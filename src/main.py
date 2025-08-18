@@ -62,23 +62,66 @@ print("\033[2J")
 # Begin project code
 
 
-def pre_autonomous() -> None:
-    # actions to do when the program starts
-    brain.screen.clear_screen()
-    brain.screen.print("pre auton code")
-    wait(1, SECONDS)
+class AutonomousControl:
+    def pre(self) -> None:
+        brain.screen.clear_screen()
+        brain.screen.print("pre auton code not implemented")
+        wait(1, SECONDS)
+
+    def main(self) -> None:
+        brain.screen.clear_screen()
+        brain.screen.print("autonomous code not implemented")
 
 
-def autonomous() -> None:
-    brain.screen.clear_screen()
-    brain.screen.print("autonomous code")
-    # place automonous code here
+class DriverControl:
+    """
+    Driver control class. Set the initial control mode during initalization (must be valid).
+    Run start_control_loop() to start the driver control loop.
+    """
 
+    def __init__(self, control_mode: str) -> None:
+        self.modes = {"split_arcade": self._split_arcade}
+        self._control_mode = self.modes[control_mode]
+        self._next_stop_control = False
 
-def user_control() -> None:
-    brain.screen.clear_screen()
-    while True:
-        # maybe implement cheesy drive TODO?
+    def start_control_loop(self) -> None:
+        """
+        Starts the driver control loop. Stops on control mode change or manual stop.
+        """
+        initial_control_mode = self._control_mode
+        while not self._next_stop_control:
+            if initial_control_mode != self._control_mode:
+                self._next_stop_control = True
+            self._control_mode()
+
+    def stop_control_loop(self) -> None:
+        """
+        Stops the driver control loop.
+        """
+        self._next_stop_control = True
+
+    def set_control_mode(self, control_mode: str) -> None:
+        """
+        Sets the driver control mode. Must be a valid value
+        as defined in the class constructor (modes).
+
+        This function stops the currently running control loop.
+        Run start_control_loop() to restart it.
+        """
+        self._control_mode = self.modes[control_mode]
+
+    def get_control_mode(self) -> str:
+        """
+        Gets the currently running control mode as a string
+        matching the internal map.
+        """
+        return {v: k for k, v in self.modes.items()}[self._control_mode]
+        # reverse dict lookup of self.modes
+
+    def _split_arcade(self) -> None:
+        """
+        Simple six-motor split arcade drive.
+        """
         front_right.set_velocity(
             controller_1.axis3.position() + controller_1.axis1.position(), PERCENT
         )
@@ -100,6 +143,8 @@ def user_control() -> None:
         )
 
 
-# create competition instance
-comp = Competition(user_control, autonomous)
-pre_autonomous()
+driver = DriverControl("split_arcade")
+auto = AutonomousControl()
+
+comp = Competition(driver.start_control_loop, auto.main)
+auto.pre()
