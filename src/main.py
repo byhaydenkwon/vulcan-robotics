@@ -59,9 +59,6 @@ print("\033[2J")
 #
 # ------------------------------------------
 
-# Library imports
-from vex import *
-
 # Begin project code
 
 
