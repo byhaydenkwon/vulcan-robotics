@@ -1,0 +1,15 @@
+[project]
+name = "vulcan-robotics"
+version = "0.1.0"
+description = "We're a VEX V5 robotics team!"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = []
+
+[tool.ruff.lint]
+ignore = ["F403", "F405"]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.12.9",
+]
