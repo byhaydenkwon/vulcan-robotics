@@ -79,10 +79,11 @@ class DriverControl:
     Run start_control_loop() to start the driver control loop.
     """
 
-    def __init__(self, control_mode: str) -> None:
+    def __init__(self, control_mode: str, **kwargs) -> None:
         self.modes = {"split_arcade": self._split_arcade}
         self._control_mode = self.modes[control_mode]
         self._next_stop_control = False
+        self._control_mode_kwargs = kwargs
 
     def start_control_loop(self) -> None:
         """
@@ -92,7 +93,7 @@ class DriverControl:
         while not self._next_stop_control:
             if initial_control_mode != self._control_mode:
                 self._next_stop_control = True
-            self._control_mode()
+            self._control_mode(**self._control_mode_kwargs)
 
     def stop_control_loop(self) -> None:
         """
