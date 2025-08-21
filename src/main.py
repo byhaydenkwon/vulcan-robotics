@@ -6,20 +6,32 @@ import urandom  # type: ignore
 brain = Brain()
 
 # Robot configuration code
-front_right = Motor(Ports.PORT1, GearSetting.RATIO_6_1, False)
-middle_right = Motor(Ports.PORT2, GearSetting.RATIO_6_1, False)
+
+# Drivetrain motors
+front_right = Motor(Ports.PORT1, GearSetting.RATIO_6_1, True)
+middle_right = Motor(Ports.PORT2, GearSetting.RATIO_6_1, False) 
 back_right = Motor(Ports.PORT3, GearSetting.RATIO_6_1, False)
-front_left = Motor(Ports.PORT4, GearSetting.RATIO_6_1, False)
+front_left = Motor(Ports.PORT4, GearSetting.RATIO_6_1, True)
 middle_left = Motor(Ports.PORT5, GearSetting.RATIO_6_1, False)
 back_left = Motor(Ports.PORT6, GearSetting.RATIO_6_1, False)
+
+# Auxillary motors
+hopper_gate = Motor(Ports.PORT11) # half motor
+intake_bottom = Motor(Ports.PORT12)
+intake_top = Motor(Ports.PORT13)
+
+# Sensors
 inertial_sensor = Inertial(Ports.PORT7)
 optical_sensor = Optical(Ports.PORT8)
 gps_sensor = Gps(Ports.PORT9, 0, 0, DistanceUnits.MM, 180)
+block_color_sensor = Optical(Ports.PORT10)
+
+
 controller_1 = Controller(PRIMARY)
 
 
 # wait for rotation sensor to fully initialize
-wait(30, MSEC)
+wait(30, MSEC) 
 
 
 # Make random actually random
@@ -65,9 +77,10 @@ print("\033[2J")
 
 class AutonomousControl:
     def pre(self) -> None:
-        brain.screen.clear_screen()
-        brain.screen.print("pre auton code not implemented")
-        wait(1, SECONDS)
+        gps_sensor.calibrate()
+        # TODO Have a way to recalibrate after a field adjustment or similar
+        # Right now you can just restart the code
+        # TODO have a set starting position for the GPS sensor
 
     def main(self) -> None:
         brain.screen.clear_screen()
