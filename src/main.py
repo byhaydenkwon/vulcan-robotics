@@ -14,6 +14,7 @@ middle_left = Motor(Ports.PORT5, GearSetting.RATIO_6_1, False)
 back_left = Motor(Ports.PORT6, GearSetting.RATIO_6_1, False)
 inertial_sensor = Inertial(Ports.PORT7)
 optical_sensor = Optical(Ports.PORT8)
+gps_sensor = Gps(Ports.PORT9, 0, 0, DistanceUnits.MM, 180)
 controller_1 = Controller(PRIMARY)
 
 
