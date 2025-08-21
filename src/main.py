@@ -17,7 +17,7 @@ back_left = Motor(Ports.PORT6, GearSetting.RATIO_6_1, False)
 
 # Auxillary motors
 hopper_gate = Motor(Ports.PORT11) # half motor
-intake_bottom = Motor(Ports.PORT12)
+intake_bottom = Motor(Ports.PORT12) 
 intake_top = Motor(Ports.PORT13)
 
 # Sensors
@@ -25,6 +25,8 @@ inertial_sensor = Inertial(Ports.PORT7)
 optical_sensor = Optical(Ports.PORT8)
 gps_sensor = Gps(Ports.PORT9, 0, 0, DistanceUnits.MM, 180)
 block_color_sensor = Optical(Ports.PORT10)
+
+henry = DigitalOut(brain.three_wire_port.a) # Tube intake
 
 
 controller_1 = Controller(PRIMARY)
