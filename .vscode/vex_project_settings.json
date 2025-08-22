@@ -2,7 +2,7 @@
 	"project": {
 		"name": "vulcan-robotics",
 		"slot": 1,
-		"description": "",
+		"description": "Robot code for team 36830C for the 2025-2026 season",
 		"platform": "V5",
 		"creationDate": "Mon, 11 Aug 2025 17:25:02 GMT",
 		"language": "python",
