@@ -17,8 +17,8 @@ back_left = Motor(Ports.PORT6, GearSetting.RATIO_6_1, False)
 
 # Auxillary motors
 hopper_gate = Motor(Ports.PORT11) # half motor
-intake_bottom = Motor(Ports.PORT12) 
-intake_top = Motor(Ports.PORT13)
+intake_bottom = Motor(Ports.PORT12, GearSetting.RATIO_6_1, False)
+intake_top = Motor(Ports.PORT13) #half motor
 
 # Sensors
 inertial_sensor = Inertial(Ports.PORT7)
