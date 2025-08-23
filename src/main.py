@@ -9,16 +9,16 @@ brain = Brain()
 
 # Drivetrain motors
 front_right = Motor(Ports.PORT1, GearSetting.RATIO_6_1, True)
-middle_right = Motor(Ports.PORT2, GearSetting.RATIO_6_1, False) 
+middle_right = Motor(Ports.PORT2, GearSetting.RATIO_6_1, False)
 back_right = Motor(Ports.PORT3, GearSetting.RATIO_6_1, False)
 front_left = Motor(Ports.PORT4, GearSetting.RATIO_6_1, True)
 middle_left = Motor(Ports.PORT5, GearSetting.RATIO_6_1, False)
 back_left = Motor(Ports.PORT6, GearSetting.RATIO_6_1, False)
 
 # Auxillary motors
-hopper_gate = Motor(Ports.PORT11) # half motor
+hopper_gate = Motor(Ports.PORT11)  # half motor
 intake_bottom = Motor(Ports.PORT12, GearSetting.RATIO_6_1, False)
-intake_top = Motor(Ports.PORT13) #half motor
+intake_top = Motor(Ports.PORT13)  # half motor
 
 # Sensors
 inertial_sensor = Inertial(Ports.PORT7)
@@ -26,14 +26,14 @@ optical_sensor = Optical(Ports.PORT8)
 gps_sensor = Gps(Ports.PORT9, 0, 0, DistanceUnits.MM, 180)
 block_color_sensor = Optical(Ports.PORT10)
 
-henry = DigitalOut(brain.three_wire_port.a) # Tube intake
+henry = DigitalOut(brain.three_wire_port.a)  # Tube intake (pneumatic)
 
 
 controller_1 = Controller(PRIMARY)
 
 
 # wait for rotation sensor to fully initialize
-wait(30, MSEC) 
+wait(30, MSEC)
 
 
 # Make random actually random
@@ -80,6 +80,18 @@ print("\033[2J")
 class AutonomousControl:
     def pre(self) -> None:
         gps_sensor.calibrate()
+        while gps_sensor.is_calibrating():
+            brain.screen.clear_screen()
+            brain.screen.print("GPS sensor calibrating")
+            wait(100, TimeUnits.MSEC)
+
+        inertial_sensor.calibrate()
+        while gps_sensor.is_calibrating():
+            brain.screen.clear_screen()
+            brain.screen.print("Inertial sensor calibrating")
+            wait(100, TimeUnits.MSEC)
+
+        optical_sensor.set_light(100)
         # TODO Have a way to recalibrate after a field adjustment or similar
         # Right now you can just restart the code
         # TODO have a set starting position for the GPS sensor
