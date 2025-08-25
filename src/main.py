@@ -30,6 +30,10 @@ henry = DigitalOut(brain.three_wire_port.a)  # Tube intake (pneumatic)
 
 controller_1 = Controller(PRIMARY)
 
+# Currently only DRIVE is implemented.
+# Eventually should add INTAKE, HOPPER, etc.
+DEBUG_MODES = ["DRIVE"]
+
 
 def main() -> None:
     setup()
@@ -224,17 +228,21 @@ class DriverControl:
                 (controller_1.axis3.position() - controller_1.axis1.position()), PERCENT
             )
 
-        brain.screen.print_at(
-            "Front Right Velocity: "
-            + str((controller_1.axis3.position() + controller_1.axis1.position()) / 2),
-            y=50,
-            x=0,
-        )
+        if "DRIVE" in DEBUG_MODES:
+            brain.screen.print_at(
+                "Front Right Velocity: "
+                + str(
+                    (controller_1.axis3.position() + controller_1.axis1.position()) / 2
+                ),
+                y=50,
+                x=0,
+            )
 
+            wait(10)
+            brain.screen.clear_screen()
+
+        # Currently a problem with controllers adding to values beyond 100%
         # TODO Fix this by implementing a ceiling to 100% velocity
-
-        wait(10)
-        brain.screen.clear_screen()
 
         # brain.screen.print("Mid Right Velocity: " + str(middle_right.velocity(PERCENT)))
         # brain.screen.new_line()
