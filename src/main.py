@@ -9,10 +9,10 @@ brain = Brain()
 
 # Drivetrain motors
 front_right = Motor(Ports.PORT1, GearSetting.RATIO_6_1, True)
-middle_right = Motor(Ports.PORT2, GearSetting.RATIO_6_1, False)
+middle_right = Motor(Ports.PORT2, GearSetting.RATIO_6_1, True)
 back_right = Motor(Ports.PORT3, GearSetting.RATIO_6_1, False)
 front_left = Motor(Ports.PORT4, GearSetting.RATIO_6_1, True)
-middle_left = Motor(Ports.PORT5, GearSetting.RATIO_6_1, False)
+middle_left = Motor(Ports.PORT5, GearSetting.RATIO_6_1, True)
 back_left = Motor(Ports.PORT6, GearSetting.RATIO_6_1, False)
 
 # Auxillary motors
@@ -78,6 +78,7 @@ print("\033[2J")
 
 # Begin project code
 
+
 class AutoHopper:
     def __init__(self, motor: Motor):
         self._motor = motor
@@ -89,10 +90,11 @@ class AutoHopper:
         self._motor.spin_for(REVERSE, 180, DEGREES, wait=False)
 
 class Intake:
-    def __init__(self, bottom_motor: Motor, top_motor: Motor, hopper: AutoHopper) -> None:
+    def __init__(self, bottom_motor: Motor, top_motor: Motor, hopper: AutoHopper, controller: Controller) -> None:
         self.bottom = bottom_motor
         self.top = top_motor
         self.hopper = hopper
+        self.controller = controller
 
     def start_intake(
         self, velocity: int, duration: int | None = None, auto_hopper=True
@@ -123,19 +125,21 @@ class Intake:
 
 class AutonomousControl:
     def pre(self) -> None:
-        gps_sensor.calibrate()
-        while gps_sensor.is_calibrating():
-            brain.screen.clear_screen()
-            brain.screen.print("GPS sensor calibrating")
-            wait(100, TimeUnits.MSEC)
+        # gps_sensor.calibrate()
+        # while gps_sensor.is_calibrating():
+        #     brain.screen.clear_screen()
+        #     brain.screen.print("GPS sensor calibrating")
+        #     wait(100, TimeUnits.MSEC)
 
-        inertial_sensor.calibrate()
-        while gps_sensor.is_calibrating():
-            brain.screen.clear_screen()
-            brain.screen.print("Inertial sensor calibrating")
-            wait(100, TimeUnits.MSEC)
+        # inertial_sensor.calibrate()
+        # while gps_sensor.is_calibrating():
+        #     brain.screen.clear_screen()
+        #     brain.screen.print("Inertial sensor calibrating")
+        #     wait(100, TimeUnits.MSEC)
 
-        optical_sensor.set_light(100)
+        # optical_sensor.set_light(100)
+
+        pass
         # TODO Have a way to recalibrate after a field adjustment or similar
         # Right now you can just restart the code
         # TODO have a set starting position for the GPS sensor
@@ -151,21 +155,29 @@ class DriverControl:
     Run start_control_loop() to start the driver control loop.
     """
 
-    def __init__(self, control_mode: str, **kwargs) -> None:
-        self.modes = {"split_arcade": self._split_arcade}
-        self._control_mode = self.modes[control_mode]
+    def __init__(self, drive_mode: str, mechanism_mode: str, controller: Controller, intake: Intake, hopper: AutoHopper, **kwargs) -> None:
+        self.drive_modes = {"split_arcade": self._split_arcade}
+        self.mechanism_modes = {"standard": self._standard_mechanisms}
+
+        self._drive_mode = self.drive_modes[drive_mode]
+        self._drive_mode_kwargs = kwargs
         self._next_stop_control = False
-        self._control_mode_kwargs = kwargs
+
+        self._mechanism_mode = self.mechanism_modes[mechanism_mode]
+
+        self.controller = controller
+        self.intake = intake
+        self.hopper = hopper
 
     def start_control_loop(self) -> None:
         """
         Starts the driver control loop. Stops on control mode change or manual stop.
         """
-        initial_control_mode = self._control_mode
+        initial_control_mode = self._drive_mode
         while not self._next_stop_control:
-            if initial_control_mode != self._control_mode:
+            if initial_control_mode != self._drive_mode:
                 self._next_stop_control = True
-            self._control_mode(**self._control_mode_kwargs)
+            self._drive_mode(**self._drive_mode_kwargs)
 
     def stop_control_loop(self) -> None:
         """
@@ -181,14 +193,14 @@ class DriverControl:
         This function stops the currently running control loop.
         Run start_control_loop() to restart it.
         """
-        self._control_mode = self.modes[control_mode]
+        self._drive_mode = self.drive_modes[control_mode]
 
     def get_control_mode(self) -> str:
         """
         Gets the currently running control mode as a string
         matching the internal map.
         """
-        return {v: k for k, v in self.modes.items()}[self._control_mode]
+        return {v: k for k, v in self.drive_modes.items()}[self._drive_mode]
         # reverse dict lookup of self.modes
 
     def _split_arcade(self) -> None:
@@ -196,27 +208,54 @@ class DriverControl:
         Simple six-motor split arcade drive.
         """
         front_right.set_velocity(
-            controller_1.axis3.position() + controller_1.axis1.position(), PERCENT
+            (controller_1.axis3.position() + controller_1.axis1.position()), PERCENT
         )
         middle_right.set_velocity(
-            controller_1.axis3.position() + controller_1.axis1.position(), PERCENT
+            (controller_1.axis3.position() + controller_1.axis1.position()), PERCENT
         )
         back_right.set_velocity(
-            controller_1.axis3.position() + controller_1.axis1.position(), PERCENT
+            (controller_1.axis3.position() + controller_1.axis1.position()), PERCENT
         )
 
         front_left.set_velocity(
-            controller_1.axis3.position() - controller_1.axis1.position(), PERCENT
+            (controller_1.axis3.position() - controller_1.axis1.position()), PERCENT
         )
         middle_left.set_velocity(
-            controller_1.axis3.position() - controller_1.axis1.position(), PERCENT
+            (controller_1.axis3.position() - controller_1.axis1.position()), PERCENT
         )
         back_left.set_velocity(
-            controller_1.axis3.position() - controller_1.axis1.position(), PERCENT
+            (controller_1.axis3.position() - controller_1.axis1.position()), PERCENT
         )
 
+        brain.screen.print_at("Front Right Velocity: " + str((controller_1.axis3.position() + controller_1.axis1.position()) / 2), y=50, x=0)
+        
+        # TODO Fix this by implementing a ceiling to 100% velocity
 
-driver = DriverControl("split_arcade")
+        wait(10)
+        brain.screen.clear_screen()
+
+
+        # brain.screen.print("Mid Right Velocity: " + str(middle_right.velocity(PERCENT)))
+        # brain.screen.new_line()
+        # brain.screen.print("Back Right Velocity: " + str(back_right.velocity(PERCENT)))
+        # brain.screen.new_line()
+
+        # brain.screen.print("Front Left Velocity: " + str(front_left.velocity(PERCENT)))
+        # brain.screen.new_line()
+        # brain.screen.print("Mid Left Velocity: " + str(middle_left.velocity(PERCENT)))
+        # brain.screen.new_line()
+        # brain.screen.print("Back Left Velocity: " + str(back_left.velocity(PERCENT)))
+        # brain.screen.new_line()
+    
+    def _standard_mechanisms(self) -> None:
+        self.controller.buttonR1.pressed(lambda: self.intake.start_intake(100))
+        self.controller.buttonR1.released(lambda: self.intake.stop_intake())
+
+
+hopper = AutoHopper(hopper_gate)
+intake = Intake(intake_bottom, intake_top, hopper, controller_1)
+
+driver = DriverControl("split_arcade", "standard", controller_1, intake, hopper)
 auto = AutonomousControl()
 
 comp = Competition(driver.start_control_loop, auto.main)
