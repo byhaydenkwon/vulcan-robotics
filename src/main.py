@@ -1,11 +1,9 @@
-# region VEXcode Generated Robot Configuration
 from vex import *
 import urandom  # type: ignore
 
-# Brain should be defined by default
-brain = Brain()
+# Config
 
-# Robot configuration code
+brain = Brain()
 
 # Drivetrain motors
 front_right = Motor(Ports.PORT1, GearSetting.RATIO_6_1, True)
@@ -30,16 +28,23 @@ block_color_sensor = Optical(Ports.PORT10)
 
 henry = DigitalOut(brain.three_wire_port.a)  # Tube intake (pneumatic)
 
-
 controller_1 = Controller(PRIMARY)
 
 
-# wait for rotation sensor to fully initialize
-wait(30, MSEC)
+def main() -> None:
+    setup()
+
+    hopper = AutoHopper(hopper_gate)
+    intake = Intake(intake_bottom, intake_top, hopper, controller_1)
+
+    driver = DriverControl("split_arcade", "standard", controller_1, intake, hopper)
+    auto = AutonomousControl()
+
+    comp = Competition(driver.start_control_loop, auto.main)
+    auto.pre()
 
 
-# Make random actually random
-def initializeRandomSeed():
+def initializeRandomSeed() -> None:
     wait(100, MSEC)
     random = (
         brain.battery.voltage(MV)
@@ -49,34 +54,21 @@ def initializeRandomSeed():
     urandom.seed(int(random))
 
 
-# Set random seed
-initializeRandomSeed()
+def setup() -> None:
+    """
+    A setup function containing mostly VEXCode generated code.
+    """
 
+    # wait for rotation sensor to fully initialize
+    wait(30, MSEC)
 
-def play_vexcode_sound(sound_name):
-    # Helper to make playing sounds from the V5 in VEXcode easier and
-    # keeps the code cleaner by making it clear what is happening.
-    print("VEXPlaySound:" + sound_name)
-    wait(5, MSEC)
+    # Set random seed
+    initializeRandomSeed()
 
-
-# add a small delay to make sure we don't print in the middle of the REPL header
-wait(200, MSEC)
-# clear the console to make sure we don't have the REPL in the console
-print("\033[2J")
-
-# endregion VEXcode Generated Robot Configuration
-
-# ------------------------------------------
-#
-# 	Project:
-# 	Author:
-# 	Created:
-# 	Configuration:
-#
-# ------------------------------------------
-
-# Begin project code
+    # add a small delay to make sure we don't print in the middle of the REPL header
+    wait(200, MSEC)
+    # clear the console to make sure we don't have the REPL in the console
+    print("\033[2J")
 
 
 class AutoHopper:
@@ -261,11 +253,5 @@ class DriverControl:
         self.controller.buttonR1.released(lambda: self.intake.stop_intake())
 
 
-hopper = AutoHopper(hopper_gate)
-intake = Intake(intake_bottom, intake_top, hopper, controller_1)
-
-driver = DriverControl("split_arcade", "standard", controller_1, intake, hopper)
-auto = AutonomousControl()
-
-comp = Competition(driver.start_control_loop, auto.main)
-auto.pre()
+if __name__ == "__main__":
+    main()
