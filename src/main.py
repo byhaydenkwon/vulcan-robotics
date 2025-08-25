@@ -222,25 +222,15 @@ class DriverControl:
         """
         Simple six-motor split arcade drive.
         """
-        front_right.set_velocity(
-            (controller_1.axis3.position() + controller_1.axis1.position()), PERCENT
-        )
-        middle_right.set_velocity(
-            (controller_1.axis3.position() + controller_1.axis1.position()), PERCENT
-        )
-        back_right.set_velocity(
-            (controller_1.axis3.position() + controller_1.axis1.position()), PERCENT
-        )
+        for motor in [front_right, middle_right, back_right]:
+            motor.set_velocity(
+                (controller_1.axis3.position() + controller_1.axis1.position()), PERCENT
+            )
 
-        front_left.set_velocity(
-            (controller_1.axis3.position() - controller_1.axis1.position()), PERCENT
-        )
-        middle_left.set_velocity(
-            (controller_1.axis3.position() - controller_1.axis1.position()), PERCENT
-        )
-        back_left.set_velocity(
-            (controller_1.axis3.position() - controller_1.axis1.position()), PERCENT
-        )
+        for motor in [front_left, middle_left, back_left]:
+            motor.set_velocity(
+                (controller_1.axis3.position() - controller_1.axis1.position()), PERCENT
+            )
 
         brain.screen.print_at(
             "Front Right Velocity: "
