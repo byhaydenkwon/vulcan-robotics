@@ -232,9 +232,25 @@ class DriverControl:
 
         if "DRIVE" in DEBUG_MODES:
             brain.screen.print_at(
-                "Front Right Velocity: "
-                + str((controller_1.axis3.position() + controller_1.axis1.position())),
+                "Right Motors Target Velocity: "
+                + str(
+                    max(
+                        controller_1.axis3.position() + controller_1.axis1.position(),
+                        100,
+                    )
+                ),
                 y=50,
+                x=0,
+            )
+            brain.screen.print_at(
+                "Left Motors Target Velocity: "
+                + str(
+                    max(
+                        controller_1.axis3.position() - controller_1.axis1.position(),
+                        100,
+                    )
+                ),
+                y=60,
                 x=0,
             )
 
