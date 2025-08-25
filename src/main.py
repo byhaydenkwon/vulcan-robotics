@@ -78,9 +78,18 @@ print("\033[2J")
 
 # Begin project code
 
+class AutoHopper:
+    def __init__(self, motor: Motor):
+        self._motor = motor
+    
+    def open(self):
+        self._motor.spin_for(FORWARD, 180, DEGREES, wait=False)
+    
+    def close(self):
+        self._motor.spin_for(REVERSE, 180, DEGREES, wait=False)
 
 class Intake:
-    def __init__(self, bottom_motor: Motor, top_motor: Motor, hopper: Motor) -> None:
+    def __init__(self, bottom_motor: Motor, top_motor: Motor, hopper: AutoHopper) -> None:
         self.bottom = bottom_motor
         self.top = top_motor
         self.hopper = hopper
@@ -97,7 +106,7 @@ class Intake:
         """
         self.bottom.set_velocity(velocity, PERCENT)
         if auto_hopper:
-            self.hopper.spin_for(FORWARD, 180, DEGREES, wait=False)
+            self.hopper.open()
         if duration:
             timer = Timer()
             timer.event(self.stop_intake, duration)
@@ -109,7 +118,7 @@ class Intake:
         """
         self.bottom.set_velocity(0, PERCENT)
         if auto_hopper:
-            self.hopper.spin_for(REVERSE, 180, DEGREES, wait=False)
+            self.hopper.close()
 
 
 class AutonomousControl:
