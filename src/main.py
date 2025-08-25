@@ -220,29 +220,26 @@ class DriverControl:
         """
         for motor in [front_right, middle_right, back_right]:
             motor.set_velocity(
-                (controller_1.axis3.position() + controller_1.axis1.position()), PERCENT
+                max(controller_1.axis3.position() + controller_1.axis1.position(), 100),
+                PERCENT,
             )
 
         for motor in [front_left, middle_left, back_left]:
             motor.set_velocity(
-                (controller_1.axis3.position() - controller_1.axis1.position()), PERCENT
+                max(controller_1.axis3.position() - controller_1.axis1.position(), 100),
+                PERCENT,
             )
 
         if "DRIVE" in DEBUG_MODES:
             brain.screen.print_at(
                 "Front Right Velocity: "
-                + str(
-                    (controller_1.axis3.position() + controller_1.axis1.position()) / 2
-                ),
+                + str((controller_1.axis3.position() + controller_1.axis1.position())),
                 y=50,
                 x=0,
             )
 
             wait(10)
             brain.screen.clear_screen()
-
-        # Currently a problem with controllers adding to values beyond 100%
-        # TODO Fix this by implementing a ceiling to 100% velocity
 
         # brain.screen.print("Mid Right Velocity: " + str(middle_right.velocity(PERCENT)))
         # brain.screen.new_line()
