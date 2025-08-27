@@ -246,24 +246,26 @@ class DriverControl:
                 + str(
                     max(min(controller_1.axis3.position() - controller_1.axis1.position(), 100), -100)
                 ),
-                y=60,
+                y=80,
                 x=0,
             )
 
             wait(10)
             brain.screen.clear_screen()
 
-        # brain.screen.print("Mid Right Velocity: " + str(middle_right.velocity(PERCENT)))
-        # brain.screen.new_line()
-        # brain.screen.print("Back Right Velocity: " + str(back_right.velocity(PERCENT)))
-        # brain.screen.new_line()
+            # brain.screen.print("Mid Right Velocity: " + str(middle_right.velocity(PERCENT)))
+            # brain.screen.new_line()
+            # brain.screen.print("Back Right Velocity: " + str(back_right.velocity(PERCENT)))
+            # brain.screen.new_line()
 
-        # brain.screen.print("Front Left Velocity: " + str(front_left.velocity(PERCENT)))
-        # brain.screen.new_line()
-        # brain.screen.print("Mid Left Velocity: " + str(middle_left.velocity(PERCENT)))
-        # brain.screen.new_line()
-        # brain.screen.print("Back Left Velocity: " + str(back_left.velocity(PERCENT)))
-        # brain.screen.new_line()
+            # brain.screen.print("Front Left Velocity: " + str(front_left.velocity(PERCENT)))
+            # brain.screen.new_line()
+            # brain.screen.print("Mid Left Velocity: " + str(middle_left.velocity(PERCENT)))
+            # brain.screen.new_line()
+            # brain.screen.print("Back Left Velocity: " + str(back_left.velocity(PERCENT)))
+            # brain.screen.new_line()
+    
+    # TODO Make turning and driving speed configurable in new driving function
 
     def _standard_mechanisms(self) -> None:
         self.controller.buttonR1.pressed(lambda: self.intake.start_intake(100))
