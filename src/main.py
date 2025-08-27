@@ -6,12 +6,12 @@ import urandom  # type: ignore
 brain = Brain()
 
 # Drivetrain motors
-front_right = Motor(Ports.PORT1, GearSetting.RATIO_6_1, True)
-middle_right = Motor(Ports.PORT2, GearSetting.RATIO_6_1, True)
+front_right = Motor(Ports.PORT1, GearSetting.RATIO_6_1, False)
+middle_right = Motor(Ports.PORT2, GearSetting.RATIO_6_1, False)
 back_right = Motor(Ports.PORT3, GearSetting.RATIO_6_1, False)
 front_left = Motor(Ports.PORT4, GearSetting.RATIO_6_1, True)
 middle_left = Motor(Ports.PORT5, GearSetting.RATIO_6_1, True)
-back_left = Motor(Ports.PORT6, GearSetting.RATIO_6_1, False)
+back_left = Motor(Ports.PORT6, GearSetting.RATIO_6_1, True)
 
 # Auxillary motors
 hopper_gate = Motor(Ports.PORT11)  # half motor
@@ -220,15 +220,17 @@ class DriverControl:
         """
         for motor in [front_right, middle_right, back_right]:
             motor.set_velocity(
-                max(min(controller_1.axis3.position() + controller_1.axis1.position(), 100), -100),
-                PERCENT,
-            )
-
-        for motor in [front_left, middle_left, back_left]:
-            motor.set_velocity(
                 max(min(controller_1.axis3.position() - controller_1.axis1.position(), 100), -100),
                 PERCENT,
             )
+            motor.spin(FORWARD)
+
+        for motor in [front_left, middle_left, back_left]:
+            motor.set_velocity(
+                max(min(controller_1.axis3.position() + controller_1.axis1.position(), 100), -100),
+                PERCENT,
+            )
+            motor.spin(FORWARD)
 
         if "DRIVE" in DEBUG_MODES:
             brain.screen.print_at(
