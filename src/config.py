@@ -1,6 +1,8 @@
-from vex import *
+"""
+Contains builtin VEX motors and sensors as well as constants.
+"""
 
-# Separate Config file to keep things organized
+from vex import *
 
 brain = Brain()
 
@@ -14,8 +16,6 @@ back_left = Motor(Ports.PORT6, GearSetting.RATIO_6_1, True)
 
 # Auxillary motors
 hopper = Motor(Ports.PORT11)  # half motor
-# NOTE I don't know exactly what our hopper gate design will be
-# at this point, so most hopper code is best-guess
 intake_bottom = Motor(Ports.PORT12, GearSetting.RATIO_6_1, False)
 intake_top = Motor(Ports.PORT13)  # half motor
 
@@ -25,9 +25,12 @@ optical_sensor = Optical(Ports.PORT8)
 gps_sensor = Gps(Ports.PORT9, 0, 0, DistanceUnits.MM, 180)
 block_color_sensor = Optical(Ports.PORT10)
 
-henry = DigitalOut(brain.three_wire_port.a)  # Tube intake (pneumatic)
+# Tube intake (pneumatic)
+henry = DigitalOut(brain.three_wire_port.a)
 
 controller_1 = Controller(PRIMARY)
+
+# Custom constants
 
 HOPPER_DEGREES_PER_BLOCK = 180
 
