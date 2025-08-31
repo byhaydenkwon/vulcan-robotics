@@ -86,7 +86,7 @@ class DriverControl:
                         100,
                     ),
                     -100,
-                ),
+                ),  # clamps velocities to 100 or -100%
                 PERCENT,
             )
             motor.spin(FORWARD)
@@ -100,13 +100,13 @@ class DriverControl:
                         100,
                     ),
                     -100,
-                ),
+                ),  # clamps velocities to 100 or -100%
                 PERCENT,
             )
             motor.spin(FORWARD)
 
         if "DRIVE" in config.DEBUG_MODES:
-            config.brain.screen.print_at(
+            config.brain.screen.print(
                 "Right Motors Target Velocity: "
                 + str(
                     max(
@@ -117,11 +117,9 @@ class DriverControl:
                         ),
                         -100,
                     )
-                ),
-                y=50,
-                x=0,
+                )
             )
-            config.brain.screen.print_at(
+            config.brain.screen.print(
                 "Left Motors Target Velocity: "
                 + str(
                     max(
@@ -132,25 +130,30 @@ class DriverControl:
                         ),
                         -100,
                     )
-                ),
-                y=80,
-                x=0,
+                )
             )
 
-            wait(10)
-            config.brain.screen.clear_screen()
+            config.brain.screen.print(
+                "Mid Right Velocity: " + str(config.middle_right.velocity(PERCENT))
+            )
+            config.brain.screen.new_line()
+            config.brain.screen.print(
+                "Back Right Velocity: " + str(config.back_right.velocity(PERCENT))
+            )
+            config.brain.screen.new_line()
+            config.brain.screen.print(
+                "Front Left Velocity: " + str(config.front_left.velocity(PERCENT))
+            )
+            config.brain.screen.new_line()
+            config.brain.screen.print(
+                "Mid Left Velocity: " + str(config.middle_left.velocity(PERCENT))
+            )
+            config.brain.screen.new_line()
+            config.brain.screen.print(
+                "Back Left Velocity: " + str(config.back_left.velocity(PERCENT))
+            )
 
-            # brain.screen.print("Mid Right Velocity: " + str(middle_right.velocity(PERCENT)))
-            # brain.screen.new_line()
-            # brain.screen.print("Back Right Velocity: " + str(back_right.velocity(PERCENT)))
-            # brain.screen.new_line()
-
-            # brain.screen.print("Front Left Velocity: " + str(front_left.velocity(PERCENT)))
-            # brain.screen.new_line()
-            # brain.screen.print("Mid Left Velocity: " + str(middle_left.velocity(PERCENT)))
-            # brain.screen.new_line()
-            # brain.screen.print("Back Left Velocity: " + str(back_left.velocity(PERCENT)))
-            # brain.screen.new_line()
+            config.brain.screen.set_cursor(1, 1)
 
     # TODO Make turning and driving speed configurable in new driving function
 
