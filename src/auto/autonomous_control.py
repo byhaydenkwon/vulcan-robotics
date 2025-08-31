@@ -13,24 +13,27 @@ class AutonomousControl:
     Contains entry functions for pre-autonomous and autonomous code.
     """
 
-    def __init__(self, logger: Logger | NullLogger = NullLogger()):
+    def __init__(
+        self,
+        gps: Gps,
+        inertial: Inertial,
+        optical: Optical,
+        logger: Logger | NullLogger = NullLogger(),
+    ):
         self.logger = logger
+        self.gps = gps
+        self.inertial = inertial
+        self.optical = optical
 
     def pre(self) -> None:
         self.logger.log(__name__, "Starting pre-autonomous code")
-        # gps_sensor.calibrate()
-        # while gps_sensor.is_calibrating():
-        #     brain.screen.clear_screen()
-        #     brain.screen.print("GPS sensor calibrating")
-        #     wait(100, TimeUnits.MSEC)
+        self.logger.log(__name__, "Calibrating GPS sensor")
+        self.gps.calibrate()
 
-        # inertial_sensor.calibrate()
-        # while gps_sensor.is_calibrating():
-        #     brain.screen.clear_screen()
-        #     brain.screen.print("Inertial sensor calibrating")
-        #     wait(100, TimeUnits.MSEC)
+        self.logger.log(__name__, "Calibrating inertial sensor")
+        self.inertial.calibrate()
 
-        # optical_sensor.set_light(100)
+        self.optical.set_light(100)
 
         pass
         # TODO Have a way to recalibrate after a field adjustment or similar
