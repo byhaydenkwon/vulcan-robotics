@@ -5,7 +5,7 @@ import config
 def main() -> None:
     setup()
 
-    hopper = AutoHopper(config.hopper_gate)
+    hopper = AutoHopper(config.hopper)
     intake = Intake(config.intake_bottom, config.intake_top, hopper, config.controller_1)
 
     driver = DriverControl("split_arcade", "standard", config.controller_1, intake, hopper)
@@ -46,11 +46,14 @@ class AutoHopper:
     def __init__(self, motor: Motor):
         self._motor = motor
 
-    def open(self):
-        self._motor.spin_for(FORWARD, 180, DEGREES, wait=False)
+    def intake(self):
+        self._motor.spin(FORWARD) 
 
-    def close(self):
-        self._motor.spin_for(REVERSE, 180, DEGREES, wait=False)
+    def output(self):
+        self._motor.spin(REVERSE)
+
+    def hold(self):
+        self._motor.stop(HOLD)
 
 
 class Intake:
@@ -78,7 +81,7 @@ class Intake:
         """
         self.bottom.set_velocity(velocity, PERCENT)
         if auto_hopper:
-            self.hopper.open()
+            self.hopper.intake()
         if duration:
             timer = Timer()
             timer.event(self.stop_intake, duration)
@@ -90,7 +93,7 @@ class Intake:
         """
         self.bottom.set_velocity(0, PERCENT)
         if auto_hopper:
-            self.hopper.close()
+            self.hopper.hold()
 
 
 class AutonomousControl:
