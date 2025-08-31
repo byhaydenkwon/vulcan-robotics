@@ -4,7 +4,7 @@ Contains the AutonomousControl class for autonomous and pre-autonomous code.
 
 from vex import *
 
-import config
+from display import Logger, NullLogger
 
 
 class AutonomousControl:
@@ -13,7 +13,11 @@ class AutonomousControl:
     Contains entry functions for pre-autonomous and autonomous code.
     """
 
+    def __init__(self, logger: Logger | NullLogger = NullLogger()):
+        self.logger = logger
+
     def pre(self) -> None:
+        self.logger.log(__name__, "Starting pre-autonomous code")
         # gps_sensor.calibrate()
         # while gps_sensor.is_calibrating():
         #     brain.screen.clear_screen()
@@ -34,5 +38,4 @@ class AutonomousControl:
         # TODO have a set starting position for the GPS sensor
 
     def main(self) -> None:
-        config.brain.screen.clear_screen()
-        config.brain.screen.print("autonomous code not implemented")
+        self.logger.log(__name__, "Starting main autonomous code")
