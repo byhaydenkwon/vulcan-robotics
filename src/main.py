@@ -45,6 +45,8 @@ def main() -> None:
     setup()
 
     logger = Logger(config.brain)
+    logging_thread = Thread(logger.start_print_loop)
+
     hopper = Hopper(config.hopper, config.HOPPER_DEGREES_PER_BLOCK, logger=logger)
     intake = Intake(
         config.intake_bottom, config.intake_top, hopper, config.controller_1, logger
