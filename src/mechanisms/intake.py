@@ -30,7 +30,7 @@ class Intake:
 
         If auto_hopper is True, this function also starts the hopper.
         """
-        self.bottom.set_velocity(velocity, PERCENT)
+        self.bottom.spin(FORWARD, velocity, PERCENT)
         if auto_hopper:
             self.hopper.intake()
         if duration:
@@ -42,6 +42,6 @@ class Intake:
         Stops the intake.
         If auto_hopper is True, this function also stops the hopper.
         """
-        self.bottom.set_velocity(0, PERCENT)
+        self.bottom.stop(HOLD)
         if auto_hopper:
             self.hopper.stop()
