@@ -19,6 +19,19 @@ hopper = Motor(Ports.PORT11)  # half motor
 intake_bottom = Motor(Ports.PORT12, GearSetting.RATIO_6_1, False)
 intake_top = Motor(Ports.PORT13)  # half motor
 
+# Odometry
+# Basic (one-wheel)
+# tracking_wheel = Rotation(Ports.PORT14)
+
+# Standard (two-wheel)
+parallel_tracking = Rotation(Ports.PORT14)  # parallel to drive wheels
+perpendicular_tracking = Rotation(Ports.PORT15)  # perpendicular to drive wheels
+
+# Advanced (three-wheel)
+# left_tracking = Rotation(Ports.PORT14)
+# right_tracking = Rotation(Ports.PORT15)
+# back_tracking = Rotation(Ports.PORT16)
+
 # Sensors
 inertial_sensor = Inertial(Ports.PORT7)
 optical_sensor = Optical(Ports.PORT8)
