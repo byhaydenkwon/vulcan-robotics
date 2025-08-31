@@ -6,6 +6,8 @@ from vex import *
 
 import config
 
+from display import Logger, NullLogger
+
 from mechanisms.hopper import Hopper
 from mechanisms.intake import Intake
 
@@ -23,6 +25,7 @@ class DriverControl:
         controller: Controller,
         intake: Intake,
         hopper: Hopper,
+        logger: Logger | NullLogger = NullLogger(),
         **kwargs,
     ) -> None:
         self.drive_modes = {"split_arcade": self._split_arcade}
@@ -38,13 +41,24 @@ class DriverControl:
         self.intake = intake
         self.hopper = hopper
 
+        self.logger = logger
+
     def start_control_loop(self) -> None:
         """
         Starts the driver control loop. Stops on control mode change or manual stop.
         """
-        initial_control_mode = self._drive_mode
+        # TODO also implement non-driver control loop
+        self.logger.log(__name__, "Starting driver control loop")
+
+        initial_drive_mode = self._drive_mode
+
+        self.logger.log(__name__, f"Initial drive mode: {initial_drive_mode.__name__}")
+
         while not self._next_stop_control:
-            if initial_control_mode != self._drive_mode:
+            if initial_drive_mode != self._drive_mode:
+                self.logger.log(
+                    __name__, "Drive mode change detected, stopping control loop"
+                )
                 self._next_stop_control = True
             self._drive_mode(**self._drive_mode_kwargs)
             sleep(10)
@@ -55,6 +69,8 @@ class DriverControl:
         """
         self._next_stop_control = True
 
+        self.logger.log(__name__, "Stopping driver control loop")
+
     def set_control_mode(self, control_mode: str) -> None:
         """
         Sets the driver control mode. Must be a valid value
@@ -64,6 +80,8 @@ class DriverControl:
         Run start_control_loop() to restart it.
         """
         self._drive_mode = self.drive_modes[control_mode]
+
+        self.logger.log(__name__, f"Drive mode set to {control_mode}")
 
     def get_control_mode(self) -> str:
         """
@@ -105,55 +123,56 @@ class DriverControl:
             )
             motor.spin(FORWARD)
 
-        if "DRIVE" in config.DEBUG_MODES:
-            config.brain.screen.print(
-                "Right Motors Target Velocity: "
-                + str(
-                    max(
-                        min(
-                            config.controller_1.axis3.position()
-                            + config.controller_1.axis1.position(),
-                            100,
-                        ),
-                        -100,
-                    )
-                )
-            )
-            config.brain.screen.print(
-                "Left Motors Target Velocity: "
-                + str(
-                    max(
-                        min(
-                            config.controller_1.axis3.position()
-                            - config.controller_1.axis1.position(),
-                            100,
-                        ),
-                        -100,
-                    )
-                )
-            )
+        # NOTE: This code is better served by the Monitor class TODO
+        # if "DRIVE" in config.DEBUG_MODES:
+        #     config.brain.screen.print(
+        #         "Right Motors Target Velocity: "
+        #         + str(
+        #             max(
+        #                 min(
+        #                     config.controller_1.axis3.position()
+        #                     + config.controller_1.axis1.position(),
+        #                     100,
+        #                 ),
+        #                 -100,
+        #             )
+        #         )
+        #     )
+        #     config.brain.screen.print(
+        #         "Left Motors Target Velocity: "
+        #         + str(
+        #             max(
+        #                 min(
+        #                     config.controller_1.axis3.position()
+        #                     - config.controller_1.axis1.position(),
+        #                     100,
+        #                 ),
+        #                 -100,
+        #             )
+        #         )
+        #     )
 
-            config.brain.screen.print(
-                "Mid Right Velocity: " + str(config.middle_right.velocity(PERCENT))
-            )
-            config.brain.screen.new_line()
-            config.brain.screen.print(
-                "Back Right Velocity: " + str(config.back_right.velocity(PERCENT))
-            )
-            config.brain.screen.new_line()
-            config.brain.screen.print(
-                "Front Left Velocity: " + str(config.front_left.velocity(PERCENT))
-            )
-            config.brain.screen.new_line()
-            config.brain.screen.print(
-                "Mid Left Velocity: " + str(config.middle_left.velocity(PERCENT))
-            )
-            config.brain.screen.new_line()
-            config.brain.screen.print(
-                "Back Left Velocity: " + str(config.back_left.velocity(PERCENT))
-            )
+        #     config.brain.screen.print(
+        #         "Mid Right Velocity: " + str(config.middle_right.velocity(PERCENT))
+        #     )
+        #     config.brain.screen.new_line()
+        #     config.brain.screen.print(
+        #         "Back Right Velocity: " + str(config.back_right.velocity(PERCENT))
+        #     )
+        #     config.brain.screen.new_line()
+        #     config.brain.screen.print(
+        #         "Front Left Velocity: " + str(config.front_left.velocity(PERCENT))
+        #     )
+        #     config.brain.screen.new_line()
+        #     config.brain.screen.print(
+        #         "Mid Left Velocity: " + str(config.middle_left.velocity(PERCENT))
+        #     )
+        #     config.brain.screen.new_line()
+        #     config.brain.screen.print(
+        #         "Back Left Velocity: " + str(config.back_left.velocity(PERCENT))
+        #     )
 
-            config.brain.screen.set_cursor(1, 1)
+        #     config.brain.screen.set_cursor(1, 1)
 
     # TODO Make turning and driving speed configurable in new driving function
 
