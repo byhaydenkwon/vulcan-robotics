@@ -55,3 +55,12 @@ class Logger:
         Queues a message for logging on the V5 Brain.
         """
         self._print_queue.append([module_name, message])
+
+
+class NullLogger:
+    """
+    A dummy logger.
+    """
+
+    def log(*args, **kwargs) -> None:
+        pass
