@@ -45,7 +45,7 @@ def main() -> None:
     setup()
 
     logger = Logger(config.brain)
-    hopper = Hopper(config.hopper, config.HOPPER_DEGREES_PER_BLOCK)
+    hopper = Hopper(config.hopper, config.HOPPER_DEGREES_PER_BLOCK, logger=logger)
     intake = Intake(
         config.intake_bottom, config.intake_top, hopper, config.controller_1, logger
     )
@@ -53,7 +53,7 @@ def main() -> None:
     driver = DriverControl(
         "split_arcade", "standard", config.controller_1, intake, hopper, logger
     )
-    auto = AutonomousControl()
+    auto = AutonomousControl(logger)
 
     comp = Competition(driver.start_control_loop, auto.main)
     auto.pre()
