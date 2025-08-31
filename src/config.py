@@ -13,7 +13,7 @@ middle_left = Motor(Ports.PORT5, GearSetting.RATIO_6_1, True)
 back_left = Motor(Ports.PORT6, GearSetting.RATIO_6_1, True)
 
 # Auxillary motors
-hopper_gate = Motor(Ports.PORT11)  # half motor
+hopper = Motor(Ports.PORT11)  # half motor
 # NOTE I don't know exactly what our hopper gate design will be
 # at this point, so most hopper code is best-guess
 intake_bottom = Motor(Ports.PORT12, GearSetting.RATIO_6_1, False)
