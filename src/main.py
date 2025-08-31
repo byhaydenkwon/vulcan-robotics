@@ -7,6 +7,8 @@ from vex import *
 import urandom  # type: ignore
 
 import config
+
+from display import Logger, NullLogger
 from mechanisms.hopper import Hopper
 from mechanisms.intake import Intake
 from auto.autonomous_control import AutonomousControl
@@ -42,18 +44,21 @@ def setup() -> None:
 def main() -> None:
     setup()
 
+    logger = Logger(config.brain)
     hopper = Hopper(config.hopper, config.HOPPER_DEGREES_PER_BLOCK)
     intake = Intake(
         config.intake_bottom, config.intake_top, hopper, config.controller_1
     )
 
     driver = DriverControl(
-        "split_arcade", "standard", config.controller_1, intake, hopper
+        "split_arcade", "standard", config.controller_1, intake, hopper, logger
     )
     auto = AutonomousControl()
 
     comp = Competition(driver.start_control_loop, auto.main)
     auto.pre()
+
+    logger.log(__name__, "All subsystems successfully initalized")
 
 
 if __name__ == "__main__":
