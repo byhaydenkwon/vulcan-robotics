@@ -6,7 +6,7 @@ import config
 def main() -> None:
     setup()
 
-    hopper = AutoHopper(config.hopper)
+    hopper = Hopper(config.hopper, config.HOPPER_DEGREES_PER_BLOCK)
     intake = Intake(
         config.intake_bottom, config.intake_top, hopper, config.controller_1
     )
@@ -47,17 +47,26 @@ def setup() -> None:
     print("\033[2J")
 
 
-class AutoHopper:
-    def __init__(self, motor: Motor):
+class Hopper:
+    def __init__(self, motor: Motor, block_degrees: int, velocity_percent=100) -> None:
         self._motor = motor
+        self.velocity = velocity_percent
+        self.block_degrees = block_degrees
+        # number of degrees required for one block to output
+        # maybe improve by sensors later
 
     def intake(self):
         self._motor.spin(FORWARD)
 
-    def output(self):
+    def output(self, blocks: int) -> None:
+        self._motor.spin_for(
+            FORWARD, self.block_degrees * blocks, DEGREES, self.velocity, PERCENT, True
+        )
+
+    def flush(self) -> None:
         self._motor.spin(REVERSE)
 
-    def hold(self):
+    def stop(self) -> None:
         self._motor.stop(HOLD)
 
 
@@ -66,7 +75,7 @@ class Intake:
         self,
         bottom_motor: Motor,
         top_motor: Motor,
-        hopper: AutoHopper,
+        hopper: Hopper,
         controller: Controller,
     ) -> None:
         self.bottom = bottom_motor
@@ -82,7 +91,7 @@ class Intake:
         Runs indefinitely if no duration is provided.
         Velocity must be provided as a percentage.
 
-        If auto_hopper is True, this function also retracts the hopper gate.
+        If auto_hopper is True, this function also starts the hopper.
         """
         self.bottom.set_velocity(velocity, PERCENT)
         if auto_hopper:
@@ -94,11 +103,11 @@ class Intake:
     def stop_intake(self, auto_hopper=True) -> None:
         """
         Stops the intake.
-        If auto_hopper is True, this function also restores the hopper gate.
+        If auto_hopper is True, this function also stops the hopper.
         """
         self.bottom.set_velocity(0, PERCENT)
         if auto_hopper:
-            self.hopper.hold()
+            self.hopper.stop()
 
 
 class AutonomousControl:
@@ -139,7 +148,7 @@ class DriverControl:
         mechanism_mode: str,
         controller: Controller,
         intake: Intake,
-        hopper: AutoHopper,
+        hopper: Hopper,
         **kwargs,
     ) -> None:
         self.drive_modes = {"split_arcade": self._split_arcade}

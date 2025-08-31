@@ -29,6 +29,8 @@ henry = DigitalOut(brain.three_wire_port.a)  # Tube intake (pneumatic)
 
 controller_1 = Controller(PRIMARY)
 
+HOPPER_DEGREES_PER_BLOCK = 180
+
 # Currently only DRIVE is implemented.
 # Eventually should add INTAKE, HOPPER, etc.
 DEBUG_MODES = ["DRIVE"]
