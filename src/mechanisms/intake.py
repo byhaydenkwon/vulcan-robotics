@@ -1,3 +1,7 @@
+"""
+Contains the Intake class.
+"""
+
 from vex import *
 
 from hopper import Hopper

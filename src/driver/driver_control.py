@@ -1,3 +1,7 @@
+"""
+Contains the DriverControl class with related drive and control functions.
+"""
+
 from vex import *
 
 import config

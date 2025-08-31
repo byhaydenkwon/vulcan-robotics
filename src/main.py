@@ -1,3 +1,8 @@
+"""
+The file run on the robot brain directly.
+Runs VEXCode pregenerated code and sets up boilerplate.
+"""
+
 from vex import *
 import urandom  # type: ignore
 

@@ -1,3 +1,7 @@
+"""
+Contains the Hopper class.
+"""
+
 from vex import *
 
 

@@ -1,9 +1,18 @@
+"""
+Contains the AutonomousControl class for autonomous and pre-autonomous code.
+"""
+
 from vex import *
 
 import config
 
 
 class AutonomousControl:
+    """
+    Main autonomous control class.
+    Contains entry functions for pre-autonomous and autonomous code.
+    """
+
     def pre(self) -> None:
         # gps_sensor.calibrate()
         # while gps_sensor.is_calibrating():
