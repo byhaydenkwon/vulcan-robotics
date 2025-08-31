@@ -2,13 +2,18 @@ from vex import *
 import urandom  # type: ignore
 import config
 
+
 def main() -> None:
     setup()
 
     hopper = AutoHopper(config.hopper)
-    intake = Intake(config.intake_bottom, config.intake_top, hopper, config.controller_1)
+    intake = Intake(
+        config.intake_bottom, config.intake_top, hopper, config.controller_1
+    )
 
-    driver = DriverControl("split_arcade", "standard", config.controller_1, intake, hopper)
+    driver = DriverControl(
+        "split_arcade", "standard", config.controller_1, intake, hopper
+    )
     auto = AutonomousControl()
 
     comp = Competition(driver.start_control_loop, auto.main)
@@ -47,7 +52,7 @@ class AutoHopper:
         self._motor = motor
 
     def intake(self):
-        self._motor.spin(FORWARD) 
+        self._motor.spin(FORWARD)
 
     def output(self):
         self._motor.spin(REVERSE)
@@ -190,14 +195,28 @@ class DriverControl:
         """
         for motor in [config.front_right, config.middle_right, config.back_right]:
             motor.set_velocity(
-                max(min(config.controller_1.axis3.position() - config.controller_1.axis1.position(), 100), -100),
+                max(
+                    min(
+                        config.controller_1.axis3.position()
+                        - config.controller_1.axis1.position(),
+                        100,
+                    ),
+                    -100,
+                ),
                 PERCENT,
             )
             motor.spin(FORWARD)
 
         for motor in [config.front_left, config.middle_left, config.back_left]:
             motor.set_velocity(
-                max(min(config.controller_1.axis3.position() + config.controller_1.axis1.position(), 100), -100),
+                max(
+                    min(
+                        config.controller_1.axis3.position()
+                        + config.controller_1.axis1.position(),
+                        100,
+                    ),
+                    -100,
+                ),
                 PERCENT,
             )
             motor.spin(FORWARD)
@@ -206,7 +225,14 @@ class DriverControl:
             config.brain.screen.print_at(
                 "Right Motors Target Velocity: "
                 + str(
-                    max(min(config.controller_1.axis3.position() + config.controller_1.axis1.position(), 100), -100)
+                    max(
+                        min(
+                            config.controller_1.axis3.position()
+                            + config.controller_1.axis1.position(),
+                            100,
+                        ),
+                        -100,
+                    )
                 ),
                 y=50,
                 x=0,
@@ -214,7 +240,14 @@ class DriverControl:
             config.brain.screen.print_at(
                 "Left Motors Target Velocity: "
                 + str(
-                    max(min(config.controller_1.axis3.position() - config.controller_1.axis1.position(), 100), -100)
+                    max(
+                        min(
+                            config.controller_1.axis3.position()
+                            - config.controller_1.axis1.position(),
+                            100,
+                        ),
+                        -100,
+                    )
                 ),
                 y=80,
                 x=0,
@@ -234,7 +267,7 @@ class DriverControl:
             # brain.screen.new_line()
             # brain.screen.print("Back Left Velocity: " + str(back_left.velocity(PERCENT)))
             # brain.screen.new_line()
-    
+
     # TODO Make turning and driving speed configurable in new driving function
 
     def _standard_mechanisms(self) -> None:

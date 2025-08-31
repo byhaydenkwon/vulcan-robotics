@@ -1,6 +1,6 @@
 from vex import *
 
-#Separate Config file to keep things organized
+# Separate Config file to keep things organized
 
 brain = Brain()
 
