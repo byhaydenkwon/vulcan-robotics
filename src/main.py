@@ -1,47 +1,14 @@
 from vex import *
 import urandom  # type: ignore
-
-# Config
-
-brain = Brain()
-
-# Drivetrain motors
-front_right = Motor(Ports.PORT1, GearSetting.RATIO_6_1, False)
-middle_right = Motor(Ports.PORT2, GearSetting.RATIO_6_1, False)
-back_right = Motor(Ports.PORT3, GearSetting.RATIO_6_1, False)
-front_left = Motor(Ports.PORT4, GearSetting.RATIO_6_1, True)
-middle_left = Motor(Ports.PORT5, GearSetting.RATIO_6_1, True)
-back_left = Motor(Ports.PORT6, GearSetting.RATIO_6_1, True)
-
-# Auxillary motors
-hopper_gate = Motor(Ports.PORT11)  # half motor
-# NOTE I don't know exactly what our hopper gate design will be
-# at this point, so most hopper code is best-guess
-intake_bottom = Motor(Ports.PORT12, GearSetting.RATIO_6_1, False)
-intake_top = Motor(Ports.PORT13)  # half motor
-
-# Sensors
-inertial_sensor = Inertial(Ports.PORT7)
-optical_sensor = Optical(Ports.PORT8)
-gps_sensor = Gps(Ports.PORT9, 0, 0, DistanceUnits.MM, 180)
-block_color_sensor = Optical(Ports.PORT10)
-
-henry = DigitalOut(brain.three_wire_port.a)  # Tube intake (pneumatic)
-
-controller_1 = Controller(PRIMARY)
-
-# Currently only DRIVE is implemented.
-# Eventually should add INTAKE, HOPPER, etc.
-DEBUG_MODES = ["DRIVE"]
-
+import config
 
 def main() -> None:
     setup()
 
-    hopper = AutoHopper(hopper_gate)
-    intake = Intake(intake_bottom, intake_top, hopper, controller_1)
+    hopper = AutoHopper(config.hopper_gate)
+    intake = Intake(config.intake_bottom, config.intake_top, hopper, config.controller_1)
 
-    driver = DriverControl("split_arcade", "standard", controller_1, intake, hopper)
+    driver = DriverControl("split_arcade", "standard", config.controller_1, intake, hopper)
     auto = AutonomousControl()
 
     comp = Competition(driver.start_control_loop, auto.main)
@@ -51,9 +18,9 @@ def main() -> None:
 def initializeRandomSeed() -> None:
     wait(100, MSEC)
     random = (
-        brain.battery.voltage(MV)
-        + brain.battery.current(CurrentUnits.AMP) * 100
-        + brain.timer.system_high_res()
+        config.brain.battery.voltage(MV)
+        + config.brain.battery.current(CurrentUnits.AMP) * 100
+        + config.brain.timer.system_high_res()
     )
     urandom.seed(int(random))
 
@@ -148,8 +115,8 @@ class AutonomousControl:
         # TODO have a set starting position for the GPS sensor
 
     def main(self) -> None:
-        brain.screen.clear_screen()
-        brain.screen.print("autonomous code not implemented")
+        config.brain.screen.clear_screen()
+        config.brain.screen.print("autonomous code not implemented")
 
 
 class DriverControl:
@@ -218,40 +185,40 @@ class DriverControl:
         """
         Simple six-motor split arcade drive.
         """
-        for motor in [front_right, middle_right, back_right]:
+        for motor in [config.front_right, config.middle_right, config.back_right]:
             motor.set_velocity(
-                max(min(controller_1.axis3.position() - controller_1.axis1.position(), 100), -100),
+                max(min(config.controller_1.axis3.position() - config.controller_1.axis1.position(), 100), -100),
                 PERCENT,
             )
             motor.spin(FORWARD)
 
-        for motor in [front_left, middle_left, back_left]:
+        for motor in [config.front_left, config.middle_left, config.back_left]:
             motor.set_velocity(
-                max(min(controller_1.axis3.position() + controller_1.axis1.position(), 100), -100),
+                max(min(config.controller_1.axis3.position() + config.controller_1.axis1.position(), 100), -100),
                 PERCENT,
             )
             motor.spin(FORWARD)
 
-        if "DRIVE" in DEBUG_MODES:
-            brain.screen.print_at(
+        if "DRIVE" in config.DEBUG_MODES:
+            config.brain.screen.print_at(
                 "Right Motors Target Velocity: "
                 + str(
-                    max(min(controller_1.axis3.position() + controller_1.axis1.position(), 100), -100)
+                    max(min(config.controller_1.axis3.position() + config.controller_1.axis1.position(), 100), -100)
                 ),
                 y=50,
                 x=0,
             )
-            brain.screen.print_at(
+            config.brain.screen.print_at(
                 "Left Motors Target Velocity: "
                 + str(
-                    max(min(controller_1.axis3.position() - controller_1.axis1.position(), 100), -100)
+                    max(min(config.controller_1.axis3.position() - config.controller_1.axis1.position(), 100), -100)
                 ),
                 y=80,
                 x=0,
             )
 
             wait(10)
-            brain.screen.clear_screen()
+            config.brain.screen.clear_screen()
 
             # brain.screen.print("Mid Right Velocity: " + str(middle_right.velocity(PERCENT)))
             # brain.screen.new_line()
