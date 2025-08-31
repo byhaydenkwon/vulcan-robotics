@@ -47,7 +47,7 @@ def main() -> None:
     logger = Logger(config.brain)
     hopper = Hopper(config.hopper, config.HOPPER_DEGREES_PER_BLOCK)
     intake = Intake(
-        config.intake_bottom, config.intake_top, hopper, config.controller_1
+        config.intake_bottom, config.intake_top, hopper, config.controller_1, logger
     )
 
     driver = DriverControl(
