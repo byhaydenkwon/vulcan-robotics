@@ -1,6 +1,6 @@
 # VEX Robotics Team 36830C - Vulcan
 
-![Vulcan Logo](images/vulcan.png)
+![Vulcan Logo](images/logos/vulcan.png)
 
 Thank you for coming to the official repository of VEX Robotics Team 36830C, Vulcan! Here we will have all of our code along with  additional information. This will solely be used to document code changes and will thus remain "professional" to provide examples. We will not be accepting pull requests.
 
