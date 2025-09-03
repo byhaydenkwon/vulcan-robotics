@@ -43,12 +43,14 @@ class Logger:
                 self._past_print_queue.append([module, message])
                 self._print_queue.pop()
 
+                if len(self._past_print_queue) >= 10:
+                    self._past_print_queue = self._past_print_queue[:10]
+                continue
+
             if len(self._past_print_queue) > 0:
                 module, message = self._past_print_queue[-1]
                 self._brain.screen.print(f"{module}: {message}")
-
-            if len(self._past_print_queue) >= 10:
-                self._past_print_queue = self._past_print_queue[:10]
+                continue
 
     def log(self, module_name: str, message: str) -> None:
         """
