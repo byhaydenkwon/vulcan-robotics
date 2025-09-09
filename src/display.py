@@ -39,7 +39,7 @@ class Logger:
 
             if len(self._print_queue) > 0:
                 module, message = self._print_queue[-1]
-                self._brain.screen.print(f"{module}: {message}")
+                self._brain.screen.print(module + ": " + message)
                 self._past_print_queue.append([module, message])
                 self._print_queue.pop()
 
@@ -49,7 +49,7 @@ class Logger:
 
             if len(self._past_print_queue) > 0:
                 module, message = self._past_print_queue[-1]
-                self._brain.screen.print(f"{module}: {message}")
+                self._brain.screen.print(module + ": " + message)
                 continue
 
     def log(self, module_name: str, message: str) -> None:

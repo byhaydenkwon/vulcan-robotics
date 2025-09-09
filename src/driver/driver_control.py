@@ -52,7 +52,7 @@ class DriverControl:
 
         initial_drive_mode = self._drive_mode
 
-        self.logger.log(__name__, f"Initial drive mode: {initial_drive_mode.__name__}")
+        self.logger.log(__name__, "Initial drive mode: " + initial_drive_mode.__name__)
 
         while not self._next_stop_control:
             if initial_drive_mode != self._drive_mode:
@@ -81,7 +81,7 @@ class DriverControl:
         """
         self._drive_mode = self.drive_modes[control_mode]
 
-        self.logger.log(__name__, f"Drive mode set to {control_mode}")
+        self.logger.log(__name__, "Drive mode set to " + control_mode)
 
     def get_control_mode(self) -> str:
         """
