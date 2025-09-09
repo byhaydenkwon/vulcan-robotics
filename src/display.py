@@ -7,7 +7,7 @@ class Logger:
     Should be run as a thread. Prints new updates below old ones; scrolls automatically.
     """
 
-    def __init__(self, brain: Brain, lines=10, font=FontType.MONO40) -> None:
+    def __init__(self, brain: Brain, lines=12, font=FontType.MONO20) -> None:
         self._brain = brain
         self._print_queue = []
         # This print queue uses nested lists in the format
@@ -18,6 +18,7 @@ class Logger:
         self._past_print_queue = []
         self._current_line = 1
         self._next_stop_print = False
+        self._printed_last = False
 
     def start_print_loop(self) -> None:
         while not self._next_stop_print:
@@ -31,26 +32,27 @@ class Logger:
         self._next_stop_print = True
 
     def _print_loop(self) -> None:
-        for col in range(self.max_lines, 1, -1):
+        for col in range(self.max_lines, 0, -1):
             # Prints backwards.
             # Starts at the bottom with the most current messages,
             # then fills any remaining space with old messages.
-            self._brain.screen.set_cursor(1, col)
+            self._brain.screen.set_cursor(col, 1)
 
             if len(self._print_queue) > 0:
                 module, message = self._print_queue[-1]
-                self._brain.screen.print(module + ": " + message)
+                self._brain.screen.print("PRINT QUEUE" + module + ": " + message)
                 self._past_print_queue.append([module, message])
-                self._print_queue.pop()
+                #self._print_queue.pop()
 
-                if len(self._past_print_queue) >= 10:
-                    self._past_print_queue = self._past_print_queue[:10]
+                if len(self._past_print_queue) >= self.max_lines:
+                    self._past_print_queue = self._past_print_queue[:self.max_lines]
                 continue
 
-            if len(self._past_print_queue) > 0:
-                module, message = self._past_print_queue[-1]
-                self._brain.screen.print(module + ": " + message)
-                continue
+            # if len(self._past_print_queue) > 0:
+            #     module, message = self._past_print_queue.pop(-1)
+            #     self._brain.screen.print("PPQ" + module + ": " + message)
+            #     #self._past_print_queue.insert(0, [module, message])
+            #     continue
 
     def log(self, module_name: str, message: str) -> None:
         """
