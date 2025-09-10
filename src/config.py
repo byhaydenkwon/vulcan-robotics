@@ -6,6 +6,8 @@ from vex import *
 
 brain = Brain()
 
+#True = reversed, False = normal
+
 # Drivetrain motors
 front_right = Motor(Ports.PORT1, GearSetting.RATIO_6_1, False)
 middle_right = Motor(Ports.PORT2, GearSetting.RATIO_6_1, False)
@@ -15,9 +17,9 @@ middle_left = Motor(Ports.PORT5, GearSetting.RATIO_6_1, True)
 back_left = Motor(Ports.PORT6, GearSetting.RATIO_6_1, True)
 
 # Auxillary motors
-hopper = Motor(Ports.PORT11)  # half motor
+hopper = Motor(Ports.PORT11, True)  # half motor
 intake_bottom = Motor(Ports.PORT12, GearSetting.RATIO_6_1, False)
-intake_top = Motor(Ports.PORT13)  # half motor
+intake_top = Motor(Ports.PORT13, True)  # half motor
 
 # Odometry
 # Basic (one-wheel)
