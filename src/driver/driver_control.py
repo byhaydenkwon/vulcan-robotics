@@ -179,3 +179,18 @@ class DriverControl:
     def _standard_mechanisms(self) -> None:
         self.controller.buttonR1.pressed(lambda: self.intake.start_intake(100))
         self.controller.buttonR1.released(lambda: self.intake.stop_intake())
+
+        self.controller.buttonR2.pressed(lambda: self.intake.output_bottom_goal(100))
+        self.controller.buttonR2.pressed(self.intake.stop_intake)
+
+        self.controller.buttonL1.pressed(lambda: self.intake.output_top_goal(100))
+        self.controller.buttonL1.pressed(self.intake.stop_intake)
+        
+        self.controller.buttonL2.pressed(lambda: self.intake.output_middle_goal(100))
+        self.controller.buttonL2.pressed(self.intake.stop_intake)
+
+
+        # y: future wing control
+        # left: future tube intake
+        # right: alignment mech
+
