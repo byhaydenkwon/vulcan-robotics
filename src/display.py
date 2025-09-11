@@ -15,10 +15,7 @@ class Logger:
         self.max_lines = lines
         self.font = font
 
-        self._past_print_queue = []
-        self._current_line = 1
         self._next_stop_print = False
-        self._printed_last = False
 
     def start_print_loop(self) -> None:
         while not self._next_stop_print:
@@ -39,20 +36,9 @@ class Logger:
             self._brain.screen.set_cursor(col, 1)
 
             if len(self._print_queue) > 0:
-                module, message = self._print_queue[-1]
-                self._brain.screen.print("PRINT QUEUE" + module + ": " + message)
-                self._past_print_queue.append([module, message])
-                #self._print_queue.pop()
-
-                if len(self._past_print_queue) >= self.max_lines:
-                    self._past_print_queue = self._past_print_queue[:self.max_lines]
-                continue
-
-            # if len(self._past_print_queue) > 0:
-            #     module, message = self._past_print_queue.pop(-1)
-            #     self._brain.screen.print("PPQ" + module + ": " + message)
-            #     #self._past_print_queue.insert(0, [module, message])
-            #     continue
+                module, message = self._print_queue[-min(col, len(self._print_queue))] # clamp this
+                self._brain.screen.print(module + ": " + message)
+                self._print_queue = self._print_queue[:10]
 
     def log(self, module_name: str, message: str) -> None:
         """
