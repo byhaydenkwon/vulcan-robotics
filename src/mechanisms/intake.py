@@ -51,8 +51,8 @@ class Intake:
         Stops the intake.
         If auto_hopper is True, this function also stops the hopper.
         """
-        self.bottom.stop(HOLD)
-        self.top.stop(HOLD)
+        self.bottom.stop()
+        self.top.stop()
 
         self.logger.log(__name__, "Stopping intake")
         if auto_hopper:
@@ -78,8 +78,8 @@ class Intake:
         """
         Outputs blocks to the middle goal with an optional time and velocity.
         """
-        self.bottom.spin(REVERSE, velocity, PERCENT)
-        self.top.spin(REVERSE, velocity, PERCENT)
+        self.bottom.spin(FORWARD, velocity, PERCENT)
+        self.top.spin(FORWARD, velocity, PERCENT)
 
         if auto_hopper:
             self.hopper.flush()
@@ -98,7 +98,7 @@ class Intake:
         """ 
 
         self.bottom.spin(FORWARD, velocity, PERCENT)
-        self.top.spin(FORWARD, velocity, PERCENT)
+        self.top.spin(REVERSE, velocity, PERCENT)
 
         if auto_hopper:
             self.hopper.flush()
