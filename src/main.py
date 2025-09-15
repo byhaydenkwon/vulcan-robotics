@@ -64,6 +64,8 @@ def main() -> None:
 
     logger.log(__name__, "All subsystems successfully initalized")
 
+    Timer().event(lambda: logger.log(__name__, "NEW MESSAGE"), 5000)
+
 
 if __name__ == "__main__":
     main()
