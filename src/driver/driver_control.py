@@ -48,6 +48,8 @@ class DriverControl:
         Starts the driver control loop. Stops on control mode change or manual stop.
         """
         # TODO also implement non-driver control loop
+
+        self._mechanism_mode()
         self.logger.log(__name__, "Starting driver control loop")
 
         initial_drive_mode = self._drive_mode
@@ -61,7 +63,6 @@ class DriverControl:
                 )
                 self._next_stop_control = True
             self._drive_mode(**self._drive_mode_kwargs)
-            self._mechanism_mode()
             sleep(10)
 
     def stop_control_loop(self) -> None:
