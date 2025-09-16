@@ -91,36 +91,39 @@ class DriverControl:
         return {v: k for k, v in self.drive_modes.items()}[self._drive_mode]
         # reverse dict lookup of self.modes
 
-    def _split_arcade(self) -> None:
+    def _split_arcade(self, turn_velocity: float) -> None:
         """
         Simple six-motor split arcade drive.
+        Turn velocity should be provided as a fraction of drive velocity
         """
+        right_velocity = max(
+            min(
+                config.controller_1.axis3.position()
+                - config.controller_1.axis1.position(),
+                100,
+            ),
+            -100,
+        )  # clamps velocities to 100 or -100%
+
+        left_velocity = max(
+            min(
+                config.controller_1.axis3.position()
+                + config.controller_1.axis1.position(),
+                100,
+            ),
+            -100,
+        )  # clamps velocities to 100 or -100%
+
+        if right_velocity != left_velocity:
+            right_velocity *= turn_velocity
+            left_velocity *= turn_velocity
+
         for motor in [config.front_right, config.middle_right, config.back_right]:
-            motor.set_velocity(
-                max(
-                    min(
-                        config.controller_1.axis3.position()
-                        - config.controller_1.axis1.position(),
-                        100,
-                    ),
-                    -100,
-                ),  # clamps velocities to 100 or -100%
-                PERCENT,
-            )
+            motor.set_velocity(right_velocity, PERCENT)
             motor.spin(FORWARD)
 
         for motor in [config.front_left, config.middle_left, config.back_left]:
-            motor.set_velocity(
-                max(
-                    min(
-                        config.controller_1.axis3.position()
-                        + config.controller_1.axis1.position(),
-                        100,
-                    ),
-                    -100,
-                ),  # clamps velocities to 100 or -100%
-                PERCENT,
-            )
+            motor.set_velocity(left_velocity, PERCENT)
             motor.spin(FORWARD)
 
         # NOTE: This code is better served by the Monitor class TODO
@@ -179,3 +182,16 @@ class DriverControl:
     def _standard_mechanisms(self) -> None:
         self.controller.buttonR1.pressed(lambda: self.intake.start_intake(100))
         self.controller.buttonR1.released(lambda: self.intake.stop_intake())
+
+        self.controller.buttonR2.pressed(lambda: self.intake.output_bottom_goal(100))
+        self.controller.buttonR2.released(self.intake.stop_intake)
+
+        self.controller.buttonL1.pressed(lambda: self.intake.output_top_goal(100))
+        self.controller.buttonL1.released(self.intake.stop_intake)
+
+        self.controller.buttonL2.pressed(lambda: self.intake.output_middle_goal(100))
+        self.controller.buttonL2.released(self.intake.stop_intake)
+
+        # y: future wing control
+        # left: future tube intake
+        # right: alignment mech
