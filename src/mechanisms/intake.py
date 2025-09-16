@@ -51,7 +51,62 @@ class Intake:
         Stops the intake.
         If auto_hopper is True, this function also stops the hopper.
         """
-        self.bottom.stop(HOLD)
+        self.bottom.stop()
+        self.top.stop()
+
         self.logger.log(__name__, "Stopping intake")
         if auto_hopper:
             self.hopper.stop()
+    
+    def output_bottom_goal(self, velocity: int, duration: int | None = None, auto_hopper=True) -> None:
+        """
+        Outputs blocks to the bottom goal with an optional time and velocity.
+        """
+        self.bottom.spin(REVERSE, velocity, PERCENT)
+        if auto_hopper:
+            self.hopper.flush()
+        if duration:
+            timer = Timer()
+            timer.event(self.stop_intake, duration)
+
+        self.logger.log(
+            __name__,
+            "Intake output bottom + " + ('for ' + str(duration) + 'ms' if duration else 'indefinitely'),
+        )
+    
+    def output_middle_goal(self, velocity: int, duration: int | None = None, auto_hopper=True) -> None:
+        """
+        Outputs blocks to the middle goal with an optional time and velocity.
+        """
+        self.bottom.spin(FORWARD, velocity, PERCENT)
+        self.top.spin(FORWARD, velocity, PERCENT)
+
+        if auto_hopper:
+            self.hopper.flush()
+        if duration:
+            timer = Timer()
+            timer.event(self.stop_intake, duration)
+
+        self.logger.log(
+            __name__,
+            "Intake output middle + " + ('for ' + str(duration) + 'ms' if duration else 'indefinitely'),
+        )
+    
+    def output_top_goal(self, velocity: int, duration: int | None = None, auto_hopper=True) -> None:
+        """
+        Outputs blocks to the top goal with an optional time and velocity.
+        """ 
+
+        self.bottom.spin(FORWARD, velocity, PERCENT)
+        self.top.spin(REVERSE, velocity, PERCENT)
+
+        if auto_hopper:
+            self.hopper.flush()
+        if duration:
+            timer = Timer()
+            timer.event(self.stop_intake, duration)
+
+        self.logger.log(
+            __name__,
+            "Intake output top + " + ('for ' + str(duration) + 'ms' if duration else 'indefinitely'),
+        )
