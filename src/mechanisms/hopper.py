@@ -30,7 +30,7 @@ class Hopper:
         self._motor.spin_for(
             FORWARD, self.block_degrees * blocks, DEGREES, self.velocity, PERCENT, True
         )
-        self.logger.log(__name__, f"Hopper releasing {blocks} blocks")
+        self.logger.log(__name__, "Hopper releasing " + str(blocks) + "blocks")
 
     def flush(self) -> None:
         self._motor.spin(REVERSE)

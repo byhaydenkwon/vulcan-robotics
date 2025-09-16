@@ -6,7 +6,7 @@ from vex import *
 
 from display import Logger, NullLogger
 
-from hopper import Hopper
+from mechanisms.hopper import Hopper
 
 
 class Intake:
@@ -43,7 +43,7 @@ class Intake:
 
         self.logger.log(
             __name__,
-            f"Starting intake {'for ' + str(duration) + 'ms' if duration else 'indefinitely'}",
+            "Starting intake + " + ('for ' + str(duration) + 'ms' if duration else 'indefinitely'),
         )
 
     def stop_intake(self, auto_hopper=True) -> None:
