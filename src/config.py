@@ -6,7 +6,7 @@ from vex import *
 
 brain = Brain()
 
-#True = reversed, False = normal
+# True = reversed, False = normal
 
 # Drivetrain motors
 front_right = Motor(Ports.PORT13, GearSetting.RATIO_6_1, False)
@@ -20,6 +20,17 @@ back_left = Motor(Ports.PORT11, GearSetting.RATIO_6_1, True)
 hopper = Motor(Ports.PORT2, True)  # half motor
 intake_bottom = Motor(Ports.PORT10, GearSetting.RATIO_6_1, False)
 intake_top = Motor(Ports.PORT1)  # half motor
+
+# Torque Amounts
+front_right.set_max_torque(100, PERCENT)
+middle_right.set_max_torque(100, PERCENT)
+back_right.set_max_torque(100, PERCENT)
+front_left.set_max_torque(100, PERCENT)
+middle_left.set_max_torque(100, PERCENT)
+back_left.set_max_torque(100, PERCENT)
+hopper.set_max_torque(100, PERCENT)
+intake_bottom.set_max_torque(100, PERCENT)
+intake_top.set_max_torque(100, PERCENT)
 
 # Odometry
 # Basic (one-wheel)
