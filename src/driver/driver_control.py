@@ -102,13 +102,12 @@ class DriverControl:
         y_input = config.controller_1.axis3.position() * velocity / 100
         x_input = config.controller_1.axis1.position() * turn_velocity / 100
 
-        
         for motor in [config.front_right, config.middle_right, config.back_right]:
-            motor.set_velocity(y_input - x_input if x_input > 0 else 0, PERCENT)
+            motor.set_velocity(y_input - x_input, PERCENT)
             motor.spin(FORWARD)
 
         for motor in [config.front_left, config.middle_left, config.back_left]:
-            motor.set_velocity(y_input - -x_input if x_input < 0 else 0, PERCENT)
+            motor.set_velocity(y_input - -x_input, PERCENT)
             motor.spin(FORWARD)
 
     def _standard_mechanisms(self) -> None:
