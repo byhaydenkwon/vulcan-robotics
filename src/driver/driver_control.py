@@ -107,7 +107,7 @@ class DriverControl:
             motor.spin(FORWARD)
 
         for motor in [config.front_left, config.middle_left, config.back_left]:
-            motor.set_velocity(y_input - -x_input, PERCENT)
+            motor.set_velocity(y_input + x_input, PERCENT)
             motor.spin(FORWARD)
 
     def _standard_mechanisms(self) -> None:
