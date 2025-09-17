@@ -7,7 +7,7 @@ class Logger:
     Should be run as a thread. Prints new updates below old ones; scrolls automatically.
     """
 
-    def __init__(self, brain: Brain, lines=10, font=FontType.MONO40) -> None:
+    def __init__(self, brain: Brain, lines=12, font=FontType.MONO20) -> None:
         self._brain = brain
         self._print_queue = []
         # This print queue uses nested lists in the format
@@ -15,8 +15,6 @@ class Logger:
         self.max_lines = lines
         self.font = font
 
-        self._past_print_queue = []
-        self._current_line = 1
         self._next_stop_print = False
 
     def start_print_loop(self) -> None:
@@ -31,26 +29,16 @@ class Logger:
         self._next_stop_print = True
 
     def _print_loop(self) -> None:
-        for col in range(self.max_lines, 1, -1):
+        for col in range(self.max_lines, 0, -1):
             # Prints backwards.
             # Starts at the bottom with the most current messages,
             # then fills any remaining space with old messages.
-            self._brain.screen.set_cursor(1, col)
+            self._brain.screen.set_cursor(col, 1)
 
             if len(self._print_queue) > 0:
-                module, message = self._print_queue[-1]
+                module, message = self._print_queue[-min(col, len(self._print_queue))] # clamp this
                 self._brain.screen.print(module + ": " + message)
-                self._past_print_queue.append([module, message])
-                self._print_queue.pop()
-
-                if len(self._past_print_queue) >= 10:
-                    self._past_print_queue = self._past_print_queue[:10]
-                continue
-
-            if len(self._past_print_queue) > 0:
-                module, message = self._past_print_queue[-1]
-                self._brain.screen.print(module + ": " + message)
-                continue
+                self._print_queue = self._print_queue[:10]
 
     def log(self, module_name: str, message: str) -> None:
         """

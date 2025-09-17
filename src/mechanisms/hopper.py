@@ -23,7 +23,7 @@ class Hopper:
         self.logger = logger
 
     def intake(self):
-        self._motor.spin(FORWARD)
+        self._motor.spin(FORWARD, velocity=self.velocity)
         self.logger.log(__name__, "Starting hopper intake")
 
     def output(self, blocks: int) -> None:
@@ -33,9 +33,9 @@ class Hopper:
         self.logger.log(__name__, "Hopper releasing " + str(blocks) + "blocks")
 
     def flush(self) -> None:
-        self._motor.spin(REVERSE)
+        self._motor.spin(REVERSE, velocity=self.velocity)
         self.logger.log(__name__, "Hopper flushing")
 
     def stop(self) -> None:
-        self._motor.stop(HOLD)
+        self._motor.stop()
         self.logger.log(__name__, "Hopper stopping")

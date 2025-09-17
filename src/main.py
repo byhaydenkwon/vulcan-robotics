@@ -53,7 +53,7 @@ def main() -> None:
     )
 
     driver = DriverControl(
-        "split_arcade", "standard", config.controller_1, intake, hopper, logger, turn_velocity=0.5
+        "split_arcade", "standard", config.controller_1, intake, hopper, logger
     )
     auto = AutonomousControl(
         config.gps_sensor, config.inertial_sensor, config.optical_sensor, logger
@@ -63,6 +63,8 @@ def main() -> None:
     auto.pre()
 
     logger.log(__name__, "All subsystems successfully initalized")
+
+    Timer().event(lambda: logger.log(__name__, "NEW MESSAGE"), 5000)
 
 
 if __name__ == "__main__":
