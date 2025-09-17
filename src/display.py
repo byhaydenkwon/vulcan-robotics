@@ -1,4 +1,24 @@
+"""
+Contains functions relating to the V5 Screen, like the selection screen and logger.
+"""
+
 from vex import *
+
+
+class Selection:
+    """
+    Initial selection screen for autonomous or skills code.
+    """
+
+    def __init__(self, brain: Brain, selection_image_path: str) -> None:
+        self._brain = brain
+
+        self._brain.screen.draw_image_from_file(selection_image_path, 0, 0)
+        self._brain.screen.pressed(self.pressed)
+
+    def pressed(self) -> None:
+        x = self._brain.screen.x_position()
+        y = self._brain.screen.y_position()
 
 
 class Logger:
@@ -36,7 +56,9 @@ class Logger:
             self._brain.screen.set_cursor(col, 1)
 
             if len(self._print_queue) > 0:
-                module, message = self._print_queue[-min(col, len(self._print_queue))] # clamp this
+                module, message = self._print_queue[
+                    -min(col, len(self._print_queue))
+                ]  # clamp this
                 self._brain.screen.print(module + ": " + message)
                 self._print_queue = self._print_queue[:10]
 

@@ -53,7 +53,7 @@ def main() -> None:
     )
 
     driver = DriverControl(
-        "split_arcade", "standard", config.controller_1, intake, hopper, logger
+        "split_arcade", "standard", config.controller_1, intake, hopper, logger, velocity=100, turn_velocity=69.42067
     )
     auto = AutonomousControl(
         config.gps_sensor, config.inertial_sensor, config.optical_sensor, logger

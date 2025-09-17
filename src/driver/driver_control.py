@@ -93,90 +93,23 @@ class DriverControl:
         return {v: k for k, v in self.drive_modes.items()}[self._drive_mode]
         # reverse dict lookup of self.modes
 
-    def _split_arcade(self) -> None:
+    def _split_arcade(self, velocity: int, turn_velocity: float) -> None:
         """
         Simple six-motor split arcade drive.
+        Provide velocity and turn velocity as percentages.
         """
+
+        y_input = config.controller_1.axis3.position() * velocity / 100
+        x_input = config.controller_1.axis1.position() * turn_velocity / 100
+
+        
         for motor in [config.front_right, config.middle_right, config.back_right]:
-            motor.set_velocity(
-                max(
-                    min(
-                        config.controller_1.axis3.position()
-                        - config.controller_1.axis1.position(),
-                        100,
-                    ),
-                    -100,
-                ),  # clamps velocities to 100 or -100%
-                PERCENT,
-            )
+            motor.set_velocity(y_input - x_input if x_input > 0 else 0, PERCENT)
             motor.spin(FORWARD)
 
         for motor in [config.front_left, config.middle_left, config.back_left]:
-            motor.set_velocity(
-                max(
-                    min(
-                        config.controller_1.axis3.position()
-                        + config.controller_1.axis1.position(),
-                        100,
-                    ),
-                    -100,
-                ),  # clamps velocities to 100 or -100%
-                PERCENT,
-            )
+            motor.set_velocity(y_input - -x_input if x_input < 0 else 0, PERCENT)
             motor.spin(FORWARD)
-
-        # NOTE: This code is better served by the Monitor class TODO
-        # if "DRIVE" in config.DEBUG_MODES:
-        #     config.brain.screen.print(
-        #         "Right Motors Target Velocity: "
-        #         + str(
-        #             max(
-        #                 min(
-        #                     config.controller_1.axis3.position()
-        #                     + config.controller_1.axis1.position(),
-        #                     100,
-        #                 ),
-        #                 -100,
-        #             )
-        #         )
-        #     )
-        #     config.brain.screen.print(
-        #         "Left Motors Target Velocity: "
-        #         + str(
-        #             max(
-        #                 min(
-        #                     config.controller_1.axis3.position()
-        #                     - config.controller_1.axis1.position(),
-        #                     100,
-        #                 ),
-        #                 -100,
-        #             )
-        #         )
-        #     )
-
-        #     config.brain.screen.print(
-        #         "Mid Right Velocity: " + str(config.middle_right.velocity(PERCENT))
-        #     )
-        #     config.brain.screen.new_line()
-        #     config.brain.screen.print(
-        #         "Back Right Velocity: " + str(config.back_right.velocity(PERCENT))
-        #     )
-        #     config.brain.screen.new_line()
-        #     config.brain.screen.print(
-        #         "Front Left Velocity: " + str(config.front_left.velocity(PERCENT))
-        #     )
-        #     config.brain.screen.new_line()
-        #     config.brain.screen.print(
-        #         "Mid Left Velocity: " + str(config.middle_left.velocity(PERCENT))
-        #     )
-        #     config.brain.screen.new_line()
-        #     config.brain.screen.print(
-        #         "Back Left Velocity: " + str(config.back_left.velocity(PERCENT))
-        #     )
-
-        #     config.brain.screen.set_cursor(1, 1)
-
-    # TODO Make turning and driving speed configurable in new driving function
 
     def _standard_mechanisms(self) -> None:
         self.controller.buttonR1.pressed(lambda: self.intake.start_intake(100))
@@ -187,12 +120,10 @@ class DriverControl:
 
         self.controller.buttonL1.pressed(lambda: self.intake.output_top_goal(100))
         self.controller.buttonL1.released(self.intake.stop_intake)
-        
+
         self.controller.buttonL2.pressed(lambda: self.intake.output_middle_goal(100))
         self.controller.buttonL2.released(self.intake.stop_intake)
-
 
         # y: future wing control
         # left: future tube intake
         # right: alignment mech
-
