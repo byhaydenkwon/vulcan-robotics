@@ -118,6 +118,8 @@ def main() -> None:
     def get_auton() -> None:
         nonlocal auton_function
         auton_function = selection.pressed()
+        if auton_function is not None:
+            config.brain.screen.clear_screen(Color.GREEN)
 
     def start_auton() -> None:
         if auton_function is not None:
