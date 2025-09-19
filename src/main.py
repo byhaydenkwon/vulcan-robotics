@@ -8,7 +8,7 @@ import urandom  # type: ignore
 
 import config
 
-from display import Logger, NullLogger
+from display import Logger, Selection, SelectionButton
 from mechanisms.hopper import Hopper
 from mechanisms.intake import Intake
 from auto.autonomous_control import AutonomousControl
@@ -45,7 +45,22 @@ def main() -> None:
     setup()
 
     logger = Logger(config.brain)
-    logging_thread = Thread(logger.start_print_loop)
+
+    # Calibration
+
+    logger.log(__name__, "Calibrating GPS sensor")
+    config.gps_sensor.calibrate()
+
+    logger.log(__name__, "Calibrating inertial sensor")
+    config.inertial_sensor.calibrate()
+
+    config.optical_sensor.set_light(100)
+
+    # TODO Have a way to recalibrate after a field adjustment or similar
+    # Right now you can just restart the code
+    # TODO have a set starting position for the GPS sensor
+
+    # Subsystems and components
 
     hopper = Hopper(config.hopper, config.HOPPER_DEGREES_PER_BLOCK, logger=logger)
     intake = Intake(
@@ -53,18 +68,47 @@ def main() -> None:
     )
 
     driver = DriverControl(
-        "split_arcade", "standard", config.controller_1, intake, hopper, logger, velocity=100, turn_velocity=69.42067
+        "split_arcade",
+        "standard",
+        config.controller_1,
+        intake,
+        hopper,
+        logger,
+        velocity=100,
+        turn_velocity=69.42067,
     )
-    auto = AutonomousControl(
-        config.gps_sensor, config.inertial_sensor, config.optical_sensor, logger
-    )
-
-    comp = Competition(driver.start_control_loop, auto.main)
-    auto.pre()
+    auto = AutonomousControl(logger)
 
     logger.log(__name__, "All subsystems successfully initalized")
 
-    Timer().event(lambda: logger.log(__name__, "NEW MESSAGE"), 5000)
+    selection = Selection(
+        config.brain,
+        "images/vulcan-selection-screen.png",
+        {
+            SelectionButton(0, 0, 120, 136): auto.i_do_nothing_replace_me,  # 1 Out
+            SelectionButton(0, 136, 120, 272): auto.i_do_nothing_replace_me,  # 2 Out
+            SelectionButton(360, 0, 480, 120): auto.i_do_nothing_replace_me,  # 3 Out
+            SelectionButton(360, 136, 480, 272): auto.i_do_nothing_replace_me,  # 4 Out
+        },
+    )
+
+    auton_function: Callable | None = None
+
+    def get_auton() -> None:
+        nonlocal auton_function
+        auton_function = selection.pressed()
+
+    def start_auton() -> None:
+        if auton_function is not None:
+            logging_thread = Thread(logger.start_print_loop)
+            # start the print loop only after the selection ends
+
+            logger.log(__name__, "Starting autonomous code")
+            auton_function()
+
+    config.brain.screen.pressed(get_auton)
+
+    Competition(driver.start_control_loop, start_auton)
 
 
 if __name__ == "__main__":
