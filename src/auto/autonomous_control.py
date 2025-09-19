@@ -2,6 +2,8 @@
 Contains the AutonomousControl class for autonomous code.
 """
 
+import math
+
 from vex import *
 
 from display import Logger, NullLogger
@@ -45,7 +47,7 @@ class AutonomousControl:
         self.motors = [
             front_right,
             middle_right,
-            back_left,
+            back_right,
             front_left,
             middle_left,
             back_left,
@@ -71,13 +73,28 @@ class AutonomousControl:
         # NOTE At idle-ish points, try to sleep(5) here and there
         # to allow time for other threads to execute. This will only slow the routine
         # down by 1/200th of a second.
+
+        # Move forward, intake, move back to realign, then forward and turn twice to score
+        # EXAMPLE DRIVE FUNCTIONS
+
+        self.drive(FORWARD, 4.0, 100, True)
+        # drive forward 4 inches at 100% velocity and wait for completion
+
+        self.drive(REVERSE, 10.0, 60, False)
+        # drive reverse 10 inches at 60% velocity and don't wait for completion
+
+        self.turn(50, RIGHT, 50)
+        # turn right 50 degrees at 50% velocity
+
         pass
 
     def position_2_match_auton(self) -> None:
         pass
 
     def position_3_match_auton(self) -> None:
-        pass
+        # self.intake.start_intake(100)
+        self.drive(FORWARD, 18, 85, True)
+        # self.turn(20, LEFT, 50)
 
     def position_4_match_auton(self) -> None:
         pass
@@ -92,17 +109,38 @@ class AutonomousControl:
         # NOTE: For now, just make sure you use the same units for
         # distance and wheel diameter.
         # Should add different units and better positional tracking later.
-        travel_rotations = distance / self.wheel_diameter
-        for motor in self.motors:
-            motor.spin_for(
-                direction=direction,
-                rot_or_time=travel_rotations,
-                units=RotationUnits.REV,
-                velocity=velocity,
-                wait=wait,
-            )
 
-    def turn(self, degrees: float, direction: TurnType, velocity: int | None) -> None:
+        self.middle_right.set_position(0, TURNS)
+        travel_rotations = distance / (self.wheel_diameter * math.pi)
+        for motor in self.motors:
+            motor.set_velocity(
+                velocity if velocity is not None else self.drivetrain_velocity, PERCENT
+            )
+            motor.spin(FORWARD, velocity, PERCENT)
+
+        while self.middle_right.position(TURNS) < travel_rotations:
+            pass
+
+        def stop_left() -> None:
+            for motor in self.left_motors:
+                motor.stop()
+
+        def stop_right() -> None:
+            for motor in self.right_motors:
+                motor.stop()
+
+        Thread(stop_left)
+        Thread(stop_right)
+
+        # if wait:
+        #     self.logger.log(__name__, "WAITING")
+        #     for motor in self.motors:
+        #         while not motor.is_done():
+        #             pass
+
+    def turn(
+        self, degrees: float, direction: TurnType.TurnType, velocity: int | None
+    ) -> None:
         # NOTE Relies on the inertial sensor for now.
         # this is just a bit bad (it's bad)
 
