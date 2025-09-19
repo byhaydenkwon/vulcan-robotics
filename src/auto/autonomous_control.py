@@ -52,6 +52,7 @@ class AutonomousControl:
             middle_left,
             back_left,
         ]
+
         self.right_motors = self.motors[:3]
         self.left_motors = self.motors[3:]
 
@@ -93,8 +94,9 @@ class AutonomousControl:
 
     def position_3_match_auton(self) -> None:
         # self.intake.start_intake(100)
-        self.drive(FORWARD, 18, 85, True)
-        # self.turn(20, LEFT, 50)
+        # self.drive(FORWARD, 10, 60, True)
+        self.turn(20, RIGHT, 60)
+        # self.drive(FORWARD, 15, 45, False)
 
     def position_4_match_auton(self) -> None:
         pass
@@ -111,7 +113,7 @@ class AutonomousControl:
         # Should add different units and better positional tracking later.
 
         self.middle_right.set_position(0, TURNS)
-        travel_rotations = distance / (self.wheel_diameter * math.pi)
+        travel_rotations = distance / (self.wheel_diameter * math.pi * 2)
         for motor in self.motors:
             motor.set_velocity(
                 velocity if velocity is not None else self.drivetrain_velocity, PERCENT
@@ -164,16 +166,17 @@ class AutonomousControl:
         # This does mean that if it's not detected the first time, it will
         # make a 360 degree rotation before trying again.
 
-        turn_motors = (
-            self.left_motors if direction == TurnType.LEFT else self.right_motors
-        )
+        if direction == TurnType.RIGHT:
+            turn_motors = [self.left_motors, self.right_motors.reverse]
+        else:
+            turn_motors = [self.right_motors, self.left_motors.reverse]
+
+        # turn_motors = (
+        # self.left_motors if direction == TurnType.LEFT else self.right_motors
+        # )
 
         for motor in turn_motors:
-            motor.spin(
-                FORWARD,
-                velocity if velocity is not None else self.turn_velocity,
-                PERCENT,
-            )
+            motor.spin(FORWARD, velocity, PERCENT)
 
         while (
             self.inertial.heading() < acceptable_turn_difference[0]
@@ -183,8 +186,8 @@ class AutonomousControl:
             # This isn't the best since there's no escape hatch
             # TODO fix later (along with everything here tbh)
 
-        for motor in turn_motors:
-            motor.stop()
+        # for motor in turn_motors:
+        # motor.stop()
 
     @staticmethod
     def i_do_nothing_replace_me(*args, **kwargs) -> None:
