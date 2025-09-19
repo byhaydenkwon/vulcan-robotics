@@ -99,6 +99,8 @@ class DriverControl:
         Provide velocity and turn velocity as percentages.
         """
 
+        # TODO later: make these use class variables, not config
+
         y_input = config.controller_1.axis3.position() * velocity / 100
         x_input = config.controller_1.axis1.position() * turn_velocity / 100
 
