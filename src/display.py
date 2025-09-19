@@ -42,6 +42,9 @@ class Selection:
         self._brain.screen.draw_image_from_file(selection_image_path, 0, 0)
 
     def pressed(self) -> Callable | None:
+        """
+        Return which button has been pressed, or None.
+        """
         x = self._brain.screen.x_position()
         y = self._brain.screen.y_position()
 
