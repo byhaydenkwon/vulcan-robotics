@@ -106,10 +106,10 @@ def main() -> None:
         config.brain,
         "images/vulcan-selection-screen.png",
         {
-            SelectionButton(0, 0, 120, 136): auto.i_do_nothing_replace_me,  # 1 Out
-            SelectionButton(0, 136, 120, 272): auto.i_do_nothing_replace_me,  # 2 Out
-            SelectionButton(360, 0, 480, 120): auto.i_do_nothing_replace_me,  # 3 Out
-            SelectionButton(360, 136, 480, 272): auto.i_do_nothing_replace_me,  # 4 Out
+            SelectionButton(0, 0, 120, 136): auto.position_1_match_auton,  # 1 Out
+            SelectionButton(0, 136, 120, 272): auto.position_2_match_auton,  # 2 Out
+            SelectionButton(360, 0, 480, 120): auto.position_3_match_auton,  # 3 Out
+            SelectionButton(360, 136, 480, 272): auto.position_4_match_auton,  # 4 Out
         },
     )
 
