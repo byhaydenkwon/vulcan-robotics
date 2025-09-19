@@ -70,28 +70,16 @@ class AutonomousControl:
         # Code here. Sorry I didn't have time to add it!
         # NOTE At idle-ish points, try to sleep(5) here and there
         # to allow time for other threads to execute. This will only slow the routine
-        # down by 1/200th of a second.abs
+        # down by 1/200th of a second.
         pass
 
     def position_2_match_auton(self) -> None:
-        # Code here. Sorry I didn't have time to add it!
-        # NOTE At idle-ish points, try to sleep(5) here and there
-        # to allow time for other threads to execute. This will only slow the routine
-        # down by 1/200th of a second.abs
         pass
 
     def position_3_match_auton(self) -> None:
-        # Code here. Sorry I didn't have time to add it!
-        # NOTE At idle-ish points, try to sleep(5) here and there
-        # to allow time for other threads to execute. This will only slow the routine
-        # down by 1/200th of a second.abs
         pass
 
     def position_4_match_auton(self) -> None:
-        # Code here. Sorry I didn't have time to add it!
-        # NOTE At idle-ish points, try to sleep(5) here and there
-        # to allow time for other threads to execute. This will only slow the routine
-        # down by 1/200th of a second.abs
         pass
 
     def drive(
