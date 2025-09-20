@@ -143,20 +143,18 @@ class AutonomousControl:
     def turn(
         self, degrees: float, direction: TurnType.TurnType, velocity: int | None
     ) -> None:
+        """
+        Autonomously turn in place using all wheels.
+        """
         # NOTE Relies on the inertial sensor for now.
         # this is just a bit bad (it's bad)
 
         if direction == TurnType.UNDEFINED:
             return
 
-        initial_heading = self.inertial.heading()
+        self.inertial.reset_heading()
 
-        turn_target = (
-            (initial_heading - degrees)
-            if direction == TurnType.LEFT
-            else (initial_heading + degrees)
-        )
-        # This could need to be reversed, with left positive and right negative.
+        turn_target = -degrees if direction == TurnType.LEFT else degrees
 
         acceptable_turn_difference = (
             turn_target - turn_target * 0.025,
@@ -164,19 +162,16 @@ class AutonomousControl:
         )
         # Allow for x% of error.
         # This does mean that if it's not detected the first time, it will
-        # make a 360 degree rotation before trying again.
+        # make a 360 degree rotation before trying to stop again.
 
-        if direction == TurnType.RIGHT:
-            turn_motors = [self.left_motors, self.right_motors.reverse]
-        else:
-            turn_motors = [self.right_motors, self.left_motors.reverse]
+        forward_motors = (
+            self.right_motors if direction == TurnType.LEFT else self.left_motors
+        )
 
-        # turn_motors = (
-        # self.left_motors if direction == TurnType.LEFT else self.right_motors
-        # )
-
-        for motor in turn_motors:
-            motor.spin(FORWARD, velocity, PERCENT)
+        for motor in self.motors:
+            motor.spin(
+                FORWARD if motor in forward_motors else REVERSE, velocity, PERCENT
+            )
 
         while (
             self.inertial.heading() < acceptable_turn_difference[0]
@@ -186,8 +181,8 @@ class AutonomousControl:
             # This isn't the best since there's no escape hatch
             # TODO fix later (along with everything here tbh)
 
-        # for motor in turn_motors:
-        # motor.stop()
+        for motor in self.motors:
+            motor.stop()
 
     @staticmethod
     def i_do_nothing_replace_me(*args, **kwargs) -> None:
