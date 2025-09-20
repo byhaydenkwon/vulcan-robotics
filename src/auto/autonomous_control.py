@@ -118,7 +118,7 @@ class AutonomousControl:
             motor.set_velocity(
                 velocity if velocity is not None else self.drivetrain_velocity, PERCENT
             )
-            motor.spin(FORWARD, velocity, PERCENT)
+            motor.spin(direction, velocity, PERCENT)
 
         while self.middle_right.position(TURNS) < travel_rotations:
             pass
