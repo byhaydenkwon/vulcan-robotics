@@ -45,7 +45,7 @@ class AutonomousControl:
         self.back_left = back_left
 
         # The order of this list determines the motor stopping order
-        self.motors = [
+        self.drivetrain = [
             back_right,
             back_left,
             middle_right,
@@ -54,8 +54,8 @@ class AutonomousControl:
             front_left,
         ]
 
-        self.right_motors = self.motors[:3]
-        self.left_motors = self.motors[3:]
+        self.right_drivetrain = self.drivetrain[:3]
+        self.left_drivetrain = self.drivetrain[3:]
 
         self.hopper = hopper
         self.intake = intake
@@ -64,10 +64,13 @@ class AutonomousControl:
         self.gps = gps
         self.block_color = block_color
         self.tube_pneumatic = tube_pneumatic
+
         self.tracking_mode = tracking_mode
+
         self.drivetrain_velocity = drivetrain_velocity
         self.turn_velocity = turn_velocity
         self.wheel_diameter = wheel_diameter
+
         self.logger = logger
 
     def position_1_match_auton(self) -> None:
@@ -113,7 +116,7 @@ class AutonomousControl:
         # Use middle right wheel as tracking wheel.
         self.middle_right.set_position(0, TURNS)
         travel_rotations = distance / (self.wheel_diameter * math.pi * 2)
-        for motor in self.motors:
+        for motor in self.drivetrain:
             motor.set_velocity(
                 velocity if velocity is not None else self.drivetrain_velocity, PERCENT
             )
@@ -122,7 +125,7 @@ class AutonomousControl:
         while self.middle_right.position(TURNS) < travel_rotations:
             pass
 
-        for motor in self.motors:
+        for motor in self.drivetrain:
             motor.stop()
 
     def pivot_turn(
@@ -148,10 +151,12 @@ class AutonomousControl:
         # make a 360 degree rotation before trying to stop again.
 
         forward_motors = (
-            self.right_motors if direction == TurnType.LEFT else self.left_motors
+            self.right_drivetrain
+            if direction == TurnType.LEFT
+            else self.left_drivetrain
         )
 
-        for motor in self.motors:
+        for motor in self.drivetrain:
             motor.spin(
                 FORWARD if motor in forward_motors else REVERSE, velocity, PERCENT
             )
@@ -162,7 +167,7 @@ class AutonomousControl:
         ):  # outside of acceptable range
             pass
 
-        for motor in self.motors:
+        for motor in self.drivetrain:
             motor.stop()
 
     @staticmethod
