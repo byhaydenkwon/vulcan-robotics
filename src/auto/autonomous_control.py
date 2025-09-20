@@ -44,13 +44,14 @@ class AutonomousControl:
         self.middle_left = middle_left
         self.back_left = back_left
 
+        # The order of this list determines the motor stopping order
         self.motors = [
-            front_right,
-            middle_right,
             back_right,
-            front_left,
-            middle_left,
             back_left,
+            middle_right,
+            middle_left,
+            front_right,
+            front_left,
         ]
 
         self.right_motors = self.motors[:3]
@@ -78,10 +79,10 @@ class AutonomousControl:
         # Move forward, intake, move back to realign, then forward and turn twice to score
         # EXAMPLE DRIVE FUNCTIONS
 
-        self.drive(FORWARD, 4.0, 100, True)
+        self.drive(FORWARD, 4.0, 100)
         # drive forward 4 inches at 100% velocity and wait for completion
 
-        self.drive(REVERSE, 10.0, 60, False)
+        self.drive(REVERSE, 10.0, 60)
         # drive reverse 10 inches at 60% velocity and don't wait for completion
 
         self.turn(50, RIGHT, 50)
@@ -94,9 +95,7 @@ class AutonomousControl:
 
     def position_3_match_auton(self) -> None:
         # self.intake.start_intake(100)
-        # self.drive(FORWARD, 10, 60, True)
-        self.turn(20, RIGHT, 60)
-        # self.drive(FORWARD, 15, 45, False)
+        pass
 
     def position_4_match_auton(self) -> None:
         pass
@@ -106,12 +105,12 @@ class AutonomousControl:
         direction: DirectionType.DirectionType,
         distance: float,
         velocity: int | None,
-        wait=True,
     ) -> None:
         # NOTE: For now, just make sure you use the same units for
         # distance and wheel diameter.
         # Should add different units and better positional tracking later.
 
+        # Use middle right wheel as tracking wheel.
         self.middle_right.set_position(0, TURNS)
         travel_rotations = distance / (self.wheel_diameter * math.pi * 2)
         for motor in self.motors:
@@ -123,22 +122,8 @@ class AutonomousControl:
         while self.middle_right.position(TURNS) < travel_rotations:
             pass
 
-        def stop_left() -> None:
-            for motor in self.left_motors:
-                motor.stop()
-
-        def stop_right() -> None:
-            for motor in self.right_motors:
-                motor.stop()
-
-        Thread(stop_left)
-        Thread(stop_right)
-
-        # if wait:
-        #     self.logger.log(__name__, "WAITING")
-        #     for motor in self.motors:
-        #         while not motor.is_done():
-        #             pass
+        for motor in self.motors:
+            motor.stop()
 
     def turn(
         self, degrees: float, direction: TurnType.TurnType, velocity: int | None
