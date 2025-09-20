@@ -85,7 +85,7 @@ class AutonomousControl:
         self.drive(REVERSE, 10.0, 60)
         # drive reverse 10 inches at 60% velocity and don't wait for completion
 
-        self.turn(50, RIGHT, 50)
+        self.pivot_turn(50, RIGHT, 50)
         # turn right 50 degrees at 50% velocity
 
         pass
@@ -125,7 +125,7 @@ class AutonomousControl:
         for motor in self.motors:
             motor.stop()
 
-    def turn(
+    def pivot_turn(
         self, degrees: float, direction: TurnType.TurnType, velocity: int | None
     ) -> None:
         """
