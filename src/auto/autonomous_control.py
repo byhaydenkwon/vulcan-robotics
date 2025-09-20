@@ -132,7 +132,6 @@ class AutonomousControl:
         Autonomously turn in place using all wheels.
         """
         # NOTE Relies on the inertial sensor for now.
-        # this is just a bit bad (it's bad)
 
         if direction == TurnType.UNDEFINED:
             return
@@ -140,7 +139,6 @@ class AutonomousControl:
         self.inertial.reset_heading()
 
         turn_target = -degrees if direction == TurnType.LEFT else degrees
-
         acceptable_turn_difference = (
             turn_target - turn_target * 0.025,
             turn_target + turn_target * 0.025,
@@ -163,8 +161,6 @@ class AutonomousControl:
             or self.inertial.heading() > acceptable_turn_difference[1]
         ):  # outside of acceptable range
             pass
-            # This isn't the best since there's no escape hatch
-            # TODO fix later (along with everything here tbh)
 
         for motor in self.motors:
             motor.stop()
