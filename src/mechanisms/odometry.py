@@ -100,9 +100,12 @@ class LinearOdometry:
         self.diameter = wheel_diameter
         self.logger = logger
 
-    def reset_tracking(self) -> None:
+    def start_tracking(self) -> None:
         self._encoder.reset_position()
-        self.logger.log(__name__, "1D position tracking reset")
+        self.logger.log(__name__, "Linear odometry (re-)started")
+
+    def stop_tracking(self, *args, **kwargs) -> None:
+        self.logger.log(__name__, "Linear odometry stopped")
 
     def get_distance_traveled(self) -> float:
         """
