@@ -8,6 +8,7 @@ import urandom  # type: ignore
 
 import config
 
+import mechanisms.odometry as odometry
 from display import Logger, Selection, SelectionButton
 from mechanisms.hopper import Hopper
 from mechanisms.intake import Intake
@@ -79,6 +80,16 @@ def main() -> None:
         velocity=100,
         turn_velocity=69.42067,
     )
+    tracking = odometry.DrivetrainOdometry(
+        front_right=config.front_right,
+        middle_right=config.middle_right,
+        back_right=config.back_right,
+        front_left=config.back_left,
+        middle_left=config.middle_left,
+        back_left=config.back_left,
+        wheel_diameter=3.25,
+        logger=logger,
+    )
     auto = AutonomousControl(
         front_right=config.front_right,
         middle_right=config.middle_right,
@@ -93,10 +104,9 @@ def main() -> None:
         gps=config.gps_sensor,
         block_color=config.block_color_sensor,
         tube_pneumatic=config.henry,
-        tracking_mode=None,
+        tracking=tracking,
         drivetrain_velocity=100,
         turn_velocity=50,
-        wheel_diameter=3.25,
         logger=logger,
     )
 

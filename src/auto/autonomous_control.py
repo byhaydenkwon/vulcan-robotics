@@ -6,6 +6,7 @@ import math
 
 from vex import *
 
+import mechanisms.odometry as odometry
 from display import Logger, NullLogger
 from mechanisms.hopper import Hopper
 from mechanisms.intake import Intake
@@ -31,10 +32,9 @@ class AutonomousControl:
         gps: Gps,
         block_color: Optical,
         tube_pneumatic: DigitalOut,
-        tracking_mode: str | None,
+        tracking: odometry.DrivetrainOdometry | odometry.LinearOdometry,
         drivetrain_velocity: int,
         turn_velocity: int,
-        wheel_diameter: float,
         logger: Logger | NullLogger = NullLogger(),
     ):
         self.front_right = front_right
@@ -44,7 +44,7 @@ class AutonomousControl:
         self.middle_left = middle_left
         self.back_left = back_left
 
-        # The order of this list determines the motor stopping order
+        # The order of this list determines the motor starting and stopping order
         self.drivetrain = [
             back_right,
             back_left,
@@ -65,11 +65,10 @@ class AutonomousControl:
         self.block_color = block_color
         self.tube_pneumatic = tube_pneumatic
 
-        self.tracking_mode = tracking_mode
+        self.tracking = tracking
 
         self.drivetrain_velocity = drivetrain_velocity
         self.turn_velocity = turn_velocity
-        self.wheel_diameter = wheel_diameter
 
         self.logger = logger
 
@@ -109,20 +108,19 @@ class AutonomousControl:
         distance: float,
         velocity: int | None,
     ) -> None:
-        # NOTE: For now, just make sure you use the same units for
-        # distance and wheel diameter.
-        # Should add different units and better positional tracking later.
+        """
+        Autonomously drive a specified distance at a specified velocity.
+        """
 
-        # Use middle right wheel as tracking wheel.
-        self.middle_right.set_position(0, TURNS)
-        travel_rotations = distance / (self.wheel_diameter * math.pi * 2)
+        self.tracking.start_tracking()
+
         for motor in self.drivetrain:
             motor.set_velocity(
                 velocity if velocity is not None else self.drivetrain_velocity, PERCENT
             )
             motor.spin(direction, velocity, PERCENT)
 
-        while self.middle_right.position(TURNS) < travel_rotations:
+        while self.tracking.get_distance_traveled() < distance:
             pass
 
         for motor in self.drivetrain:
@@ -134,7 +132,7 @@ class AutonomousControl:
         """
         Autonomously turn in place using all wheels.
         """
-        # NOTE Relies on the inertial sensor for now.
+        # NOTE Relies only on the inertial sensor for now.
 
         if direction == TurnType.UNDEFINED:
             return
