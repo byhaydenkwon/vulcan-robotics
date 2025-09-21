@@ -2,8 +2,6 @@
 Contains the AutonomousControl class for autonomous code.
 """
 
-import math
-
 from vex import *
 
 import mechanisms.odometry as odometry
