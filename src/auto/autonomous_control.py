@@ -52,8 +52,8 @@ class AutonomousControl:
             front_left,
         ]
 
-        self.right_drivetrain = self.drivetrain[:3]
-        self.left_drivetrain = self.drivetrain[3:]
+        self.right_drivetrain = [back_right, middle_right, front_right]
+        self.left_drivetrain = [back_left, middle_left, front_left]
 
         self.hopper = hopper
         self.intake = intake
@@ -71,22 +71,9 @@ class AutonomousControl:
         self.logger = logger
 
     def position_1_match_auton(self) -> None:
-        # Code here. Sorry I didn't have time to add it!
-        # NOTE At idle-ish points, try to sleep(5) here and there
-        # to allow time for other threads to execute. This will only slow the routine
-        # down by 1/200th of a second.
-
-        # Move forward, intake, move back to realign, then forward and turn twice to score
-        # EXAMPLE DRIVE FUNCTIONS
-
-        self.drive(FORWARD, 4.0, 100)
-        # drive forward 4 inches at 100% velocity and wait for completion
-
-        self.drive(REVERSE, 10.0, 60)
-        # drive reverse 10 inches at 60% velocity and don't wait for completion
-
-        self.pivot_turn(50, RIGHT, 50)
-        # turn right 50 degrees at 50% velocity
+        self.pivot_turn(90, RIGHT, 10)
+        self.pivot_turn(120, LEFT, 50)
+        self.pivot_turn(300, RIGHT, 100)
 
         pass
 
@@ -94,7 +81,6 @@ class AutonomousControl:
         pass
 
     def position_3_match_auton(self) -> None:
-        # self.intake.start_intake(100)
         pass
 
     def position_4_match_auton(self) -> None:
@@ -128,7 +114,7 @@ class AutonomousControl:
         self, degrees: float, direction: TurnType.TurnType, velocity: int | None
     ) -> None:
         """
-        Autonomously turn in place using all wheels.
+        Autonomously turn in place using all wheels. Loses accuracy at higher speeds.
         """
         # NOTE Relies only on the inertial sensor for now.
 
@@ -137,11 +123,9 @@ class AutonomousControl:
 
         self.inertial.reset_heading()
 
-        turn_target = -degrees if direction == TurnType.LEFT else degrees
-        acceptable_turn_difference = (
-            turn_target - turn_target * 0.025,
-            turn_target + turn_target * 0.025,
-        )
+        turn_target = degrees if direction == TurnType.RIGHT else -degrees + 360
+        lower_turn_difference = turn_target - turn_target * 0.025
+        upper_turn_difference = turn_target + turn_target * 0.025
         # Allow for x% of error.
         # This does mean that if it's not detected the first time, it will
         # make a 360 degree rotation before trying to stop again.
@@ -158,8 +142,8 @@ class AutonomousControl:
             )
 
         while (
-            self.inertial.heading() < acceptable_turn_difference[0]
-            or self.inertial.heading() > acceptable_turn_difference[1]
+            self.inertial.heading() < lower_turn_difference
+            or self.inertial.heading() > upper_turn_difference
         ):  # outside of acceptable range
             pass
 
