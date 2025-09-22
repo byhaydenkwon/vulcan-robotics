@@ -46,7 +46,7 @@ perpendicular_tracking = Rotation(Ports.PORT4)  # perpendicular to drive wheels
 # back_tracking = Rotation(Ports.PORT16)
 
 # Sensors
-inertial_sensor = Inertial(Ports.PORT5)
+inertial_sensor = Inertial(Ports.PORT16)
 optical_sensor = Optical(Ports.PORT6)
 gps_sensor = Gps(Ports.PORT7, 0, 0, DistanceUnits.MM, 180)
 block_color_sensor = Optical(Ports.PORT8)
