@@ -70,16 +70,17 @@ class AutonomousControl:
 
         self.logger = logger
 
+    # TODO: Combine these functions into one that has direction parameters
     def position_1_match_auton(self) -> None:
-        self.drive(FORWARD, 30, 15)
-
         pass
 
     def position_2_match_auton(self) -> None:
         pass
 
     def position_3_match_auton(self) -> None:
-        pass
+        self.intake.start_intake(100)
+        self.drive(FORWARD, 30.0, 50)
+        self.pivot_turn(180, RIGHT, 25)
 
     def position_4_match_auton(self) -> None:
         pass
