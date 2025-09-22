@@ -81,7 +81,8 @@ class DrivetrainOdometry:
 
     def get_distance_traveled(self) -> float:
         avg_revolutions = sum(self.revolutions.values()) / len(self.revolutions)
-        return avg_revolutions * self.diameter * math.pi
+        # gear ratio is 1:1.6 driven:driver
+        return avg_revolutions * 0.6 * self.diameter * math.pi
 
 
 class LinearOdometry:

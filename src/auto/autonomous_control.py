@@ -71,9 +71,7 @@ class AutonomousControl:
         self.logger = logger
 
     def position_1_match_auton(self) -> None:
-        self.pivot_turn(90, RIGHT, 10)
-        self.pivot_turn(120, LEFT, 50)
-        self.pivot_turn(300, RIGHT, 100)
+        self.drive(FORWARD, 30, 15)
 
         pass
 
@@ -96,7 +94,7 @@ class AutonomousControl:
         Autonomously drive a specified distance at a specified velocity.
         """
 
-        self.tracking.start_tracking()
+        Thread(self.tracking.start_tracking)
 
         for motor in self.drivetrain:
             motor.set_velocity(
