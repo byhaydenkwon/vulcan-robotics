@@ -9,11 +9,11 @@ import urandom  # type: ignore
 import config
 
 import mechanisms.odometry as odometry
-from display import Logger, Selection, SelectionButton
+from utils.display import Logger, Selection, SelectionButton
 from mechanisms.hopper import Hopper
 from mechanisms.intake import Intake
-from auto.autonomous_control import AutonomousControl
-from driver.driver_control import DriverControl
+from control.autonomous_control import AutonomousControl
+from control.driver_control import DriverControl
 
 
 def setup() -> None:

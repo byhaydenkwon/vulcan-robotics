@@ -4,7 +4,7 @@ Contains the Hopper class.
 
 from vex import *
 
-from display import Logger, NullLogger
+from utils.display import Logger, NullLogger
 
 
 class Hopper:
