@@ -42,15 +42,7 @@ def setup() -> None:
     print("\033[2J")
 
 
-def main() -> None:
-    # TODO: clean this up and move it all out of main
-
-    setup()
-
-    logger = Logger(config.brain)
-
-    # Calibration
-
+def calibrate(logger: Logger) -> None:
     logger.log(__name__, "Calibrating GPS sensor")
     config.gps_sensor.calibrate()
 
@@ -58,13 +50,16 @@ def main() -> None:
     config.inertial_sensor.calibrate()
 
     config.optical_sensor.set_light(100)
-
-    # TODO Have a way to recalibrate after a field adjustment or similar
+    # TODO (low-priority) Have a way to recalibrate after a field adjustment or similar
     # Right now you can just restart the code
-    # TODO have a set starting position for the GPS sensor
 
-    # Subsystems and components
 
+def main() -> None:
+    logger = Logger(config.brain)
+    setup()
+    calibrate(logger)
+
+    # Subsystems, components, and control
     hopper = Hopper(config.hopper, config.HOPPER_DEGREES_PER_BLOCK, logger=logger)
     intake = Intake(
         config.intake_bottom, config.intake_top, hopper, config.controller_1, logger
@@ -111,6 +106,8 @@ def main() -> None:
     )
 
     logger.log(__name__, "All subsystems successfully initalized")
+
+    # Start selection screen
 
     selection = Selection(
         config.brain,
