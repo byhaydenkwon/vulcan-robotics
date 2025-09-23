@@ -5,7 +5,7 @@ Contains the AutonomousControl class for autonomous code.
 from vex import *
 
 import mechanisms.odometry as odometry
-from display import Logger, NullLogger
+from utils.display import Logger, NullLogger
 from mechanisms.hopper import Hopper
 from mechanisms.intake import Intake
 

@@ -4,7 +4,7 @@ Contains the Intake class.
 
 from vex import *
 
-from display import Logger, NullLogger
+from utils.display import Logger, NullLogger
 
 from mechanisms.hopper import Hopper
 

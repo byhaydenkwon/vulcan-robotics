@@ -6,7 +6,7 @@ from vex import *
 
 import config
 
-from display import Logger, NullLogger
+from utils.display import Logger, NullLogger
 
 from mechanisms.hopper import Hopper
 from mechanisms.intake import Intake
