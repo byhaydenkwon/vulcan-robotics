@@ -43,7 +43,8 @@ class Intake:
 
         self.logger.log(
             __name__,
-            "Starting intake + " + ('for ' + str(duration) + 'ms' if duration else 'indefinitely'),
+            "Starting intake + "
+            + ("for " + str(duration) + "ms" if duration else "indefinitely"),
         )
 
     def stop_intake(self, auto_hopper=True) -> None:
@@ -57,8 +58,10 @@ class Intake:
         self.logger.log(__name__, "Stopping intake")
         if auto_hopper:
             self.hopper.stop()
-    
-    def output_bottom_goal(self, velocity: int, duration: int | None = None, auto_hopper=True) -> None:
+
+    def output_bottom_goal(
+        self, velocity: int, duration: int | None = None, auto_hopper=True
+    ) -> None:
         """
         Outputs blocks to the bottom goal with an optional time and velocity.
         """
@@ -71,10 +74,13 @@ class Intake:
 
         self.logger.log(
             __name__,
-            "Intake output bottom + " + ('for ' + str(duration) + 'ms' if duration else 'indefinitely'),
+            "Intake output bottom + "
+            + ("for " + str(duration) + "ms" if duration else "indefinitely"),
         )
-    
-    def output_middle_goal(self, velocity: int, duration: int | None = None, auto_hopper=True) -> None:
+
+    def output_middle_goal(
+        self, velocity: int, duration: int | None = None, auto_hopper=True
+    ) -> None:
         """
         Outputs blocks to the middle goal with an optional time and velocity.
         """
@@ -89,13 +95,16 @@ class Intake:
 
         self.logger.log(
             __name__,
-            "Intake output middle + " + ('for ' + str(duration) + 'ms' if duration else 'indefinitely'),
+            "Intake output middle + "
+            + ("for " + str(duration) + "ms" if duration else "indefinitely"),
         )
-    
-    def output_top_goal(self, velocity: int, duration: int | None = None, auto_hopper=True) -> None:
+
+    def output_top_goal(
+        self, velocity: int, duration: int | None = None, auto_hopper=True
+    ) -> None:
         """
         Outputs blocks to the top goal with an optional time and velocity.
-        """ 
+        """
 
         self.bottom.spin(FORWARD, velocity, PERCENT)
         self.top.spin(REVERSE, velocity, PERCENT)
@@ -108,5 +117,6 @@ class Intake:
 
         self.logger.log(
             __name__,
-            "Intake output top + " + ('for ' + str(duration) + 'ms' if duration else 'indefinitely'),
+            "Intake output top + "
+            + ("for " + str(duration) + "ms" if duration else "indefinitely"),
         )
