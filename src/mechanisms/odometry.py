@@ -4,6 +4,86 @@ from vex import *
 
 from display import Logger, NullLogger
 
+# TODO make planar and absolute odometry, make a base class for odometry and inherit
+
+
+class DrivetrainOdometry:
+    """
+    In the absence of tracking wheels, uses drivetrain motor
+    positions to calculate the average linear distance
+    traveled by each wheel.
+    """
+
+    # Please do not implement turns into this.
+    # It's probably inaccurate enough as-is.
+
+    def __init__(
+        self,
+        front_right: Motor,
+        middle_right: Motor,
+        back_right: Motor,
+        front_left: Motor,
+        middle_left: Motor,
+        back_left: Motor,
+        wheel_diameter: float,
+        logger: Logger | NullLogger = NullLogger(),
+    ):
+        self.front_right = front_right
+        self.middle_right = middle_right
+        self.back_right = back_right
+        self.front_left = front_left
+        self.middle_left = middle_left
+        self.back_left = back_left
+
+        self.drivetrain = {
+            "back_right": back_right,
+            "back_left": back_left,
+            "middle_right": middle_right,
+            "middle_left": middle_left,
+            "front_right": front_right,
+            "front_left": front_left,
+        }
+
+        self.diameter = wheel_diameter
+
+        self.logger = logger
+
+        self._next_stop_tracking = False
+        self.revolutions = {name: 0.0 for name in self.drivetrain.keys()}
+
+    def start_tracking(self) -> None:
+        """
+        Resets and starts tracking.
+        """
+        for motor in self.drivetrain.values():
+            motor.reset_position()
+        self.logger.log(__name__, "Drivetrain odometry (re)-started")
+
+        # {"back_right": 0.0, "back_left": 0.0, ...}
+        previous_revolutions = {name: 0.0 for name in self.drivetrain.keys()}
+
+        while not self._next_stop_tracking:
+            for name, motor in self.drivetrain.items():
+                pos = motor.position(TURNS)
+
+                # get forward distance between old and new positions, wrapping around 1
+                # ex. (0.5 - 0.4) % 1 = 0.1 % 1 = 0.1
+                # (0.1 - 0.9) % 1 = -0.8 % 1 = 0.2
+                # note: floating-point inaccuracies may lead to a
+                # rounding error of about 10E-16
+                self.revolutions[name] += (pos - previous_revolutions[name]) % 1
+                previous_revolutions[name] = pos
+            sleep(20)
+
+    def stop_tracking(self) -> None:
+        self._next_stop_tracking = True
+        self.logger.log(__name__, "Drivetrain odometry stopped")
+
+    def get_distance_traveled(self) -> float:
+        avg_revolutions = sum(self.revolutions.values()) / len(self.revolutions)
+        # gear ratio is 1:1.6 driven:driver
+        return avg_revolutions * 0.6 * self.diameter * math.pi
+
 
 class LinearOdometry:
     """
@@ -21,9 +101,12 @@ class LinearOdometry:
         self.diameter = wheel_diameter
         self.logger = logger
 
-    def reset_tracking(self) -> None:
+    def start_tracking(self) -> None:
         self._encoder.reset_position()
-        self.logger.log(__name__, "1D position tracking reset")
+        self.logger.log(__name__, "Linear odometry (re-)started")
+
+    def stop_tracking(self, *args, **kwargs) -> None:
+        self.logger.log(__name__, "Linear odometry stopped")
 
     def get_distance_traveled(self) -> float:
         """

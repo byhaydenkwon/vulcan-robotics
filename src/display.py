@@ -5,20 +5,52 @@ Contains functions relating to the V5 Screen, like the selection screen and logg
 from vex import *
 
 
+class SelectionButton:
+    """
+    Initial selection screen buttons.
+    """
+
+    def __init__(self, x_min: int, y_min: int, x_max: int, y_max: int) -> None:
+        self.x_min = x_min
+        self.y_min = y_min
+        self.x_max = x_max
+        self.y_max = y_max
+
+    def pressed(self, x: int, y: int) -> bool:
+        """
+        Given an x and y brain screen position, output True if pressed and False if not.
+        """
+        return (x >= self.x_min and x < self.x_max) and (
+            y >= self.y_min and y < self.y_max
+        )
+
+
 class Selection:
     """
     Initial selection screen for autonomous or skills code.
     """
 
-    def __init__(self, brain: Brain, selection_image_path: str) -> None:
+    def __init__(
+        self,
+        brain: Brain,
+        selection_image_path: str,
+        buttons: dict[SelectionButton, Callable],  # {SelectionButton, auton function}
+    ) -> None:
         self._brain = brain
+        self.buttons = buttons
 
         self._brain.screen.draw_image_from_file(selection_image_path, 0, 0)
-        self._brain.screen.pressed(self.pressed)
 
-    def pressed(self) -> None:
+    def pressed(self) -> Callable | None:
+        """
+        Return which button has been pressed, or None.
+        """
         x = self._brain.screen.x_position()
         y = self._brain.screen.y_position()
+
+        for button, auton_function in self.buttons.items():
+            if button.pressed(x, y):
+                return auton_function
 
 
 class Logger:
@@ -38,6 +70,7 @@ class Logger:
         self._next_stop_print = False
 
     def start_print_loop(self) -> None:
+        self._brain.screen.clear_screen()
         while not self._next_stop_print:
             self._print_loop()
 
