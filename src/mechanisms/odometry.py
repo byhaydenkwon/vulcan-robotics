@@ -56,6 +56,8 @@ class DrivetrainOdometry:
         """
         Resets tracking.
         """
+        self.revolutions = {name: 0.0 for name in self.drivetrain.keys()}
+
         for motor in self.drivetrain.values():
             motor.reset_position()
 
@@ -64,7 +66,7 @@ class DrivetrainOdometry:
 
         self.logger.log(__name__, "Drivetrain odometry reset")
 
-    def start_tracking(self) -> None:
+    def start_tracking(self, direction) -> None:
         """
         Starts tracking. If not reset, continues tracking.
         """
@@ -78,13 +80,21 @@ class DrivetrainOdometry:
                 # (0.1 - 0.9) % 1 = -0.8 % 1 = 0.2
                 # note: floating-point inaccuracies may lead to a
                 # rounding error of about 10E-16
-                self.revolutions[name] += (pos - self.previous_revolutions[name]) % 1
+                if direction == FORWARD:
+                    self.revolutions[name] += (
+                        pos - self.previous_revolutions[name]
+                    ) % 1
+                else:
+                    self.revolutions[name] += (
+                        self.previous_revolutions[name] - pos
+                    ) % 1
+
                 self.previous_revolutions[name] = pos
             sleep(20)
+        self.logger.log(__name__, "Drivetrain odometry stopped")
 
     def stop_tracking(self) -> None:
         self._next_stop_tracking = True
-        self.logger.log(__name__, "Drivetrain odometry stopped")
 
     def get_distance_traveled(self) -> float:
         avg_revolutions = sum(self.revolutions.values()) / len(self.revolutions)
