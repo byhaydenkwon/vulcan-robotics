@@ -4,8 +4,6 @@ Contains the DriverControl class with related drive and control functions.
 
 from vex import *
 
-import config
-
 from utils.display import Logger, NullLogger
 
 from mechanisms.hopper import Hopper
@@ -22,6 +20,12 @@ class DriverControl:
         self,
         drive_mode: str,
         mechanism_mode: str,
+        front_right: Motor,
+        middle_right: Motor,
+        back_right: Motor,
+        front_left: Motor,
+        middle_left: Motor,
+        back_left: Motor,
         controller: Controller,
         intake: Intake,
         hopper: Hopper,
@@ -30,6 +34,13 @@ class DriverControl:
     ) -> None:
         self.drive_modes = {"split_arcade": self._split_arcade}
         self.mechanism_modes = {"standard": self._standard_mechanisms}
+
+        self.front_right = front_right
+        self.middle_right = middle_right
+        self.back_right = back_right
+        self.front_left = front_left
+        self.middle_left = middle_left
+        self.back_left = back_left
 
         self._drive_mode = self.drive_modes[drive_mode]
         self._drive_mode_kwargs = kwargs
@@ -99,16 +110,14 @@ class DriverControl:
         Provide velocity and turn velocity as percentages.
         """
 
-        # TODO later: make these use class variables, not config
+        y_input = self.controller.axis3.position() * velocity / 100
+        x_input = self.controller.axis1.position() * turn_velocity / 100
 
-        y_input = config.controller_1.axis3.position() * velocity / 100
-        x_input = config.controller_1.axis1.position() * turn_velocity / 100
-
-        for motor in [config.front_right, config.middle_right, config.back_right]:
+        for motor in [self.front_right, self.middle_right, self.back_right]:
             motor.set_velocity(y_input - x_input, PERCENT)
             motor.spin(FORWARD)
 
-        for motor in [config.front_left, config.middle_left, config.back_left]:
+        for motor in [self.front_left, self.middle_left, self.back_left]:
             motor.set_velocity(y_input + x_input, PERCENT)
             motor.spin(FORWARD)
 
