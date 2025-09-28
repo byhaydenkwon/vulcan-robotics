@@ -49,19 +49,28 @@ class DrivetrainOdometry:
         self.logger = logger
 
         self._next_stop_tracking = False
-        self.revolutions = {name: 0.0 for name in self.drivetrain.keys()}
 
-    def start_tracking(self) -> None:
+        # {"back_right": 0.0, "back_left": 0.0, ...}
+        self.revolutions = {name: 0.0 for name in self.drivetrain.keys()}
+        self.previous_revolutions = {name: 0.0 for name in self.drivetrain.keys()}
+
+    def reset_tracking(self) -> None:
         """
-        Resets and starts tracking.
+        Resets tracking.
         """
         for motor in self.drivetrain.values():
             motor.reset_position()
-        self.logger.log(__name__, "Drivetrain odometry (re)-started")
 
-        # {"back_right": 0.0, "back_left": 0.0, ...}
-        previous_revolutions = {name: 0.0 for name in self.drivetrain.keys()}
+        self.revolutions = {name: 0.0 for name in self.drivetrain.keys()}
+        self.previous_revolutions = {name: 0.0 for name in self.drivetrain.keys()}
 
+        self.logger.log(__name__, "Drivetrain odometry reset")
+
+    def start_tracking(self) -> None:
+        """
+        Starts tracking. If not reset, continues tracking.
+        """
+        self.logger.log(__name__, "Drivetrain odometry started")
         while not self._next_stop_tracking:
             for name, motor in self.drivetrain.items():
                 pos = motor.position(TURNS)
@@ -71,8 +80,8 @@ class DrivetrainOdometry:
                 # (0.1 - 0.9) % 1 = -0.8 % 1 = 0.2
                 # note: floating-point inaccuracies may lead to a
                 # rounding error of about 10E-16
-                self.revolutions[name] += (pos - previous_revolutions[name]) % 1
-                previous_revolutions[name] = pos
+                self.revolutions[name] += (pos - self.previous_revolutions[name]) % 1
+                self.previous_revolutions[name] = pos
             sleep(20)
 
     def stop_tracking(self) -> None:
@@ -101,9 +110,12 @@ class LinearOdometry:
         self.diameter = wheel_diameter
         self.logger = logger
 
-    def start_tracking(self) -> None:
+    def reset_tracking(self) -> None:
         self._encoder.reset_position()
         self.logger.log(__name__, "Linear odometry (re-)started")
+
+    def start_tracking(self) -> None:
+        self.logger.log(__name__, "Linear odometry started")
 
     def stop_tracking(self, *args, **kwargs) -> None:
         self.logger.log(__name__, "Linear odometry stopped")

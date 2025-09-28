@@ -95,6 +95,7 @@ class AutonomousControl:
         Autonomously drive a specified distance at a specified velocity.
         """
 
+        self.tracking.reset_tracking()
         Thread(self.tracking.start_tracking)
 
         for motor in self.drivetrain:
