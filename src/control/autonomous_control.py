@@ -79,8 +79,17 @@ class AutonomousControl:
 
     def position_3_match_auton(self) -> None:
         self.intake.start_intake(100)
+        self.pivot_turn(10, RIGHT, 10)
+        self.drive(FORWARD, 40.0, 50)
+        wait(2, SECONDS)
+        self.drive(REVERSE, 20.0, 50)
+        self.intake.stop_intake()
+        self.pivot_turn(80, RIGHT, 20)
         self.drive(FORWARD, 30.0, 50)
-        self.pivot_turn(180, RIGHT, 25)
+        self.pivot_turn(90, LEFT, 20)
+        self.intake.start_intake(100)
+        self.drive(FORWARD, 10.0, 30)
+        self.intake.stop_intake()
 
     def position_4_match_auton(self) -> None:
         pass
