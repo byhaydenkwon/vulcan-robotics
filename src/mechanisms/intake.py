@@ -65,6 +65,8 @@ class Intake:
         """
         Outputs blocks to the bottom goal with an optional time and velocity.
         """
+        self.stop_intake()
+
         self.bottom.spin(REVERSE, velocity, PERCENT)
         if auto_hopper:
             self.hopper.flush()
@@ -84,6 +86,8 @@ class Intake:
         """
         Outputs blocks to the middle goal with an optional time and velocity.
         """
+        self.stop_intake()
+
         self.bottom.spin(FORWARD, velocity, PERCENT)
         self.top.spin(FORWARD, velocity, PERCENT)
 
@@ -105,6 +109,7 @@ class Intake:
         """
         Outputs blocks to the top goal with an optional time and velocity.
         """
+        self.stop_intake()
 
         self.bottom.spin(FORWARD, velocity, PERCENT)
         self.top.spin(REVERSE, velocity, PERCENT)
