@@ -4,8 +4,6 @@ from vex import *
 
 from utils.display import Logger, NullLogger
 
-# TODO make planar and absolute odometry, make a base class for odometry and inherit
-
 
 class DrivetrainOdometry:
     """
