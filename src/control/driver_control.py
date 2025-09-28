@@ -73,7 +73,7 @@ class DriverControl:
                 )
                 self._next_stop_control = True
             self._drive_mode(**self._drive_mode_kwargs)
-            sleep(10)
+            sleep(2)
 
     def stop_control_loop(self) -> None:
         """
