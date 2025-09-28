@@ -6,7 +6,7 @@ Runs VEXCode pregenerated code and sets up boilerplate.
 from vex import *
 import urandom  # type: ignore
 
-import config
+import utils.config as config
 
 import mechanisms.odometry as odometry
 from utils.display import Logger, Selection, SelectionButton
