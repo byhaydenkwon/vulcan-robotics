@@ -158,11 +158,3 @@ class AutonomousControl:
 
         for motor in self.drivetrain:
             motor.stop()
-
-    @staticmethod
-    def i_do_nothing_replace_me(*args, **kwargs) -> None:
-        """
-        Do nothing.
-        Dummy autonomous code function.
-        """
-        pass
