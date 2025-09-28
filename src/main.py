@@ -142,9 +142,13 @@ def main() -> None:
             logger.log(__name__, "Starting autonomous code")
             auton_function()
 
+    def start_driver() -> None:
+        auto.exit_autonomous()
+        driver.start_control_loop()
+
     config.brain.screen.pressed(get_auton)
 
-    Competition(driver.start_control_loop, start_auton)
+    Competition(driver=start_driver, autonomous=start_auton)
 
 
 if __name__ == "__main__":

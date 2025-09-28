@@ -10,6 +10,14 @@ from mechanisms.hopper import Hopper
 from mechanisms.intake import Intake
 
 
+class AutonomousExit(Exception):
+    """
+    Exception raised to stop autonomous code when the driver control period starts.
+    """
+
+    pass
+
+
 class AutonomousControl:
     """
     Contains autonomous code helper functions.
@@ -70,26 +78,35 @@ class AutonomousControl:
 
         self.logger = logger
 
+        self._stop = False
+
     # TODO: Combine these functions into one that has direction parameters
     def position_1_match_auton(self) -> None:
         pass
 
     def position_2_match_auton(self) -> None:
-        pass
+        try:
+            self.drive(FORWARD, 200.0, 1)
+        except AutonomousExit as e:
+            self.logger.log(__name__, e.args[0])
 
     def position_3_match_auton(self) -> None:
-        self.intake.start_intake(100)
-        self.pivot_turn(10, RIGHT, 10)
-        self.drive(FORWARD, 40.0, 50)
-        wait(2, SECONDS)
-        self.drive(REVERSE, 20.0, 50)
-        self.intake.stop_intake()
-        self.pivot_turn(80, RIGHT, 20)
-        self.drive(FORWARD, 30.0, 50)
-        self.pivot_turn(90, LEFT, 20)
-        self.intake.start_intake(100)
-        self.drive(FORWARD, 10.0, 30)
-        self.intake.stop_intake()
+        try:
+            self.intake.start_intake(100)
+            self.pivot_turn(10, RIGHT, 10)
+            self.drive(FORWARD, 40.0, 50)
+            if not self._stop:
+                wait(2, SECONDS)
+            self.drive(REVERSE, 20.0, 50)
+            self.intake.stop_intake()
+            self.pivot_turn(80, RIGHT, 20)
+            self.drive(FORWARD, 30.0, 50)
+            self.pivot_turn(90, LEFT, 20)
+            self.intake.start_intake(100)
+            self.drive(FORWARD, 10.0, 30)
+            self.intake.stop_intake()
+        except AutonomousExit as e:
+            self.logger.log(__name__, e.args[0])
 
     def position_4_match_auton(self) -> None:
         pass
@@ -103,6 +120,8 @@ class AutonomousControl:
         """
         Autonomously drive a specified distance at a specified velocity.
         """
+        if self._stop:
+            raise AutonomousExit("Autonomous exit during drive")
 
         self.tracking.reset_tracking()
         Thread(self.tracking.start_tracking)
@@ -126,6 +145,9 @@ class AutonomousControl:
         Autonomously turn in place using all wheels. Loses accuracy at higher speeds.
         """
         # NOTE Relies only on the inertial sensor for now.
+
+        if self._stop:
+            raise AutonomousExit("Autonomous exit during pivot turn")
 
         if direction == TurnType.UNDEFINED:
             return
@@ -158,6 +180,19 @@ class AutonomousControl:
 
         for motor in self.drivetrain:
             motor.stop()
+
+    def exit_autonomous(self) -> None:
+        """
+        Stop all mechanisms and exit all autonomous routines.
+        """
+        # raise AutonomousExit in drivetrain functions if routine not finished
+        self._stop = True
+        for motor in self.drivetrain:
+            motor.stop()
+        self.hopper.stop()
+        self.intake.stop_intake(auto_hopper=False)
+        self.tracking.stop_tracking()
+        self.logger.log(__name__, "Autonomous code stopped")
 
     @staticmethod
     def i_do_nothing_replace_me(*args, **kwargs) -> None:
