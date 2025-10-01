@@ -105,7 +105,7 @@ class AutonomousControl:
         """
 
         self.tracking.reset_tracking()
-        Thread(self.tracking.start_tracking)
+        Thread(lambda: self.tracking.start_tracking(direction))
 
         for motor in self.drivetrain:
             motor.set_velocity(
