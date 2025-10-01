@@ -8,6 +8,7 @@ from utils.display import Logger, NullLogger
 
 from mechanisms.hopper import Hopper
 from mechanisms.intake import Intake
+from mechanisms.aligner import GoalAligner
 
 
 class DriverControl:
@@ -29,6 +30,7 @@ class DriverControl:
         controller: Controller,
         intake: Intake,
         hopper: Hopper,
+        aligner: GoalAligner,
         logger: Logger | NullLogger = NullLogger(),
         **kwargs,
     ) -> None:
@@ -51,6 +53,7 @@ class DriverControl:
         self.controller = controller
         self.intake = intake
         self.hopper = hopper
+        self.aligner = aligner
 
         self.logger = logger
 
@@ -73,6 +76,13 @@ class DriverControl:
                 )
                 self._next_stop_control = True
             self._drive_mode(**self._drive_mode_kwargs)
+
+            if self.controller.buttonA.pressing():
+                if self.aligner.extended:
+                    self.aligner.retract()
+                else:
+                    self.aligner.extend()
+
             sleep(2)
 
     def stop_control_loop(self) -> None:

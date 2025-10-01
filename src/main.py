@@ -12,6 +12,7 @@ import mechanisms.odometry as odometry
 from utils.display import Logger, Selection, SelectionButton
 from mechanisms.hopper import Hopper
 from mechanisms.intake import Intake
+from mechanisms.aligner import GoalAligner
 from control.autonomous_control import AutonomousControl
 from control.driver_control import DriverControl
 
@@ -64,6 +65,7 @@ def main() -> None:
     intake = Intake(
         config.intake_bottom, config.intake_top, hopper, config.controller_1, logger
     )
+    aligner = GoalAligner(config.aligner_out_port, logger)
 
     driver = DriverControl(
         "split_arcade",
@@ -77,6 +79,7 @@ def main() -> None:
         config.controller_1,
         intake,
         hopper,
+        aligner,
         logger,
         velocity=100,
         turn_velocity=69.42067,
