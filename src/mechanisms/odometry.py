@@ -66,7 +66,7 @@ class DrivetrainOdometry:
 
         self.logger.log(__name__, "Drivetrain odometry reset")
 
-    def start_tracking(self, direction) -> None:
+    def start_tracking(self, direction: DirectionType.DirectionType) -> None:
         """
         Starts tracking. If not reset, continues tracking.
         """
@@ -122,7 +122,7 @@ class LinearOdometry:
         self._encoder.reset_position()
         self.logger.log(__name__, "Linear odometry (re-)started")
 
-    def start_tracking(self) -> None:
+    def start_tracking(self, direction) -> None:
         self.logger.log(__name__, "Linear odometry started")
 
     def stop_tracking(self, *args, **kwargs) -> None:
