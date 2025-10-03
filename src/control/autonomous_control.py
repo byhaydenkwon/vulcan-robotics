@@ -8,6 +8,7 @@ import mechanisms.odometry as odometry
 from utils.display import Logger, NullLogger
 from mechanisms.hopper import Hopper
 from mechanisms.intake import Intake
+from utils import config as config
 
 
 class AutonomousControl:
@@ -92,7 +93,21 @@ class AutonomousControl:
         self.intake.stop_intake()
 
     def position_4_match_auton(self) -> None:
-        pass
+        def print_heading():
+            while True:
+                config.controller_1.screen.print(self.inertial.heading())
+                config.controller_1.screen.set_cursor(1, 1)
+                sleep(30)
+
+        Thread(print_heading)
+        self.pivot_turn(90, RIGHT, 10)
+        self.pivot_turn(90, LEFT, 10)
+        self.pivot_turn(90, RIGHT, 10)
+        self.pivot_turn(90, LEFT, 10)
+        self.pivot_turn(90, RIGHT, 10)
+        self.pivot_turn(90, LEFT, 10)
+        self.pivot_turn(90, RIGHT, 10)
+        self.pivot_turn(90, LEFT, 10)
 
     def drive(
         self,
@@ -132,9 +147,16 @@ class AutonomousControl:
 
         self.inertial.reset_heading()
 
-        turn_target = degrees if direction == TurnType.RIGHT else -degrees + 360
-        lower_turn_difference = turn_target - turn_target * 0.025
-        upper_turn_difference = turn_target + turn_target * 0.025
+        # example right 90 degrees
+        turn_target = (
+            degrees if direction == TurnType.RIGHT else -degrees + 360
+        )  # converted to 270 deg
+        lower_turn_difference = (
+            turn_target - turn_target * 0.025
+        ) % 360  # 270 - 6.75 = 263.25
+        upper_turn_difference = (
+            turn_target + turn_target * 0.025
+        ) % 360  # 270 + 6.75 = 276.25
         # Allow for x% of error.
         # This does mean that if it's not detected the first time, it will
         # make a 360 degree rotation before trying to stop again.
