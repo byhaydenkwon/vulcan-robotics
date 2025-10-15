@@ -8,6 +8,7 @@ from utils.display import Logger, NullLogger
 
 from mechanisms.hopper import Hopper
 from mechanisms.intake import Intake
+from mechanisms.aligner import GoalAligner
 
 
 class DriverControl:
@@ -29,6 +30,7 @@ class DriverControl:
         controller: Controller,
         intake: Intake,
         hopper: Hopper,
+        aligner: GoalAligner,
         logger: Logger | NullLogger = NullLogger(),
         **kwargs,
     ) -> None:
@@ -51,6 +53,7 @@ class DriverControl:
         self.controller = controller
         self.intake = intake
         self.hopper = hopper
+        self.aligner = aligner
 
         self.logger = logger
 
@@ -73,6 +76,7 @@ class DriverControl:
                 )
                 self._next_stop_control = True
             self._drive_mode(**self._drive_mode_kwargs)
+
             sleep(2)
 
     def stop_control_loop(self) -> None:
@@ -124,14 +128,16 @@ class DriverControl:
         self.controller.buttonR1.pressed(lambda: self.intake.start_intake(100))
         self.controller.buttonR1.released(lambda: self.intake.stop_intake())
 
-        self.controller.buttonR2.pressed(lambda: self.intake.output_middle_goal(100))
+        self.controller.buttonR2.pressed(lambda: self.intake.output_bottom_goal(100))
         self.controller.buttonR2.released(self.intake.stop_intake)
 
         self.controller.buttonL1.pressed(lambda: self.intake.output_top_goal(100))
         self.controller.buttonL1.released(self.intake.stop_intake)
 
-        self.controller.buttonL2.pressed(lambda: self.intake.output_bottom_goal(100))
+        self.controller.buttonL2.pressed(lambda: self.intake.output_middle_goal(100))
         self.controller.buttonL2.released(self.intake.stop_intake)
+
+        self.controller.buttonA.pressed(lambda: self.aligner.toggle())
 
         # y: future wing control
         # left: future tube intake

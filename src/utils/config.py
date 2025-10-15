@@ -51,8 +51,11 @@ optical_sensor = Optical(Ports.PORT6)
 gps_sensor = Gps(Ports.PORT17, 0, 0, DistanceUnits.MM, 180)
 block_color_sensor = Optical(Ports.PORT8)
 
-# Tube intake (pneumatic)
-henry = DigitalOut(brain.three_wire_port.a)
+# Pneumatics
+aligner_out_port = DigitalOut(
+    brain.three_wire_port.a
+)  # False (0) is piston out, True (1) is piston in
+henry = DigitalOut(brain.three_wire_port.b)
 
 controller_1 = Controller(PRIMARY)
 
