@@ -28,3 +28,12 @@ class GoalAligner:
         self.pneumatic.set(True)
         self.extended = False
         self.logger.log(__name__, "Goal aligner retracted")
+
+    def toggle(self) -> None:
+        """
+        Toggle the pneumatic goal aligner.
+        """
+        if self.extended:
+            self.retract()
+        else:
+            self.extend()
