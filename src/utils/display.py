@@ -109,3 +109,6 @@ class NullLogger:
 
     def log(*args, **kwargs) -> None:
         pass
+
+    def start_print_loop(*args, **kwargs) -> None:
+        pass

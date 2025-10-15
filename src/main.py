@@ -9,7 +9,7 @@ import urandom  # type: ignore
 import utils.config as config
 
 import mechanisms.odometry as odometry
-from utils.display import Logger, Selection, SelectionButton
+from utils.display import Logger, NullLogger, Selection, SelectionButton
 from mechanisms.hopper import Hopper
 from mechanisms.intake import Intake
 from mechanisms.aligner import GoalAligner
@@ -43,7 +43,7 @@ def setup() -> None:
     print("\033[2J")
 
 
-def calibrate(logger: Logger) -> None:
+def calibrate(logger: Logger | NullLogger) -> None:
     logger.log(__name__, "Calibrating GPS sensor")
     config.gps_sensor.calibrate()
 
@@ -56,7 +56,7 @@ def calibrate(logger: Logger) -> None:
 
 
 def main() -> None:
-    logger = Logger(config.brain)
+    logger = NullLogger()
     setup()
     calibrate(logger)
 
