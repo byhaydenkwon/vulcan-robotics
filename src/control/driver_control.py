@@ -4,6 +4,7 @@ Contains the DriverControl class with related drive and control functions.
 
 from vex import *
 
+from utils.enums import IntakeTargets
 from utils.display import Logger, NullLogger
 
 from mechanisms.hopper import Hopper
@@ -63,6 +64,7 @@ class DriverControl:
         """
 
         self._mechanism_mode()
+        Thread(self.intake.start_control_loop)  # TODO MOVE TO MAIN
         self.logger.log(__name__, "Starting driver control loop")
 
         initial_drive_mode = self._drive_mode
@@ -125,17 +127,30 @@ class DriverControl:
             motor.spin(FORWARD)
 
     def _standard_mechanisms(self) -> None:
-        self.controller.buttonR1.pressed(lambda: self.intake.start_intake(100))
-        self.controller.buttonR1.released(lambda: self.intake.stop_intake())
+        self.controller.buttonR1.pressed(self.intake.start_intake)
+        self.controller.buttonR1.released(
+            lambda: self.intake.stop_command(IntakeTargets.INTAKE)
+        )
 
-        self.controller.buttonR2.pressed(lambda: self.intake.output_bottom_goal(100))
-        self.controller.buttonR2.released(self.intake.stop_intake)
+        self.controller.buttonR2.pressed(lambda: self.intake.output(IntakeTargets.LOW))
+        self.controller.buttonR2.released(
+            lambda: self.intake.stop_command(IntakeTargets.LOW)
+        )
 
-        self.controller.buttonL1.pressed(lambda: self.intake.output_top_goal(100))
-        self.controller.buttonL1.released(self.intake.stop_intake)
+        self.controller.buttonL1.pressed(lambda: self.intake.output(IntakeTargets.HIGH))
+        self.controller.buttonL1.released(
+            lambda: self.intake.stop_command(IntakeTargets.HIGH)
+        )
 
-        self.controller.buttonL2.pressed(lambda: self.intake.output_middle_goal(100))
-        self.controller.buttonL2.released(self.intake.stop_intake)
+        self.controller.buttonL2.pressed(
+            lambda: self.intake.output(IntakeTargets.MIDDLE)
+        )
+        self.controller.buttonL2.released(
+            lambda: self.intake.stop_command(IntakeTargets.MIDDLE)
+        )
+
+        # A just-in-case backup button that immediately stops the entire intake:
+        self.controller.buttonDown.pressed(lambda: self.intake.stop_intake())
 
         self.controller.buttonA.pressed(lambda: self.aligner.toggle())
 

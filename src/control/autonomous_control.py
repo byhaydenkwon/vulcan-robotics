@@ -212,7 +212,7 @@ class AutonomousControl:
         for motor in self.drivetrain:
             motor.stop()
         self.hopper.stop()
-        self.intake.stop_intake(auto_hopper=False)
+        self.intake.stop_intake()
         self.tracking.stop_tracking()
         self.logger.log(__name__, "Autonomous code stopped")
 
