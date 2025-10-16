@@ -109,6 +109,7 @@ def main() -> None:
         gps=config.gps_sensor,
         block_color=config.block_color_sensor,
         tube_pneumatic=config.henry,
+        aligner=aligner,
         tracking=tracking,
         drivetrain_velocity=100,
         turn_velocity=50,
