@@ -64,7 +64,6 @@ class DriverControl:
         """
 
         self._mechanism_mode()
-        Thread(self.intake.start_control_loop)  # TODO MOVE TO MAIN
         self.logger.log(__name__, "Starting driver control loop")
 
         initial_drive_mode = self._drive_mode
