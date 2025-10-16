@@ -151,7 +151,7 @@ def main() -> None:
 
     config.brain.screen.pressed(get_auton)
 
-    Competition(driver=start_driver, autonomous=start_auton)
+    Competition(start_driver, start_auton)
 
 
 if __name__ == "__main__":
