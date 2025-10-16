@@ -65,6 +65,7 @@ def main() -> None:
     intake = Intake(
         config.intake_bottom, config.intake_top, hopper, config.controller_1, logger
     )
+    Thread(intake.start_control_loop)
     aligner = GoalAligner(config.aligner_out_port, logger)
 
     driver = DriverControl(
