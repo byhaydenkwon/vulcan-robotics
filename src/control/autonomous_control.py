@@ -6,6 +6,7 @@ from vex import *
 
 import mechanisms.odometry as odometry
 from utils.display import Logger, NullLogger
+from utils.enums import IntakeTargets
 from mechanisms.hopper import Hopper
 from mechanisms.intake import Intake
 from mechanisms.aligner import GoalAligner
@@ -99,38 +100,26 @@ class AutonomousControl:
 
     def position_3_match_auton(self) -> None:
         try:
-            self.intake.start_intake(100)
-            self.pivot_turn(10, RIGHT, 10)
+            self.pivot_turn(5, RIGHT, 10)
+            self.intake.start_intake()
             self.drive(FORWARD, 40.0, 50)
-            if not self._stop:
-                wait(2, SECONDS)
-            self.drive(REVERSE, 20.0, 50)
+            wait(1.5, SECONDS)
+            self.drive(REVERSE, 35.0, 50)
             self.intake.stop_intake()
-            self.pivot_turn(80, RIGHT, 20)
-            self.drive(FORWARD, 30.0, 50)
-            self.pivot_turn(90, LEFT, 20)
-            self.intake.start_intake(100)
-            self.drive(FORWARD, 10.0, 30)
-            self.intake.stop_intake()
+            self.pivot_turn(85, RIGHT, 20)
+            # self.drive(FORWARD, 20.0, 50)
+            # self.pivot_turn(90, LEFT, 20)
+            # self.aligner.toggle
+            # self.drive(FORWARD, 10.0, 30)
+            # self.intake.output(IntakeTargets.HIGH)
         except AutonomousExit as e:
             self.logger.log(__name__, e.args[0])
 
     def position_4_match_auton(self) -> None:
-        def print_heading():
-            while True:
-                config.controller_1.screen.print(self.inertial.heading())
-                config.controller_1.screen.set_cursor(1, 1)
-                sleep(30)
-
-        Thread(print_heading)
-        self.pivot_turn(90, RIGHT, 10)
-        self.pivot_turn(90, LEFT, 10)
-        self.pivot_turn(90, RIGHT, 10)
-        self.pivot_turn(90, LEFT, 10)
-        self.pivot_turn(90, RIGHT, 10)
-        self.pivot_turn(90, LEFT, 10)
-        self.pivot_turn(90, RIGHT, 10)
-        self.pivot_turn(90, LEFT, 10)
+        self.drive(FORWARD, 30, 30)
+        self.drive(REVERSE, 30, 30)
+        self.drive(FORWARD, 30, 30)
+        self.drive(REVERSE, 30, 30)
 
     def drive(
         self,
@@ -144,7 +133,6 @@ class AutonomousControl:
         if self._stop:
             raise AutonomousExit("Autonomous exit during drive")
 
-        self.tracking.reset_tracking()
         Thread(lambda: self.tracking.start_tracking(direction))
 
         for motor in self.drivetrain:
@@ -154,10 +142,17 @@ class AutonomousControl:
             motor.spin(direction, velocity, PERCENT)
 
         while self.tracking.get_distance_traveled() < distance:
-            pass
+            config.controller_1.screen.print(
+                "FORWARD" if direction == FORWARD else "REVERSE"
+            )
+            config.controller_1.screen.set_cursor(1, 1)
 
         for motor in self.drivetrain:
             motor.stop()
+
+        self.tracking.reset_tracking()
+
+        wait(30)
 
     def pivot_turn(
         self, degrees: float, direction: TurnType.TurnType, velocity: int | None

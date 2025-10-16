@@ -54,9 +54,10 @@ class DrivetrainOdometry:
 
     def reset_tracking(self) -> None:
         """
-        Resets tracking.
+        Resets and stops tracking.
         """
-        self.revolutions = {name: 0.0 for name in self.drivetrain.keys()}
+
+        self.stop_tracking()
 
         for motor in self.drivetrain.values():
             motor.reset_position()
@@ -71,6 +72,8 @@ class DrivetrainOdometry:
         Starts tracking. If not reset, continues tracking.
         """
         self.logger.log(__name__, "Drivetrain odometry started")
+        self._next_stop_tracking = False
+
         while not self._next_stop_tracking:
             for name, motor in self.drivetrain.items():
                 pos = motor.position(TURNS)
@@ -99,7 +102,7 @@ class DrivetrainOdometry:
     def get_distance_traveled(self) -> float:
         avg_revolutions = sum(self.revolutions.values()) / len(self.revolutions)
         # gear ratio is 1:1.6 driven:driver
-        return avg_revolutions * 0.6 * self.diameter * math.pi
+        return abs(avg_revolutions * 0.6 * self.diameter * math.pi)
 
 
 class LinearOdometry:
@@ -118,7 +121,7 @@ class LinearOdometry:
         self.diameter = wheel_diameter
         self.logger = logger
 
-    def reset_tracking(self) -> None:
+    def reset_tracking(self, *args, **kwargs) -> None:
         self._encoder.reset_position()
         self.logger.log(__name__, "Linear odometry (re-)started")
 
