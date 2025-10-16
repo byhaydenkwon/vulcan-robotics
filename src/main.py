@@ -144,6 +144,7 @@ def main() -> None:
 
             logger.log(__name__, "Starting autonomous code")
             auton_function()
+            Thread(intake.start_control_loop)
 
     def start_driver() -> None:
         auto.exit_autonomous()
