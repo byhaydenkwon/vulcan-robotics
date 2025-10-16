@@ -8,6 +8,7 @@ import mechanisms.odometry as odometry
 from utils.display import Logger, NullLogger
 from mechanisms.hopper import Hopper
 from mechanisms.intake import Intake
+from mechanisms.aligner import GoalAligner
 from utils import config as config
 
 
@@ -39,6 +40,7 @@ class AutonomousControl:
         gps: Gps,
         block_color: Optical,
         tube_pneumatic: DigitalOut,
+        aligner: GoalAligner,
         tracking: odometry.DrivetrainOdometry | odometry.LinearOdometry,
         drivetrain_velocity: int,
         turn_velocity: int,
@@ -71,6 +73,7 @@ class AutonomousControl:
         self.gps = gps
         self.block_color = block_color
         self.tube_pneumatic = tube_pneumatic
+        self.aligner = aligner
 
         self.tracking = tracking
 
@@ -83,7 +86,10 @@ class AutonomousControl:
 
     # TODO: Combine these functions into one that has direction parameters
     def position_1_match_auton(self) -> None:
-        pass
+        try:
+            self.aligner.toggle()
+        except AutonomousExit as e:
+            self.logger.log(__name__, e.args[0])
 
     def position_2_match_auton(self) -> None:
         try:
