@@ -10,6 +10,9 @@ class DrivetrainOdometry:
     In the absence of tracking wheels, uses drivetrain motor
     positions to calculate the average linear distance
     traveled by each wheel.
+
+    gear_ratio is the amount of revolutions the drivetrain output has for
+    each motor revolution.
     """
 
     # Please do not implement turns into this.
@@ -24,6 +27,7 @@ class DrivetrainOdometry:
         middle_left: Motor,
         back_left: Motor,
         wheel_diameter: float,
+        gear_ratio: float = 0.625,
         logger: Logger | NullLogger = NullLogger(),
     ):
         self.drivetrain = {
@@ -35,6 +39,7 @@ class DrivetrainOdometry:
             "front_left": front_left,
         }
 
+        self.gear_ratio = gear_ratio
         self.diameter = wheel_diameter
         self.logger = logger
 
@@ -53,8 +58,7 @@ class DrivetrainOdometry:
         avg_revolutions = sum(
             [motor.position(TURNS) for motor in self.drivetrain.values()]
         ) / len(self.drivetrain)
-        # gear ratio is 1:1.6 driven:driver
-        return abs(avg_revolutions * 0.6 * self.diameter * math.pi)
+        return abs(avg_revolutions * self.gear_ratio * self.diameter * math.pi)
 
 
 class LinearOdometry:
@@ -67,10 +71,12 @@ class LinearOdometry:
         self,
         encoder: Rotation,
         wheel_diameter: float,
+        gear_ratio: float,
         logger: Logger | NullLogger = NullLogger(),
     ) -> None:
         self._encoder = encoder
         self.diameter = wheel_diameter
+        self.gear_ratio = gear_ratio
         self.logger = logger
 
     def reset_tracking(self) -> None:
@@ -81,4 +87,4 @@ class LinearOdometry:
         """
         Returns relative distance traveled in the direction of the tracking wheel.
         """
-        return self.diameter * math.pi * self._encoder.position(TURNS)
+        return self.diameter * math.pi * self._encoder.position(TURNS) * self.gear_ratio
