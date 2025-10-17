@@ -5,9 +5,19 @@ Contains the AutonomousControl class for autonomous code.
 from vex import *
 
 import mechanisms.odometry as odometry
-from display import Logger, NullLogger
+from utils.display import Logger, NullLogger
+from utils.enums import IntakeTargets
 from mechanisms.hopper import Hopper
 from mechanisms.intake import Intake
+from mechanisms.aligner import GoalAligner
+
+
+class AutonomousExit(Exception):
+    """
+    Exception raised to stop autonomous code when the driver control period starts.
+    """
+
+    pass
 
 
 class AutonomousControl:
@@ -30,6 +40,7 @@ class AutonomousControl:
         gps: Gps,
         block_color: Optical,
         tube_pneumatic: DigitalOut,
+        aligner: GoalAligner,
         tracking: odometry.DrivetrainOdometry | odometry.LinearOdometry,
         drivetrain_velocity: int,
         turn_velocity: int,
@@ -62,6 +73,7 @@ class AutonomousControl:
         self.gps = gps
         self.block_color = block_color
         self.tube_pneumatic = tube_pneumatic
+        self.aligner = aligner
 
         self.tracking = tracking
 
@@ -70,20 +82,44 @@ class AutonomousControl:
 
         self.logger = logger
 
+        self._stop = False
+
     # TODO: Combine these functions into one that has direction parameters
     def position_1_match_auton(self) -> None:
-        pass
+        try:
+            self.aligner.toggle()
+        except AutonomousExit as e:
+            self.logger.log(__name__, e.args[0])
 
     def position_2_match_auton(self) -> None:
-        pass
+        try:
+            self.drive(FORWARD, 200.0, 1)
+        except AutonomousExit as e:
+            self.logger.log(__name__, e.args[0])
 
     def position_3_match_auton(self) -> None:
-        self.intake.start_intake(100)
-        self.drive(FORWARD, 30.0, 50)
-        self.pivot_turn(180, RIGHT, 25)
+        try:
+            # Distances inaccurate
+            self.pivot_turn(5, RIGHT, 10)
+            self.intake.start_intake()
+            self.drive(FORWARD, 40.0, 50)
+            wait(1.5, SECONDS)
+            self.drive(REVERSE, 35.0, 50)
+            self.intake.stop_intake()
+            self.pivot_turn(85, RIGHT, 20)
+            self.drive(FORWARD, 20.0, 50)
+            self.pivot_turn(90, LEFT, 20)
+            self.aligner.toggle
+            self.drive(FORWARD, 10.0, 30)
+            self.intake.output(IntakeTargets.HIGH)
+        except AutonomousExit as e:
+            self.logger.log(__name__, e.args[0])
 
     def position_4_match_auton(self) -> None:
-        pass
+        self.drive(FORWARD, 30, 30)
+        self.drive(REVERSE, 30, 30)
+        self.drive(FORWARD, 30, 30)
+        self.drive(REVERSE, 30, 30)
 
     def drive(
         self,
@@ -94,8 +130,10 @@ class AutonomousControl:
         """
         Autonomously drive a specified distance at a specified velocity.
         """
+        if self._stop:
+            raise AutonomousExit("Autonomous exit during drive")
 
-        Thread(self.tracking.start_tracking)
+        self.tracking.reset_tracking()
 
         for motor in self.drivetrain:
             motor.set_velocity(
@@ -117,14 +155,24 @@ class AutonomousControl:
         """
         # NOTE Relies only on the inertial sensor for now.
 
+        if self._stop:
+            raise AutonomousExit("Autonomous exit during pivot turn")
+
         if direction == TurnType.UNDEFINED:
             return
 
         self.inertial.reset_heading()
 
-        turn_target = degrees if direction == TurnType.RIGHT else -degrees + 360
-        lower_turn_difference = turn_target - turn_target * 0.025
-        upper_turn_difference = turn_target + turn_target * 0.025
+        # example right 90 degrees
+        turn_target = (
+            degrees if direction == TurnType.RIGHT else -degrees + 360
+        )  # converted to 270 deg
+        lower_turn_difference = (
+            turn_target - turn_target * 0.025
+        ) % 360  # 270 - 6.75 = 263.25
+        upper_turn_difference = (
+            turn_target + turn_target * 0.025
+        ) % 360  # 270 + 6.75 = 276.25
         # Allow for x% of error.
         # This does mean that if it's not detected the first time, it will
         # make a 360 degree rotation before trying to stop again.
@@ -148,6 +196,18 @@ class AutonomousControl:
 
         for motor in self.drivetrain:
             motor.stop()
+
+    def exit_autonomous(self) -> None:
+        """
+        Stop all mechanisms and exit all autonomous routines.
+        """
+        # raise AutonomousExit in drivetrain functions if routine not finished
+        self._stop = True
+        for motor in self.drivetrain:
+            motor.stop()
+        self.hopper.stop()
+        self.intake.stop_intake()
+        self.logger.log(__name__, "Autonomous code stopped")
 
     @staticmethod
     def i_do_nothing_replace_me(*args, **kwargs) -> None:

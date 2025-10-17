@@ -6,14 +6,15 @@ Runs VEXCode pregenerated code and sets up boilerplate.
 from vex import *
 import urandom  # type: ignore
 
-import config
+import utils.config as config
 
 import mechanisms.odometry as odometry
-from display import Logger, Selection, SelectionButton
+from utils.display import Logger, NullLogger, Selection, SelectionButton
 from mechanisms.hopper import Hopper
 from mechanisms.intake import Intake
-from auto.autonomous_control import AutonomousControl
-from driver.driver_control import DriverControl
+from mechanisms.aligner import GoalAligner
+from control.autonomous_control import AutonomousControl
+from control.driver_control import DriverControl
 
 
 def setup() -> None:
@@ -42,15 +43,7 @@ def setup() -> None:
     print("\033[2J")
 
 
-def main() -> None:
-    # TODO: clean this up and move it all out of main
-
-    setup()
-
-    logger = Logger(config.brain)
-
-    # Calibration
-
+def calibrate(logger: Logger | NullLogger) -> None:
     logger.log(__name__, "Calibrating GPS sensor")
     config.gps_sensor.calibrate()
 
@@ -58,24 +51,36 @@ def main() -> None:
     config.inertial_sensor.calibrate()
 
     config.optical_sensor.set_light(100)
-
-    # TODO Have a way to recalibrate after a field adjustment or similar
+    # TODO (low-priority) Have a way to recalibrate after a field adjustment or similar
     # Right now you can just restart the code
-    # TODO have a set starting position for the GPS sensor
 
-    # Subsystems and components
 
+def main() -> None:
+    logger = NullLogger()
+    setup()
+    calibrate(logger)
+
+    # Subsystems, components, and control
     hopper = Hopper(config.hopper, config.HOPPER_DEGREES_PER_BLOCK, logger=logger)
     intake = Intake(
         config.intake_bottom, config.intake_top, hopper, config.controller_1, logger
     )
+    Thread(intake.start_control_loop)
+    aligner = GoalAligner(config.aligner_out_port, logger)
 
     driver = DriverControl(
         "split_arcade",
         "standard",
+        config.front_right,
+        config.middle_right,
+        config.back_right,
+        config.front_left,
+        config.middle_left,
+        config.back_left,
         config.controller_1,
         intake,
         hopper,
+        aligner,
         logger,
         velocity=100,
         turn_velocity=69.42067,
@@ -104,6 +109,7 @@ def main() -> None:
         gps=config.gps_sensor,
         block_color=config.block_color_sensor,
         tube_pneumatic=config.henry,
+        aligner=aligner,
         tracking=tracking,
         drivetrain_velocity=100,
         turn_velocity=50,
@@ -111,6 +117,8 @@ def main() -> None:
     )
 
     logger.log(__name__, "All subsystems successfully initalized")
+
+    # Start selection screen
 
     selection = Selection(
         config.brain,
@@ -138,10 +146,15 @@ def main() -> None:
 
             logger.log(__name__, "Starting autonomous code")
             auton_function()
+            Thread(intake.start_control_loop)
+
+    def start_driver() -> None:
+        auto.exit_autonomous()
+        driver.start_control_loop()
 
     config.brain.screen.pressed(get_auton)
 
-    Competition(driver.start_control_loop, start_auton)
+    Competition(start_driver, start_auton)
 
 
 if __name__ == "__main__":

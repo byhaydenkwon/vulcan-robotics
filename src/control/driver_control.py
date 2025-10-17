@@ -4,12 +4,12 @@ Contains the DriverControl class with related drive and control functions.
 
 from vex import *
 
-import config
-
-from display import Logger, NullLogger
+from utils.enums import IntakeTargets
+from utils.display import Logger, NullLogger
 
 from mechanisms.hopper import Hopper
 from mechanisms.intake import Intake
+from mechanisms.aligner import GoalAligner
 
 
 class DriverControl:
@@ -22,14 +22,28 @@ class DriverControl:
         self,
         drive_mode: str,
         mechanism_mode: str,
+        front_right: Motor,
+        middle_right: Motor,
+        back_right: Motor,
+        front_left: Motor,
+        middle_left: Motor,
+        back_left: Motor,
         controller: Controller,
         intake: Intake,
         hopper: Hopper,
+        aligner: GoalAligner,
         logger: Logger | NullLogger = NullLogger(),
         **kwargs,
     ) -> None:
         self.drive_modes = {"split_arcade": self._split_arcade}
         self.mechanism_modes = {"standard": self._standard_mechanisms}
+
+        self.front_right = front_right
+        self.middle_right = middle_right
+        self.back_right = back_right
+        self.front_left = front_left
+        self.middle_left = middle_left
+        self.back_left = back_left
 
         self._drive_mode = self.drive_modes[drive_mode]
         self._drive_mode_kwargs = kwargs
@@ -40,6 +54,7 @@ class DriverControl:
         self.controller = controller
         self.intake = intake
         self.hopper = hopper
+        self.aligner = aligner
 
         self.logger = logger
 
@@ -47,7 +62,6 @@ class DriverControl:
         """
         Starts the driver control loop. Stops on control mode change or manual stop.
         """
-        # TODO also implement non-driver control loop
 
         self._mechanism_mode()
         self.logger.log(__name__, "Starting driver control loop")
@@ -63,7 +77,8 @@ class DriverControl:
                 )
                 self._next_stop_control = True
             self._drive_mode(**self._drive_mode_kwargs)
-            sleep(10)
+
+            sleep(2)
 
     def stop_control_loop(self) -> None:
         """
@@ -99,31 +114,44 @@ class DriverControl:
         Provide velocity and turn velocity as percentages.
         """
 
-        # TODO later: make these use class variables, not config
+        y_input = self.controller.axis3.position() * velocity / 100
+        x_input = self.controller.axis1.position() * turn_velocity / 100
 
-        y_input = config.controller_1.axis3.position() * velocity / 100
-        x_input = config.controller_1.axis1.position() * turn_velocity / 100
-
-        for motor in [config.front_right, config.middle_right, config.back_right]:
+        for motor in [self.front_right, self.middle_right, self.back_right]:
             motor.set_velocity(y_input - x_input, PERCENT)
             motor.spin(FORWARD)
 
-        for motor in [config.front_left, config.middle_left, config.back_left]:
+        for motor in [self.front_left, self.middle_left, self.back_left]:
             motor.set_velocity(y_input + x_input, PERCENT)
             motor.spin(FORWARD)
 
     def _standard_mechanisms(self) -> None:
-        self.controller.buttonR1.pressed(lambda: self.intake.start_intake(100))
-        self.controller.buttonR1.released(lambda: self.intake.stop_intake())
+        self.controller.buttonR1.pressed(self.intake.start_intake)
+        self.controller.buttonR1.released(
+            lambda: self.intake.stop_command(IntakeTargets.INTAKE)
+        )
 
-        self.controller.buttonR2.pressed(lambda: self.intake.output_middle_goal(100))
-        self.controller.buttonR2.released(self.intake.stop_intake)
+        self.controller.buttonR2.pressed(lambda: self.intake.output(IntakeTargets.LOW))
+        self.controller.buttonR2.released(
+            lambda: self.intake.stop_command(IntakeTargets.LOW)
+        )
 
-        self.controller.buttonL1.pressed(lambda: self.intake.output_top_goal(100))
-        self.controller.buttonL1.released(self.intake.stop_intake)
+        self.controller.buttonL1.pressed(lambda: self.intake.output(IntakeTargets.HIGH))
+        self.controller.buttonL1.released(
+            lambda: self.intake.stop_command(IntakeTargets.HIGH)
+        )
 
-        self.controller.buttonL2.pressed(lambda: self.intake.output_bottom_goal(100))
-        self.controller.buttonL2.released(self.intake.stop_intake)
+        self.controller.buttonL2.pressed(
+            lambda: self.intake.output(IntakeTargets.MIDDLE)
+        )
+        self.controller.buttonL2.released(
+            lambda: self.intake.stop_command(IntakeTargets.MIDDLE)
+        )
+
+        # A just-in-case backup button that immediately stops the entire intake:
+        self.controller.buttonDown.pressed(lambda: self.intake.stop_intake())
+
+        self.controller.buttonA.pressed(lambda: self.aligner.toggle())
 
         # y: future wing control
         # left: future tube intake

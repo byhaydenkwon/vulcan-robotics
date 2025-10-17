@@ -2,9 +2,7 @@ import math
 
 from vex import *
 
-from display import Logger, NullLogger
-
-# TODO make planar and absolute odometry, make a base class for odometry and inherit
+from utils.display import Logger, NullLogger
 
 
 class DrivetrainOdometry:
@@ -12,6 +10,9 @@ class DrivetrainOdometry:
     In the absence of tracking wheels, uses drivetrain motor
     positions to calculate the average linear distance
     traveled by each wheel.
+
+    gear_ratio is the amount of revolutions the drivetrain output has for
+    each motor revolution.
     """
 
     # Please do not implement turns into this.
@@ -26,15 +27,9 @@ class DrivetrainOdometry:
         middle_left: Motor,
         back_left: Motor,
         wheel_diameter: float,
+        gear_ratio: float = 0.625,
         logger: Logger | NullLogger = NullLogger(),
     ):
-        self.front_right = front_right
-        self.middle_right = middle_right
-        self.back_right = back_right
-        self.front_left = front_left
-        self.middle_left = middle_left
-        self.back_left = back_left
-
         self.drivetrain = {
             "back_right": back_right,
             "back_left": back_left,
@@ -44,45 +39,26 @@ class DrivetrainOdometry:
             "front_left": front_left,
         }
 
+        self.gear_ratio = gear_ratio
         self.diameter = wheel_diameter
-
         self.logger = logger
 
-        self._next_stop_tracking = False
-        self.revolutions = {name: 0.0 for name in self.drivetrain.keys()}
-
-    def start_tracking(self) -> None:
+    def reset_tracking(self) -> None:
         """
-        Resets and starts tracking.
+        Resets tracking values.
         """
         for motor in self.drivetrain.values():
             motor.reset_position()
-        self.logger.log(__name__, "Drivetrain odometry (re)-started")
-
-        # {"back_right": 0.0, "back_left": 0.0, ...}
-        previous_revolutions = {name: 0.0 for name in self.drivetrain.keys()}
-
-        while not self._next_stop_tracking:
-            for name, motor in self.drivetrain.items():
-                pos = motor.position(TURNS)
-
-                # get forward distance between old and new positions, wrapping around 1
-                # ex. (0.5 - 0.4) % 1 = 0.1 % 1 = 0.1
-                # (0.1 - 0.9) % 1 = -0.8 % 1 = 0.2
-                # note: floating-point inaccuracies may lead to a
-                # rounding error of about 10E-16
-                self.revolutions[name] += (pos - previous_revolutions[name]) % 1
-                previous_revolutions[name] = pos
-            sleep(20)
-
-    def stop_tracking(self) -> None:
-        self._next_stop_tracking = True
-        self.logger.log(__name__, "Drivetrain odometry stopped")
+        self.logger.log(__name__, "Drivetrain odometry reset")
 
     def get_distance_traveled(self) -> float:
-        avg_revolutions = sum(self.revolutions.values()) / len(self.revolutions)
-        # gear ratio is 1:1.6 driven:driver
-        return avg_revolutions * 0.6 * self.diameter * math.pi
+        """
+        Returns distance traveled by drivetrain wheels.
+        """
+        avg_revolutions = sum(
+            [motor.position(TURNS) for motor in self.drivetrain.values()]
+        ) / len(self.drivetrain)
+        return abs(avg_revolutions * self.gear_ratio * self.diameter * math.pi)
 
 
 class LinearOdometry:
@@ -95,21 +71,20 @@ class LinearOdometry:
         self,
         encoder: Rotation,
         wheel_diameter: float,
+        gear_ratio: float,
         logger: Logger | NullLogger = NullLogger(),
     ) -> None:
         self._encoder = encoder
         self.diameter = wheel_diameter
+        self.gear_ratio = gear_ratio
         self.logger = logger
 
-    def start_tracking(self) -> None:
+    def reset_tracking(self) -> None:
         self._encoder.reset_position()
-        self.logger.log(__name__, "Linear odometry (re-)started")
-
-    def stop_tracking(self, *args, **kwargs) -> None:
-        self.logger.log(__name__, "Linear odometry stopped")
+        self.logger.log(__name__, "Linear odometry reset")
 
     def get_distance_traveled(self) -> float:
         """
         Returns relative distance traveled in the direction of the tracking wheel.
         """
-        return self.diameter * math.pi * self._encoder.position(RotationUnits.REV)
+        return self.diameter * math.pi * self._encoder.position(TURNS) * self.gear_ratio
