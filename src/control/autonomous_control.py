@@ -10,7 +10,6 @@ from utils.enums import IntakeTargets
 from mechanisms.hopper import Hopper
 from mechanisms.intake import Intake
 from mechanisms.aligner import GoalAligner
-from utils import config as config
 
 
 class AutonomousExit(Exception):
@@ -100,6 +99,7 @@ class AutonomousControl:
 
     def position_3_match_auton(self) -> None:
         try:
+            # Distances inaccurate
             self.pivot_turn(5, RIGHT, 10)
             self.intake.start_intake()
             self.drive(FORWARD, 40.0, 50)
@@ -107,11 +107,11 @@ class AutonomousControl:
             self.drive(REVERSE, 35.0, 50)
             self.intake.stop_intake()
             self.pivot_turn(85, RIGHT, 20)
-            # self.drive(FORWARD, 20.0, 50)
-            # self.pivot_turn(90, LEFT, 20)
-            # self.aligner.toggle
-            # self.drive(FORWARD, 10.0, 30)
-            # self.intake.output(IntakeTargets.HIGH)
+            self.drive(FORWARD, 20.0, 50)
+            self.pivot_turn(90, LEFT, 20)
+            self.aligner.toggle
+            self.drive(FORWARD, 10.0, 30)
+            self.intake.output(IntakeTargets.HIGH)
         except AutonomousExit as e:
             self.logger.log(__name__, e.args[0])
 
@@ -133,7 +133,7 @@ class AutonomousControl:
         if self._stop:
             raise AutonomousExit("Autonomous exit during drive")
 
-        Thread(lambda: self.tracking.start_tracking(direction))
+        self.tracking.reset_tracking()
 
         for motor in self.drivetrain:
             motor.set_velocity(
@@ -142,17 +142,10 @@ class AutonomousControl:
             motor.spin(direction, velocity, PERCENT)
 
         while self.tracking.get_distance_traveled() < distance:
-            config.controller_1.screen.print(
-                "FORWARD" if direction == FORWARD else "REVERSE"
-            )
-            config.controller_1.screen.set_cursor(1, 1)
+            pass
 
         for motor in self.drivetrain:
             motor.stop()
-
-        self.tracking.reset_tracking()
-
-        wait(30)
 
     def pivot_turn(
         self, degrees: float, direction: TurnType.TurnType, velocity: int | None
@@ -214,7 +207,6 @@ class AutonomousControl:
             motor.stop()
         self.hopper.stop()
         self.intake.stop_intake()
-        self.tracking.stop_tracking()
         self.logger.log(__name__, "Autonomous code stopped")
 
     @staticmethod
