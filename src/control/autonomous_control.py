@@ -93,33 +93,30 @@ class AutonomousControl:
 
     def position_2_match_auton(self) -> None:
         try:
-            self.drive(FORWARD, 200.0, 1)
+            self.pivot_turn(5, RIGHT, 10)
         except AutonomousExit as e:
             self.logger.log(__name__, e.args[0])
 
     def position_3_match_auton(self) -> None:
         try:
-            # Distances inaccurate
-            self.pivot_turn(5, RIGHT, 10)
+            self.pivot_turn(5, RIGHT, 5)
             self.intake.start_intake()
-            self.drive(FORWARD, 40.0, 50)
+            self.drive(FORWARD, 40.0, 25)
             wait(1.5, SECONDS)
-            self.drive(REVERSE, 35.0, 50)
+            self.drive(REVERSE, 35.0, 25)
             self.intake.stop_intake()
-            self.pivot_turn(85, RIGHT, 20)
-            self.drive(FORWARD, 20.0, 50)
+            self.pivot_turn(80, RIGHT, 20)
+            self.drive(FORWARD, 25, 25)
             self.pivot_turn(90, LEFT, 20)
-            self.aligner.toggle
-            self.drive(FORWARD, 10.0, 30)
+            self.aligner.extend()
+            self.drive(FORWARD, 20.0, 30)
             self.intake.output(IntakeTargets.HIGH)
+            self.aligner.retract()
         except AutonomousExit as e:
             self.logger.log(__name__, e.args[0])
 
     def position_4_match_auton(self) -> None:
-        self.drive(FORWARD, 30, 30)
-        self.drive(REVERSE, 30, 30)
-        self.drive(FORWARD, 30, 30)
-        self.drive(REVERSE, 30, 30)
+        self.drive(FORWARD, 40, 100)
 
     def drive(
         self,
