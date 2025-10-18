@@ -90,10 +90,13 @@ class Intake:
         Starts the intake for the specified duration in milliseconds.
         Runs indefinitely if no duration is provided.
         """
-        self.stack.append(IntakeStates.INTAKING)
+
+        if IntakeStates.INTAKING not in self.stack:
+            self.stack.append(IntakeStates.INTAKING)
+
         if duration:
             timer = Timer()
-            timer.event(self.stop_intake, duration)
+            timer.event(lambda: self.stop_command(IntakeTargets.INTAKE), duration)
 
         self.logger.log(
             __name__,
@@ -112,7 +115,8 @@ class Intake:
             self.logger.log(__name__, "PROVIDED OUTPUT TARGET NOT IN STATES")
             return
 
-        self.stack.append(new_state)
+        if new_state not in self.stack:
+            self.stack.append(new_state)
 
         if duration:
             timer = Timer()
