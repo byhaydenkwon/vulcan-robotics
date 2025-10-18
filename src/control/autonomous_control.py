@@ -121,6 +121,10 @@ class AutonomousControl:
         self.drive(FORWARD, 30, 30)
         self.drive(REVERSE, 30, 30)
 
+    def skills_auton(self) -> None:
+        self.intake.output(IntakeTargets.LOW)
+        self.drive(FORWARD, 20, 100)
+
     def drive(
         self,
         direction: DirectionType.DirectionType,

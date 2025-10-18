@@ -128,6 +128,7 @@ def main() -> None:
             SelectionButton(0, 136, 120, 272): auto.position_2_match_auton,  # 2 Out
             SelectionButton(360, 0, 480, 120): auto.position_3_match_auton,  # 3 Out
             SelectionButton(360, 136, 480, 272): auto.position_4_match_auton,  # 4 Out
+            SelectionButton(120, 0, 360, 272): auto.skills_auton,  # Skills
         },
     )
 
