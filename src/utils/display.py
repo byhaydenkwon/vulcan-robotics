@@ -27,30 +27,89 @@ class SelectionButton:
 
 class Selection:
     """
-    Initial selection screen for autonomous or skills code.
+    A singular selection screen that takes SelectionButtons and Callables.
+    """
+
+    def __init__(
+        self,
+        selection_image_path: str,
+        buttons: dict[SelectionButton, Callable],  # {SelectionButton: auton function}
+    ) -> None:
+        self.buttons = buttons
+
+        self.image_path = selection_image_path
+        # NOTE Image sizes should be 480x240. Top 32 lines are taken
+        # for the V5 status bar; see
+        # https://www.vexforum.com/t/introducing-a-new-way-to-display-images-on-your-vex-v5-brain-no-micro-sd-card-required/121687/2
+
+    def pressed(self, x: int, y: int) -> Callable | None:
+        """
+        Return which button has been pressed, or None.
+        """
+
+        for button, auton_function in self.buttons.items():
+            if button.pressed(x, y):
+                return auton_function
+
+
+class UserInterface:
+    """
+    A V5 Brain Screen user interface lifecycle taking multiple Selections in sequence.
     """
 
     def __init__(
         self,
         brain: Brain,
-        selection_image_path: str,
-        buttons: dict[SelectionButton, Callable],  # {SelectionButton, auton function}
+        selections: dict[str, Selection],
+        confirm_image_path: str | None = None,
     ) -> None:
-        self._brain = brain
-        self.buttons = buttons
+        self.brain = brain
+        self.selections = selections
+        self.confirm_image_path = confirm_image_path
 
-        self._brain.screen.draw_image_from_file(selection_image_path, 0, 0)
+        self.results: dict[str, Callable | None] = {
+            label: None for label in self.selections.keys()
+        }
+        self.done = False
 
-    def pressed(self) -> Callable | None:
+        self._next_stop_control = False
+
+    def start_ui_loop(self) -> None:
         """
-        Return which button has been pressed, or None.
+        Waits for input on each selection screen, then moves on to the next one.
         """
-        x = self._brain.screen.x_position()
-        y = self._brain.screen.y_position()
+        for label, selection in self.selections.items():
+            if self._next_stop_control:
+                break
 
-        for button, auton_function in self.buttons.items():
-            if button.pressed(x, y):
-                return auton_function
+            self.brain.screen.draw_image_from_file(selection.image_path, 0, 32)
+            while not self._next_stop_control:
+                if self.brain.screen.pressing():
+                    self.results[label] = selection.pressed(
+                        self.brain.screen.x_position(), self.brain.screen.y_position()
+                    )
+                    self._next_stop_control = True
+                wait(200, MSEC)
+
+        if self.confirm_image_path:
+            self.brain.screen.draw_image_from_file(self.confirm_image_path, 0, 32)
+        else:
+            self.brain.screen.clear_screen(Color.GREEN)
+
+        self.done = True
+
+    def stop_ui_loop(self) -> None:
+        """
+        Prematurely stops the UI loop.
+        """
+        self._next_stop_control = True
+
+    def get_ui_selection_results(self) -> dict[str, Callable | None]:
+        """
+        Returns current state of UI selection results.
+        Is only complete if UserInterface.done is True.
+        """
+        return self.results
 
 
 class Logger:
