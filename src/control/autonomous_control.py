@@ -7,7 +7,6 @@ from vex import *
 import mechanisms.odometry as odometry
 from utils.display import Logger, NullLogger
 from utils.enums import IntakeTargets
-from mechanisms.hopper import Hopper
 from mechanisms.intake import Intake
 from mechanisms.aligner import GoalAligner
 
@@ -33,7 +32,6 @@ class AutonomousControl:
         front_left: Motor,
         middle_left: Motor,
         back_left: Motor,
-        hopper: Hopper,
         intake: Intake,
         inertial: Inertial,
         optical: Optical,
@@ -66,7 +64,6 @@ class AutonomousControl:
         self.right_drivetrain = [back_right, middle_right, front_right]
         self.left_drivetrain = [back_left, middle_left, front_left]
 
-        self.hopper = hopper
         self.intake = intake
         self.inertial = inertial
         self.optical = optical
@@ -205,7 +202,6 @@ class AutonomousControl:
         self._stop = True
         for motor in self.drivetrain:
             motor.stop()
-        self.hopper.stop()
         self.intake.stop_intake()
         self.logger.log(__name__, "Autonomous code stopped")
 

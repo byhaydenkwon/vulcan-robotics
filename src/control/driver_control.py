@@ -7,7 +7,6 @@ from vex import *
 from utils.enums import IntakeTargets
 from utils.display import Logger, NullLogger
 
-from mechanisms.hopper import Hopper
 from mechanisms.intake import Intake
 from mechanisms.aligner import GoalAligner
 
@@ -30,7 +29,6 @@ class DriverControl:
         back_left: Motor,
         controller: Controller,
         intake: Intake,
-        hopper: Hopper,
         aligner: GoalAligner,
         logger: Logger | NullLogger = NullLogger(),
         **kwargs,
@@ -53,7 +51,6 @@ class DriverControl:
 
         self.controller = controller
         self.intake = intake
-        self.hopper = hopper
         self.aligner = aligner
 
         self.logger = logger
