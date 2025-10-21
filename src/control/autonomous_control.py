@@ -84,39 +84,25 @@ class AutonomousControl:
 
         self._stop = False
 
-    # TODO: Combine these functions into one that has direction parameters
-    def position_1_match_auton(self) -> None:
+    def match_auton(self, goal_turn_direction: TurnType.TurnType) -> None:
+        """
+        RIGHT for positions 2 and 3; LEFT for positions 1 and 4.
+        """
         try:
-            self.aligner.toggle()
-        except AutonomousExit as e:
-            self.logger.log(__name__, e.args[0])
-
-    def position_2_match_auton(self) -> None:
-        try:
-            self.pivot_turn(5, RIGHT, 10)
-        except AutonomousExit as e:
-            self.logger.log(__name__, e.args[0])
-
-    def position_3_match_auton(self) -> None:
-        try:
-            self.pivot_turn(5, RIGHT, 5)
+            self.pivot_turn(5, goal_turn_direction, 7)
             self.intake.start_intake()
-            self.drive(FORWARD, 40.0, 25)
-            wait(1.5, SECONDS)
+            self.drive(FORWARD, 40.0, 35)
+            wait(1, SECONDS)
             self.drive(REVERSE, 35.0, 25)
             self.intake.stop_intake()
-            self.pivot_turn(80, RIGHT, 20)
-            self.drive(FORWARD, 25, 25)
-            self.pivot_turn(90, LEFT, 20)
+            self.pivot_turn(75, goal_turn_direction, 20)
+            self.drive(FORWARD, 28.5, 25)
+            self.pivot_turn(90, LEFT if goal_turn_direction is RIGHT else RIGHT, 20)
             self.aligner.extend()
-            self.drive(FORWARD, 20.0, 30)
+            self.drive(FORWARD, 20.0, 50)
             self.intake.output(IntakeTargets.HIGH)
-            self.aligner.retract()
         except AutonomousExit as e:
             self.logger.log(__name__, e.args[0])
-
-    def position_4_match_auton(self) -> None:
-        self.drive(FORWARD, 40, 100)
 
     def drive(
         self,
