@@ -9,7 +9,7 @@ import urandom  # type: ignore
 import utils.config as config
 
 import mechanisms.odometry as odometry
-from utils.display import Logger, NullLogger, Selection, SelectionButton
+from utils.display import Logger, NullLogger, Selection, SelectionButton, UserInterface
 from mechanisms.hopper import Hopper
 from mechanisms.intake import Intake
 from mechanisms.aligner import GoalAligner
@@ -60,13 +60,16 @@ def main() -> None:
     setup()
     calibrate(logger)
 
-    # Subsystems, components, and control
+    # Subsystems and components
+
     hopper = Hopper(config.hopper, config.HOPPER_DEGREES_PER_BLOCK, logger=logger)
     intake = Intake(
         config.intake_bottom, config.intake_top, hopper, config.controller_1, logger
     )
     Thread(intake.start_control_loop)
     aligner = GoalAligner(config.aligner_out_port, logger)
+
+    # Control
 
     driver = DriverControl(
         "split_arcade",
@@ -118,10 +121,9 @@ def main() -> None:
 
     logger.log(__name__, "All subsystems successfully initalized")
 
-    # Start selection screen
+    # Selection screens and user interface
 
-    selection = Selection(
-        config.brain,
+    auto_selection = Selection(
         "images/vulcan-selection-screen.png",
         {
             SelectionButton(0, 0, 120, 136): auto.position_1_match_auton,  # 1 Out
@@ -132,27 +134,39 @@ def main() -> None:
         },
     )
 
-    auton_function: Callable | None = None
+    win_point_selection = Selection(
+        "images/vulcan-wp-selection-screen.png",
+        {
+            SelectionButton(0, 0, 240, 272): auto.i_do_nothing_replace_me,
+            SelectionButton(240, 0, 480, 272): auto.i_do_nothing_replace_me,
+        },
+    )
 
-    def get_auton() -> None:
-        nonlocal auton_function
-        auton_function = selection.pressed()
-        if auton_function is not None:
-            config.brain.screen.clear_screen(Color.GREEN)
+    brain_interface = UserInterface(
+        config.brain, {"auto": auto_selection, "win_point": win_point_selection}, None
+    )
+
+    Thread(brain_interface.start_ui_loop)
+
+    interface_result = brain_interface.get_ui_selection_results()
+
+    def handle_input() -> None:
+        nonlocal interface_result
+        interface_result = brain_interface.get_ui_selection_results()
 
     def start_auton() -> None:
-        if auton_function is not None:
+        if brain_interface.done:
             logging_thread = Thread(logger.start_print_loop)
-            # start the print loop only after the selection ends
+            # start the print loop only after the interface ends
 
-            logger.log(__name__, "Starting autonomous code")
-            auton_function()
+        if callable(interface_result["auto"]):
+            interface_result["auto"]()
 
     def start_driver() -> None:
         auto.exit_autonomous()
         driver.start_control_loop()
 
-    config.brain.screen.pressed(get_auton)
+    config.brain.screen.pressed(handle_input)
 
     Competition(start_driver, start_auton)
 
