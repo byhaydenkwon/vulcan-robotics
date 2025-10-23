@@ -79,10 +79,7 @@ class UserInterface:
         Waits for input on each selection screen, then moves on to the next one.
         """
         for label, selection in self.selections.items():
-            if self._next_stop_control:
-                break
-
-            self.brain.screen.draw_image_from_file(selection.image_path, 0, 32)
+            self.brain.screen.draw_image_from_file(selection.image_path, 0, 0)
             while not self._next_stop_control:
                 if self.brain.screen.pressing():
                     self.results[label] = selection.pressed(
@@ -91,8 +88,10 @@ class UserInterface:
                     self._next_stop_control = True
                 wait(200, MSEC)
 
+            self._next_stop_control = False
+
         if self.confirm_image_path:
-            self.brain.screen.draw_image_from_file(self.confirm_image_path, 0, 32)
+            self.brain.screen.draw_image_from_file(self.confirm_image_path, 0, 0)
         else:
             self.brain.screen.clear_screen(Color.GREEN)
 
