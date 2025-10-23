@@ -141,6 +141,9 @@ def main() -> None:
 
     def start_auton() -> None:
         if auton_function is not None:
+            for motor in config.drivetrain_motors:
+                motor.set_stopping(HOLD)
+
             logging_thread = Thread(logger.start_print_loop)
             # start the print loop only after the selection ends
 
@@ -150,6 +153,8 @@ def main() -> None:
 
     def start_driver() -> None:
         auto.exit_autonomous()
+        for motor in config.drivetrain_motors:
+            motor.set_stopping(BRAKE)
         driver.start_control_loop()
 
     config.brain.screen.pressed(get_auton)
