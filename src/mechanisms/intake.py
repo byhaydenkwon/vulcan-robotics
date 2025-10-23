@@ -7,8 +7,6 @@ from vex import *
 from utils.enums import IntakeStates, IntakeStateValue, IntakeTargets, IntakeTargetValue
 from utils.display import Logger, NullLogger
 
-from mechanisms.hopper import Hopper
-
 
 class Intake:
     """
@@ -19,13 +17,13 @@ class Intake:
         self,
         bottom_motor: Motor,
         top_motor: Motor,
-        hopper: Hopper,
+        hopper_motor: Motor,
         controller: Controller,
         logger: Logger | NullLogger = NullLogger(),
     ) -> None:
         self.bottom = bottom_motor
         self.top = top_motor
-        self.hopper = hopper
+        self.hopper = hopper_motor
         self.controller = controller
         self.logger = logger
 
@@ -59,20 +57,19 @@ class Intake:
             elif active == IntakeStates.INTAKING:
                 self.bottom.spin(FORWARD, 100, PERCENT)
                 self.top.stop()
-                self.hopper.intake()
+                self.hopper.spin(FORWARD, 100, PERCENT)
             elif active == IntakeStates.OUTTAKING_LOW:
                 self.bottom.spin(REVERSE, 100, PERCENT)
                 self.top.stop()
-                self.hopper.flush()
+                self.hopper.spin(REVERSE, 100, PERCENT)
             elif active == IntakeStates.OUTTAKING_MIDDLE:
                 self.bottom.spin(FORWARD, 100, PERCENT)
                 self.top.spin(FORWARD, 100, PERCENT)
-                self.hopper.flush()
+                self.hopper.spin(REVERSE, 100, PERCENT)
             elif active == IntakeStates.OUTTAKING_HIGH:
                 self.bottom.spin(FORWARD, 100, PERCENT)
                 self.top.spin(REVERSE, 100, PERCENT)
-                self.hopper.flush()
-
+                self.hopper.spin(REVERSE, 100, PERCENT)
             if len(self.stack) > 4:
                 self.stack = self.stack[4:]
                 # this prevents issues when the buttons are spammed extremely quickly
@@ -90,10 +87,13 @@ class Intake:
         Starts the intake for the specified duration in milliseconds.
         Runs indefinitely if no duration is provided.
         """
-        self.stack.append(IntakeStates.INTAKING)
+
+        if IntakeStates.INTAKING not in self.stack:
+            self.stack.append(IntakeStates.INTAKING)
+
         if duration:
             timer = Timer()
-            timer.event(self.stop_intake, duration)
+            timer.event(lambda: self.stop_command(IntakeTargets.INTAKE), duration)
 
         self.logger.log(
             __name__,
@@ -112,7 +112,8 @@ class Intake:
             self.logger.log(__name__, "PROVIDED OUTPUT TARGET NOT IN STATES")
             return
 
-        self.stack.append(new_state)
+        if new_state not in self.stack:
+            self.stack.append(new_state)
 
         if duration:
             timer = Timer()

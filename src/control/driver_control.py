@@ -7,7 +7,6 @@ from vex import *
 from utils.enums import IntakeTargets
 from utils.display import Logger, NullLogger
 
-from mechanisms.hopper import Hopper
 from mechanisms.intake import Intake
 from mechanisms.aligner import GoalAligner
 
@@ -30,7 +29,6 @@ class DriverControl:
         back_left: Motor,
         controller: Controller,
         intake: Intake,
-        hopper: Hopper,
         aligner: GoalAligner,
         logger: Logger | NullLogger = NullLogger(),
         **kwargs,
@@ -53,7 +51,6 @@ class DriverControl:
 
         self.controller = controller
         self.intake = intake
-        self.hopper = hopper
         self.aligner = aligner
 
         self.logger = logger
@@ -62,8 +59,6 @@ class DriverControl:
         """
         Starts the driver control loop. Stops on control mode change or manual stop.
         """
-
-        self._mechanism_mode()
         self.logger.log(__name__, "Starting driver control loop")
 
         initial_drive_mode = self._drive_mode
@@ -77,6 +72,7 @@ class DriverControl:
                 )
                 self._next_stop_control = True
             self._drive_mode(**self._drive_mode_kwargs)
+            self._mechanism_mode()
 
             sleep(2)
 
@@ -126,33 +122,34 @@ class DriverControl:
             motor.spin(FORWARD)
 
     def _standard_mechanisms(self) -> None:
-        self.controller.buttonR1.pressed(self.intake.start_intake)
-        self.controller.buttonR1.released(
-            lambda: self.intake.stop_command(IntakeTargets.INTAKE)
-        )
+        # callbacks not used to enable holding down buttons during
+        # autonomous period and immediately having the functions call
+        # when the driver control period starts
+        if self.controller.buttonR1.pressing():
+            self.intake.start_intake()
+        else:
+            self.intake.stop_command(IntakeTargets.INTAKE)
 
-        self.controller.buttonR2.pressed(lambda: self.intake.output(IntakeTargets.LOW))
-        self.controller.buttonR2.released(
-            lambda: self.intake.stop_command(IntakeTargets.LOW)
-        )
+        if self.controller.buttonR2.pressing():
+            self.intake.output(IntakeTargets.LOW)
+        else:
+            self.intake.stop_command(IntakeTargets.LOW)
 
-        self.controller.buttonL1.pressed(lambda: self.intake.output(IntakeTargets.HIGH))
-        self.controller.buttonL1.released(
-            lambda: self.intake.stop_command(IntakeTargets.HIGH)
-        )
+        if self.controller.buttonL1.pressing():
+            self.intake.output(IntakeTargets.HIGH)
+        else:
+            self.intake.stop_command(IntakeTargets.HIGH)
 
-        self.controller.buttonL2.pressed(
-            lambda: self.intake.output(IntakeTargets.MIDDLE)
-        )
-        self.controller.buttonL2.released(
-            lambda: self.intake.stop_command(IntakeTargets.MIDDLE)
-        )
+        if self.controller.buttonL2.pressing():
+            self.intake.output(IntakeTargets.MIDDLE)
+        else:
+            self.intake.stop_command(IntakeTargets.MIDDLE)
 
-        # A just-in-case backup button that immediately stops the entire intake:
-        self.controller.buttonDown.pressed(lambda: self.intake.stop_intake())
+        if self.controller.buttonDown.pressing():
+            self.intake.stop_intake()
 
-        self.controller.buttonA.pressed(lambda: self.aligner.toggle())
+        if self.controller.buttonA.pressing():
+            self.aligner.toggle()
 
         # y: future wing control
         # left: future tube intake
-        # right: alignment mech
