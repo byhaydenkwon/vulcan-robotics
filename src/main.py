@@ -10,7 +10,6 @@ import utils.config as config
 
 import mechanisms.odometry as odometry
 from utils.display import Logger, NullLogger, Selection, SelectionButton, UserInterface
-from mechanisms.hopper import Hopper
 from mechanisms.intake import Intake
 from mechanisms.aligner import GoalAligner
 from control.autonomous_control import AutonomousControl
@@ -60,11 +59,13 @@ def main() -> None:
     setup()
     calibrate(logger)
 
-    # Subsystems and components
-
-    hopper = Hopper(config.hopper, config.HOPPER_DEGREES_PER_BLOCK, logger=logger)
+    # Subsystems, components, and control
     intake = Intake(
-        config.intake_bottom, config.intake_top, hopper, config.controller_1, logger
+        config.intake_bottom,
+        config.intake_top,
+        config.hopper,
+        config.controller_1,
+        logger,
     )
     Thread(intake.start_control_loop)
     aligner = GoalAligner(config.aligner_out_port, logger)
@@ -82,7 +83,6 @@ def main() -> None:
         config.back_left,
         config.controller_1,
         intake,
-        hopper,
         aligner,
         logger,
         velocity=100,
@@ -105,7 +105,6 @@ def main() -> None:
         front_left=config.front_left,
         middle_left=config.middle_left,
         back_left=config.back_left,
-        hopper=hopper,
         intake=intake,
         inertial=config.inertial_sensor,
         optical=config.optical_sensor,
