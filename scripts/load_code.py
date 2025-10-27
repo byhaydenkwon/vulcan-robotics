@@ -71,7 +71,7 @@ def main() -> None:
     if not load_dotenv():
         notify_and_raise(FileNotFoundError("No .env file found in source directory!"))
 
-    source_path = Path.cwd() / "src"
+    source_path = Path(__file__).parent.parent / "src"
 
     if not source_path.exists() or not source_path.is_dir():
         notify_and_raise(FileNotFoundError("No src/ folder found in source directory!"))
