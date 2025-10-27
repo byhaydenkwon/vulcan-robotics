@@ -9,7 +9,7 @@ target directory!)
 
 To configure, create a file called ".env" in the project directory and add:
 
-TARGET_PATH_WINDOWS = "C:\\your\\sd\\card\\path\\here"
+TARGET_PATH_WINDOWS = "C:\your\sd\card\path\here"
 
 or
 
@@ -26,11 +26,12 @@ import shutil
 import platform
 import subprocess
 
+from datetime import datetime, timedelta
 from pathlib import Path
 
 from dotenv import load_dotenv
 
-from plyer.facades import Notification  # Windows
+from windows_toasts import WindowsToaster, Toast
 
 APP_NAME = "vulcan-robotics"
 
@@ -40,11 +41,11 @@ def notify(title: str, message: str, app_name: str, timeout: int) -> None:
     Send a system notification on Windows or Linux. Timeout in seconds.
     """
     if os.name == "nt":
-        Notification().notify(
-            title=title,
-            message=message,
-            app_name=app_name,
-            timeout=timeout,
+        WindowsToaster(app_name).show_toast(
+            Toast(
+                [title, message],
+                expiration_time=datetime.now() + timedelta(seconds=timeout),
+            )
         )
     elif os.name == "posix":
         subprocess.run(
@@ -66,8 +67,6 @@ def notify_and_raise(error: Exception) -> None:
 
 
 def main() -> None:
-    notify("Copying files...", "", APP_NAME, 3)
-
     if not load_dotenv():
         notify_and_raise(FileNotFoundError("No .env file found in source directory!"))
 
