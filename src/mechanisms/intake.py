@@ -48,7 +48,13 @@ class Intake:
             if not self.stack:
                 active = IntakeStates.OFF
             else:
-                active = self.stack[-1]
+                try:
+                    active = self.stack[-1]
+                except IndexError:
+                    from utils import config
+
+                    config.brain.screen.clear_screen(Color.RED)
+                    # if the error is fixed ever
 
             if active == IntakeStates.OFF:
                 self.bottom.stop()
