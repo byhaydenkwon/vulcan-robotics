@@ -59,32 +59,3 @@ class DrivetrainOdometry:
             [motor.position(TURNS) for motor in self.drivetrain.values()]
         ) / len(self.drivetrain)
         return abs(avg_revolutions * self.gear_ratio * self.diameter * math.pi)
-
-
-class LinearOdometry:
-    """
-    One-dimensional simple odometry for calculating
-    straight distance traveled with a single parallel tracking wheel.
-    """
-
-    def __init__(
-        self,
-        encoder: Rotation,
-        wheel_diameter: float,
-        gear_ratio: float,
-        logger: Logger | NullLogger = NullLogger(),
-    ) -> None:
-        self._encoder = encoder
-        self.diameter = wheel_diameter
-        self.gear_ratio = gear_ratio
-        self.logger = logger
-
-    def reset_tracking(self) -> None:
-        self._encoder.reset_position()
-        self.logger.log(__name__, "Linear odometry reset")
-
-    def get_distance_traveled(self) -> float:
-        """
-        Returns relative distance traveled in the direction of the tracking wheel.
-        """
-        return self.diameter * math.pi * self._encoder.position(TURNS) * self.gear_ratio
