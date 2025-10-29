@@ -39,7 +39,7 @@ class AutonomousControl:
         block_color: Optical,
         loader: MatchLoader,
         aligner: GoalAligner,
-        tracking: odometry.DrivetrainOdometry | odometry.LinearOdometry,
+        tracking: odometry.DrivetrainOdometry,
         drivetrain_velocity: int,
         turn_velocity: int,
         logger: Logger | NullLogger = NullLogger(),
