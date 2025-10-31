@@ -8,7 +8,7 @@ from utils.enums import IntakeTargets
 from utils.display import Logger, NullLogger
 
 from mechanisms.intake import Intake
-from mechanisms.aligner import GoalAligner
+from mechanisms.pneumatics import GoalAligner
 
 
 class DriverControl:

@@ -8,7 +8,7 @@ import mechanisms.odometry as odometry
 from utils.display import Logger, NullLogger
 from utils.enums import IntakeTargets
 from mechanisms.intake import Intake
-from mechanisms.aligner import GoalAligner
+from mechanisms.pneumatics import GoalAligner
 
 
 class AutonomousExit(Exception):

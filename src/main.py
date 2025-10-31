@@ -11,7 +11,7 @@ import utils.config as config
 import mechanisms.odometry as odometry
 from utils.display import Logger, NullLogger, Selection, SelectionButton, UserInterface
 from mechanisms.intake import Intake
-from mechanisms.aligner import GoalAligner
+from mechanisms.pneumatics import GoalAligner
 from control.autonomous_control import AutonomousControl
 from control.driver_control import DriverControl
 
@@ -68,7 +68,7 @@ def main() -> None:
         logger,
     )
     Thread(intake.start_control_loop)
-    aligner = GoalAligner(config.aligner_out_port, logger)
+    aligner = GoalAligner(config.aligner_out_port, False, False, logger)
 
     # Control
 
