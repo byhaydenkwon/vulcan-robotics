@@ -34,7 +34,9 @@ class DriverControl:
         **kwargs,
     ) -> None:
         self.drive_modes = {"split_arcade": self._split_arcade}
-        self.mechanism_modes = {"standard": self._standard_mechanisms}
+        self.mechanism_modes = {
+            "standard": [self._standard_mechanisms, self._pre_register_mechanisms]
+        }
 
         self.front_right = front_right
         self.middle_right = middle_right
@@ -65,6 +67,8 @@ class DriverControl:
 
         self.logger.log(__name__, "Initial drive mode: " + str(initial_drive_mode))
 
+        self._mechanism_mode[1]()
+
         while not self._next_stop_control:
             if initial_drive_mode != self._drive_mode:
                 self.logger.log(
@@ -72,7 +76,7 @@ class DriverControl:
                 )
                 self._next_stop_control = True
             self._drive_mode(**self._drive_mode_kwargs)
-            self._mechanism_mode()
+            self._mechanism_mode[0]()
 
             sleep(2)
 
@@ -148,8 +152,8 @@ class DriverControl:
         if self.controller.buttonDown.pressing():
             self.intake.stop_intake()
 
-        if self.controller.buttonA.pressing():
-            self.aligner.toggle()
-
         # y: future wing control
         # left: future tube intake
+
+    def _pre_register_mechanisms(self) -> None:
+        self.controller.buttonA.pressed(self.aligner.toggle)
