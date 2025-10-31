@@ -8,7 +8,7 @@ import mechanisms.odometry as odometry
 from utils.display import Logger, NullLogger
 from utils.enums import IntakeTargets
 from mechanisms.intake import Intake
-from mechanisms.pneumatics import GoalAligner
+from mechanisms.pneumatics import GoalAligner, MatchLoader
 
 
 class AutonomousExit(Exception):
@@ -37,7 +37,7 @@ class AutonomousControl:
         optical: Optical,
         gps: Gps,
         block_color: Optical,
-        tube_pneumatic: DigitalOut,
+        loader: MatchLoader,
         aligner: GoalAligner,
         tracking: odometry.DrivetrainOdometry | odometry.LinearOdometry,
         drivetrain_velocity: int,
@@ -69,7 +69,7 @@ class AutonomousControl:
         self.optical = optical
         self.gps = gps
         self.block_color = block_color
-        self.tube_pneumatic = tube_pneumatic
+        self.loader = loader
         self.aligner = aligner
 
         self.tracking = tracking

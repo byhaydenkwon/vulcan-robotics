@@ -64,7 +64,7 @@ block_color_sensor = Optical(Ports.PORT8)
 aligner_out_port = DigitalOut(
     brain.three_wire_port.a
 )  # False (0) is piston out, True (1) is piston in
-henry = DigitalOut(brain.three_wire_port.b)
+match_loader_port = DigitalOut(brain.three_wire_port.b)
 
 controller_1 = Controller(PRIMARY)
 

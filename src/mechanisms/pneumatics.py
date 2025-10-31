@@ -67,7 +67,6 @@ class PneumaticToggle:
 
 
 class GoalAligner(PneumaticToggle):
-    # mostly just for type hinting
     def __init__(
         self,
         pneumatic: DigitalOut,

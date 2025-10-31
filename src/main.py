@@ -11,7 +11,7 @@ import utils.config as config
 import mechanisms.odometry as odometry
 from utils.display import Logger, NullLogger, Selection, SelectionButton, UserInterface
 from mechanisms.intake import Intake
-from mechanisms.pneumatics import GoalAligner
+from mechanisms.pneumatics import GoalAligner, MatchLoader
 from control.autonomous_control import AutonomousControl
 from control.driver_control import DriverControl
 
@@ -69,6 +69,7 @@ def main() -> None:
     )
     Thread(intake.start_control_loop)
     aligner = GoalAligner(config.aligner_out_port, False, False, logger)
+    loader = MatchLoader(config.match_loader_port, False, False, logger)
 
     # Control
 
@@ -84,6 +85,7 @@ def main() -> None:
         config.controller_1,
         intake,
         aligner,
+        loader,
         logger,
         velocity=100,
         turn_velocity=69.42067,
@@ -110,7 +112,7 @@ def main() -> None:
         optical=config.optical_sensor,
         gps=config.gps_sensor,
         block_color=config.block_color_sensor,
-        tube_pneumatic=config.henry,
+        loader=loader,
         aligner=aligner,
         tracking=tracking,
         drivetrain_velocity=100,

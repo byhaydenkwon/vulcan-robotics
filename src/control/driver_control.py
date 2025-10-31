@@ -8,7 +8,7 @@ from utils.enums import IntakeTargets
 from utils.display import Logger, NullLogger
 
 from mechanisms.intake import Intake
-from mechanisms.pneumatics import GoalAligner
+from mechanisms.pneumatics import GoalAligner, MatchLoader
 
 
 class DriverControl:
@@ -30,6 +30,7 @@ class DriverControl:
         controller: Controller,
         intake: Intake,
         aligner: GoalAligner,
+        loader: MatchLoader,
         logger: Logger | NullLogger = NullLogger(),
         **kwargs,
     ) -> None:
@@ -54,6 +55,7 @@ class DriverControl:
         self.controller = controller
         self.intake = intake
         self.aligner = aligner
+        self.loader = loader
 
         self.logger = logger
 
@@ -157,3 +159,4 @@ class DriverControl:
 
     def _pre_register_mechanisms(self) -> None:
         self.controller.buttonA.pressed(self.aligner.toggle)
+        self.controller.buttonY.pressed(self.loader.toggle)
