@@ -101,6 +101,10 @@ class AutonomousControl:
         except AutonomousExit as e:
             self.logger.log(__name__, e.args[0])
 
+    def skills_auton(self) -> None:
+        self.intake.output(IntakeTargets.LOW)
+        self.drive(FORWARD, 20, 100)
+
     def drive(
         self,
         direction: DirectionType.DirectionType,

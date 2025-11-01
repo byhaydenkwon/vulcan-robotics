@@ -131,6 +131,7 @@ def main() -> None:
             SelectionButton(0, 136, 120, 272): lambda: auto.match_auton(RIGHT),  # 2
             SelectionButton(360, 0, 480, 120): lambda: auto.match_auton(RIGHT),  # 3
             SelectionButton(360, 136, 480, 272): lambda: auto.match_auton(LEFT),  # 4
+            SelectionButton(120, 0, 360, 272): lambda: auto.skills_auton(),
         },
     )
 
