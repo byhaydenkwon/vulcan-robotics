@@ -86,7 +86,7 @@ class AutonomousControl:
         RIGHT for positions 2 and 3; LEFT for positions 1 and 4.
         """
         try:
-            self.pivot_turn(5, goal_turn_direction, 7)
+            self.pivot_turn(5, goal_turn_direction, 5)
             self.intake.start_intake()
             self.drive(FORWARD, 40.0, 35)
             wait(1, SECONDS)
@@ -96,14 +96,14 @@ class AutonomousControl:
             self.drive(FORWARD, 28.5, 25)
             self.pivot_turn(90, LEFT if goal_turn_direction is RIGHT else RIGHT, 20)
             self.aligner.extend()
-            self.drive(FORWARD, 23.0, 50)
+            self.drive(FORWARD, 25.0, 50)
             self.intake.output(IntakeTargets.HIGH)
         except AutonomousExit as e:
             self.logger.log(__name__, e.args[0])
 
     def skills_auton(self) -> None:
         self.intake.output(IntakeTargets.LOW)
-        self.drive(FORWARD, 20, 100)
+        self.drive(FORWARD, 24, 100)
 
     def drive(
         self,
@@ -153,9 +153,9 @@ class AutonomousControl:
             lower_turn_difference = turn_target - turn_target * 0.25
             upper_turn_difference = turn_target + turn_target * 0.25
         else:
-            lower_turn_difference = turn_target - 5
-            upper_turn_difference = turn_target + 5
-        # Allow for 5 degrees of error in each direction, or ten degrees total.
+            lower_turn_difference = turn_target - 2.5
+            upper_turn_difference = turn_target + 2.5
+        # Allow for 2.5 degrees of error in each direction, or 5 degrees total.
         # 25% if the target itself is less than 6 degrees; maximum 3 deg total range in this case.
         # Try adjusting this value if it doesn't like turning lower values.
 
