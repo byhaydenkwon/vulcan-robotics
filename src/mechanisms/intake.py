@@ -51,10 +51,7 @@ class Intake:
                 try:
                     active = self.stack[-1]
                 except IndexError:
-                    from utils import config
-
-                    config.brain.screen.clear_screen(Color.RED)
-                    # if the error is fixed ever
+                    pass  # this is REQUIRED or the robot will randomly break
 
             if active == IntakeStates.OFF:
                 self.bottom.stop()
