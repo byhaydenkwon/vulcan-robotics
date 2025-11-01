@@ -69,7 +69,7 @@ def main() -> None:
     )
     Thread(intake.start_control_loop)
     aligner = GoalAligner(config.aligner_out_port, False, False, logger)
-    loader = MatchLoader(config.match_loader_port, False, False, logger)
+    loader = MatchLoader(config.match_loader_port, True, False, logger)
 
     # Control
 
