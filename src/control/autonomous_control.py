@@ -147,17 +147,18 @@ class AutonomousControl:
 
         self.inertial.reset_heading()
 
-        # example right 90 degrees
-        turn_target = (
-            degrees if direction == TurnType.RIGHT else -degrees + 360
-        )  # converted to 270 deg
-        lower_turn_difference = (
-            turn_target - turn_target * 0.025
-        ) % 360  # 270 - 6.75 = 263.25
-        upper_turn_difference = (
-            turn_target + turn_target * 0.025
-        ) % 360  # 270 + 6.75 = 276.25
-        # Allow for x% of error.
+        turn_target = degrees if direction == TurnType.RIGHT else -degrees + 360
+
+        if turn_target <= 6:
+            lower_turn_difference = turn_target - turn_target * 0.25
+            upper_turn_difference = turn_target + turn_target * 0.25
+        else:
+            lower_turn_difference = turn_target - 5
+            upper_turn_difference = turn_target + 5
+        # Allow for 5 degrees of error in each direction, or ten degrees total.
+        # 25% if the target itself is less than 6 degrees; maximum 3 deg total range in this case.
+        # Try adjusting this value if it doesn't like turning lower values.
+
         # This does mean that if it's not detected the first time, it will
         # make a 360 degree rotation before trying to stop again.
 
