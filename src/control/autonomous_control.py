@@ -96,7 +96,7 @@ class AutonomousControl:
             self.drive(FORWARD, 28.5, 25)
             self.pivot_turn(90, LEFT if goal_turn_direction is RIGHT else RIGHT, 20)
             self.aligner.extend()
-            self.drive(FORWARD, 20.0, 50)
+            self.drive(FORWARD, 23.0, 50)
             self.intake.output(IntakeTargets.HIGH)
         except AutonomousExit as e:
             self.logger.log(__name__, e.args[0])
