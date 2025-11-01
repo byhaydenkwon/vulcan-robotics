@@ -94,16 +94,16 @@ class AutonomousControl:
             self.intake.stop_intake()
             self.pivot_turn(75, goal_turn_direction, 20)
             self.drive(FORWARD, 28.5, 25)
-            self.pivot_turn(90, LEFT if goal_turn_direction is RIGHT else RIGHT, 20)
+            self.pivot_turn(85, LEFT if goal_turn_direction is RIGHT else RIGHT, 20)
             self.aligner.extend()
-            self.drive(FORWARD, 25.0, 50)
+            self.drive(FORWARD, 30.0, 50)
             self.intake.output(IntakeTargets.HIGH)
         except AutonomousExit as e:
             self.logger.log(__name__, e.args[0])
 
     def skills_auton(self) -> None:
         self.intake.output(IntakeTargets.LOW)
-        self.drive(FORWARD, 24, 100)
+        self.drive(FORWARD, 24, 60)
 
     def drive(
         self,
