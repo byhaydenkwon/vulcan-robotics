@@ -20,17 +20,18 @@ class Drivetrain:
         gear_ratio: float,
         wheel_diameter: float,
     ) -> None:
-        self.front_right = front_right
-        self.middle_right = middle_right
-        self.back_right = back_right
-        self.front_left = front_left
-        self.middle_left = middle_left
-        self.back_left = back_left
+        self.right = [front_right, middle_right, back_right]
+        self.left = [front_left, middle_left, back_left]
 
-        self.right = [self.front_right, self.middle_right, self.back_right]
-        self.left = [self.front_left, self.middle_left, self.back_left]
-
-        self.motors = self.right + self.left
+        # The order of this list determines the motor starting and stopping order
+        self.motors = [
+            back_right,
+            back_left,
+            middle_right,
+            middle_left,
+            front_right,
+            front_left,
+        ]
 
         self.gear_ratio = gear_ratio
         self.diameter = wheel_diameter
