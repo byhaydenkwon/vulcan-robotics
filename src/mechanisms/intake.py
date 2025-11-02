@@ -18,13 +18,11 @@ class Intake:
         bottom_motor: Motor,
         top_motor: Motor,
         hopper_motor: Motor,
-        controller: Controller,
         logger: Logger | NullLogger = NullLogger(),
     ) -> None:
         self.bottom = bottom_motor
         self.top = top_motor
         self.hopper = hopper_motor
-        self.controller = controller
         self.logger = logger
 
         self.target_states: dict[IntakeTargetValue, IntakeStateValue] = {

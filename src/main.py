@@ -50,38 +50,47 @@ def main() -> None:
 
     # Subsystems, components, and control
     drivetrain = Drivetrain(
-        config.front_right,
-        config.middle_right,
-        config.back_right,
-        config.front_left,
-        config.middle_left,
-        config.back_left,
-        0.625,
-        3.25,
+        front_right=config.front_right,
+        middle_right=config.middle_right,
+        back_right=config.back_right,
+        front_left=config.front_left,
+        middle_left=config.middle_left,
+        back_left=config.back_left,
+        gear_ratio=0.625,
+        wheel_diameter=3.25,
     )
     intake = Intake(
-        config.intake_bottom,
-        config.intake_top,
-        config.hopper,
-        config.controller_1,
-        logger,
+        bottom_motor=config.intake_bottom,
+        top_motor=config.intake_top,
+        hopper_motor=config.hopper,
+        logger=logger,
     )
-    aligner = GoalAligner(config.aligner_port, False, False, logger)
-    loader = MatchLoader(config.match_loader_port, False, False, logger)
+    aligner = GoalAligner(
+        pneumatic=config.aligner_port,
+        internal_extended_bool=False,
+        default_extended_status=False,
+        logger=logger,
+    )
+    loader = MatchLoader(
+        pneumatic=config.match_loader_port,
+        internal_extended_bool=False,
+        default_extended_status=False,
+        logger=logger,
+    )
 
     Thread(intake.start_control_loop)
 
     # Control
 
     driver = DriverControl(
-        "split_arcade",
-        "standard",
-        drivetrain,
-        config.controller_1,
-        intake,
-        aligner,
-        loader,
-        logger,
+        drive_mode="split_arcade",
+        mechanism_mode="standard",
+        drivetrain=drivetrain,
+        controller=config.controller_1,
+        intake=intake,
+        aligner=aligner,
+        loader=loader,
+        logger=logger,
         velocity=100,
         turn_velocity=69.42067,
     )
