@@ -20,26 +20,19 @@ from control.driver_control import DriverControl
 
 def setup() -> None:
     """
-    A setup function containing mostly VEXCode generated code.
+    A setup function containing modified VEXCode-generated code.
     """
 
-    # wait for rotation sensor to fully initialize
-    wait(30, MSEC)
+    # wait for sensor and system setup
+    wait(350, MSEC)
 
-    # Set random seed
-    def initializeRandomSeed() -> None:
-        wait(100, MSEC)
-        random = (
-            config.brain.battery.voltage(MV)
-            + config.brain.battery.current(CurrentUnits.AMP) * 100
-            + config.brain.timer.system_high_res()
-        )
-        urandom.seed(int(random))
+    random = (
+        config.brain.battery.voltage(MV)
+        + config.brain.battery.current(CurrentUnits.AMP) * 100
+        + config.brain.timer.system_high_res()
+    )
+    urandom.seed(int(random))
 
-    initializeRandomSeed()
-
-    # add a small delay to make sure we don't print in the middle of the REPL header
-    wait(200, MSEC)
     # clear the console to make sure we don't have the REPL in the console
     print("\033[2J")
 
@@ -50,8 +43,9 @@ def calibrate(logger: Logger | NullLogger) -> None:
 
 
 def main() -> None:
-    logger = NullLogger()
     setup()
+
+    logger = NullLogger()
     calibrate(logger)
 
     # Subsystems, components, and control
@@ -72,9 +66,10 @@ def main() -> None:
         config.controller_1,
         logger,
     )
-    Thread(intake.start_control_loop)
     aligner = GoalAligner(config.aligner_port, False, False, logger)
     loader = MatchLoader(config.match_loader_port, False, False, logger)
+
+    Thread(intake.start_control_loop)
 
     # Control
 
@@ -110,7 +105,7 @@ def main() -> None:
             SelectionButton(0, 136, 120, 272): lambda: auto.match_auton(RIGHT),  # 2
             SelectionButton(360, 0, 480, 120): lambda: auto.match_auton(RIGHT),  # 3
             SelectionButton(360, 136, 480, 272): lambda: auto.match_auton(LEFT),  # 4
-            SelectionButton(120, 0, 360, 272): lambda: auto.skills_auton(),
+            SelectionButton(120, 0, 360, 272): lambda: auto.skills_auton(),  # Middle
         },
     )
 
@@ -136,8 +131,8 @@ def main() -> None:
 
     def start_auton() -> None:
         if brain_interface.done:
-            logging_thread = Thread(logger.start_print_loop)
-            # start the print loop only after the interface ends
+            Thread(logger.start_print_loop)
+            # start the print loop only if the interface ends
 
         if callable(interface_result["auto"]):
             interface_result["auto"]()
