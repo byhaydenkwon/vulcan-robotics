@@ -4,14 +4,16 @@ Runs VEXCode pregenerated code and sets up boilerplate.
 """
 
 from vex import *
+
 import urandom  # type: ignore
 
-import utils.config as config
-
+from utils import config
 from utils.display import Logger, NullLogger, Selection, SelectionButton, UserInterface
+
 from mechanisms.intake import Intake
 from mechanisms.pneumatics import GoalAligner, MatchLoader
 from mechanisms.drivetrain import Drivetrain
+
 from control.autonomous_control import AutonomousControl
 from control.driver_control import DriverControl
 
