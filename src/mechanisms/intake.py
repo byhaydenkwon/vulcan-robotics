@@ -18,13 +18,11 @@ class Intake:
         bottom_motor: Motor,
         top_motor: Motor,
         hopper_motor: Motor,
-        controller: Controller,
         logger: Logger | NullLogger = NullLogger(),
     ) -> None:
         self.bottom = bottom_motor
         self.top = top_motor
         self.hopper = hopper_motor
-        self.controller = controller
         self.logger = logger
 
         self.target_states: dict[IntakeTargetValue, IntakeStateValue] = {
@@ -48,7 +46,13 @@ class Intake:
             if not self.stack:
                 active = IntakeStates.OFF
             else:
-                active = self.stack[-1]
+                try:
+                    active = self.stack[-1]
+                except IndexError:
+                    from utils import config
+
+                    config.brain.screen.clear_screen(Color.RED)
+                    # if the error is fixed ever
 
             if active == IntakeStates.OFF:
                 self.bottom.stop()

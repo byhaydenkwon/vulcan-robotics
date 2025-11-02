@@ -10,4 +10,8 @@ dependencies = []
 ignore = ["F403", "F405"]
 
 [dependency-groups]
-dev = ["ruff>=0.12.9"]
+dev = [
+    "python-dotenv>=1.2.1",
+    "ruff>=0.12.9",
+    "windows-toasts>=1.3.1",
+]

@@ -7,8 +7,9 @@ from vex import *
 from utils.enums import IntakeTargets
 from utils.display import Logger, NullLogger
 
+from mechanisms.drivetrain import Drivetrain
 from mechanisms.intake import Intake
-from mechanisms.aligner import GoalAligner
+from mechanisms.pneumatics import GoalAligner, MatchLoader
 
 
 class DriverControl:
@@ -21,27 +22,18 @@ class DriverControl:
         self,
         drive_mode: str,
         mechanism_mode: str,
-        front_right: Motor,
-        middle_right: Motor,
-        back_right: Motor,
-        front_left: Motor,
-        middle_left: Motor,
-        back_left: Motor,
+        drivetrain: Drivetrain,
         controller: Controller,
         intake: Intake,
         aligner: GoalAligner,
+        loader: MatchLoader,
         logger: Logger | NullLogger = NullLogger(),
         **kwargs,
     ) -> None:
         self.drive_modes = {"split_arcade": self._split_arcade}
-        self.mechanism_modes = {"standard": self._standard_mechanisms}
-
-        self.front_right = front_right
-        self.middle_right = middle_right
-        self.back_right = back_right
-        self.front_left = front_left
-        self.middle_left = middle_left
-        self.back_left = back_left
+        self.mechanism_modes = {
+            "standard": [self._standard_mechanisms, self._pre_register_mechanisms]
+        }
 
         self._drive_mode = self.drive_modes[drive_mode]
         self._drive_mode_kwargs = kwargs
@@ -50,8 +42,10 @@ class DriverControl:
         self._mechanism_mode = self.mechanism_modes[mechanism_mode]
 
         self.controller = controller
+        self.drivetrain = drivetrain
         self.intake = intake
         self.aligner = aligner
+        self.loader = loader
 
         self.logger = logger
 
@@ -65,6 +59,8 @@ class DriverControl:
 
         self.logger.log(__name__, "Initial drive mode: " + str(initial_drive_mode))
 
+        self._mechanism_mode[1]()
+
         while not self._next_stop_control:
             if initial_drive_mode != self._drive_mode:
                 self.logger.log(
@@ -72,7 +68,7 @@ class DriverControl:
                 )
                 self._next_stop_control = True
             self._drive_mode(**self._drive_mode_kwargs)
-            self._mechanism_mode()
+            self._mechanism_mode[0]()
 
             sleep(2)
 
@@ -113,13 +109,8 @@ class DriverControl:
         y_input = self.controller.axis3.position() * velocity / 100
         x_input = self.controller.axis1.position() * turn_velocity / 100
 
-        for motor in [self.front_right, self.middle_right, self.back_right]:
-            motor.set_velocity(y_input - x_input, PERCENT)
-            motor.spin(FORWARD)
-
-        for motor in [self.front_left, self.middle_left, self.back_left]:
-            motor.set_velocity(y_input + x_input, PERCENT)
-            motor.spin(FORWARD)
+        self.drivetrain.spin_right_motors(FORWARD, y_input - x_input)
+        self.drivetrain.spin_left_motors(FORWARD, y_input + x_input)
 
     def _standard_mechanisms(self) -> None:
         # callbacks not used to enable holding down buttons during
@@ -148,8 +139,9 @@ class DriverControl:
         if self.controller.buttonDown.pressing():
             self.intake.stop_intake()
 
-        if self.controller.buttonA.pressing():
-            self.aligner.toggle()
-
         # y: future wing control
         # left: future tube intake
+
+    def _pre_register_mechanisms(self) -> None:
+        self.controller.buttonA.pressed(self.aligner.toggle)
+        self.controller.buttonY.pressed(self.loader.toggle)
