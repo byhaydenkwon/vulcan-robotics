@@ -35,17 +35,21 @@ class Drivetrain:
         self.gear_ratio = gear_ratio
         self.diameter = wheel_diameter
 
-    def spin_right(self, direction: DirectionType.DirectionType, velocity: int) -> None:
+    def spin_right_motors(
+        self, direction: DirectionType.DirectionType, velocity: int
+    ) -> None:
         """
-        Set the velocity of the right-side motors.
+        Set the velocity of the right-side motors and spin them.
         """
         for motor in self.right:
             motor.set_velocity(velocity, PERCENT)
             motor.spin(direction)
 
-    def spin_left(self, direction: DirectionType.DirectionType, velocity: int) -> None:
+    def spin_left_motors(
+        self, direction: DirectionType.DirectionType, velocity: int
+    ) -> None:
         """
-        Set the velocity of the right-side motors.
+        Set the velocity of the right-side motors and spin them.
         """
         for motor in self.left:
             motor.set_velocity(velocity, PERCENT)
