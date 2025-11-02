@@ -56,6 +56,23 @@ class Drivetrain:
             motor.set_velocity(velocity, PERCENT)
             motor.spin(direction)
 
+    def spin_motors(
+        self, direction: DirectionType.DirectionType, velocity: float
+    ) -> None:
+        """
+        Set the velocity of all motors and spin them.
+        """
+        for motor in self.motors:
+            motor.set_velocity(velocity, PERCENT)
+            motor.spin(direction)
+
+    def stop_motors(self) -> None:
+        """
+        Stop all motors.
+        """
+        for motor in self.motors:
+            motor.stop()
+
     def reset_tracking(self) -> None:
         """
         Resets tracking values.
