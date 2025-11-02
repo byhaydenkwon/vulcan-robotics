@@ -8,10 +8,10 @@ import urandom  # type: ignore
 
 import utils.config as config
 
-import mechanisms.odometry as odometry
 from utils.display import Logger, NullLogger, Selection, SelectionButton, UserInterface
 from mechanisms.intake import Intake
 from mechanisms.pneumatics import GoalAligner, MatchLoader
+from mechanisms.drivetrain import Drivetrain
 from control.autonomous_control import AutonomousControl
 from control.driver_control import DriverControl
 
@@ -60,6 +60,16 @@ def main() -> None:
     calibrate(logger)
 
     # Subsystems, components, and control
+    drivetrain = Drivetrain(
+        config.front_right,
+        config.middle_right,
+        config.back_right,
+        config.front_left,
+        config.middle_left,
+        config.back_left,
+        0.625,
+        3.25,
+    )
     intake = Intake(
         config.intake_bottom,
         config.intake_top,
@@ -90,23 +100,8 @@ def main() -> None:
         velocity=100,
         turn_velocity=69.42067,
     )
-    tracking = odometry.DrivetrainOdometry(
-        front_right=config.front_right,
-        middle_right=config.middle_right,
-        back_right=config.back_right,
-        front_left=config.back_left,
-        middle_left=config.middle_left,
-        back_left=config.back_left,
-        wheel_diameter=3.25,
-        logger=logger,
-    )
     auto = AutonomousControl(
-        front_right=config.front_right,
-        middle_right=config.middle_right,
-        back_right=config.back_right,
-        front_left=config.front_left,
-        middle_left=config.middle_left,
-        back_left=config.back_left,
+        drivetrain=drivetrain,
         intake=intake,
         inertial=config.inertial_sensor,
         optical=config.optical_sensor,
@@ -114,9 +109,6 @@ def main() -> None:
         block_color=config.block_color_sensor,
         loader=loader,
         aligner=aligner,
-        tracking=tracking,
-        drivetrain_velocity=100,
-        turn_velocity=50,
         logger=logger,
     )
 
