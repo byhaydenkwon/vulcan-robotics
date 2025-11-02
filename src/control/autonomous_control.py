@@ -30,9 +30,6 @@ class AutonomousControl:
         drivetrain: Drivetrain,
         intake: Intake,
         inertial: Inertial,
-        optical: Optical,
-        gps: Gps,
-        block_color: Optical,
         loader: MatchLoader,
         aligner: GoalAligner,
         logger: Logger | NullLogger = NullLogger(),
@@ -43,9 +40,6 @@ class AutonomousControl:
         self.aligner = aligner
 
         self.inertial = inertial
-        self.optical = optical
-        self.gps = gps
-        self.block_color = block_color
 
         self.logger = logger
 

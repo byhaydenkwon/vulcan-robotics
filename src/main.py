@@ -45,15 +45,8 @@ def setup() -> None:
 
 
 def calibrate(logger: Logger | NullLogger) -> None:
-    logger.log(__name__, "Calibrating GPS sensor")
-    config.gps_sensor.calibrate()
-
     logger.log(__name__, "Calibrating inertial sensor")
     config.inertial_sensor.calibrate()
-
-    config.optical_sensor.set_light(100)
-    # TODO (low-priority) Have a way to recalibrate after a field adjustment or similar
-    # Right now you can just restart the code
 
 
 def main() -> None:
@@ -80,7 +73,7 @@ def main() -> None:
         logger,
     )
     Thread(intake.start_control_loop)
-    aligner = GoalAligner(config.aligner_out_port, False, False, logger)
+    aligner = GoalAligner(config.aligner_port, False, False, logger)
     loader = MatchLoader(config.match_loader_port, False, False, logger)
 
     # Control
@@ -101,9 +94,6 @@ def main() -> None:
         drivetrain=drivetrain,
         intake=intake,
         inertial=config.inertial_sensor,
-        optical=config.optical_sensor,
-        gps=config.gps_sensor,
-        block_color=config.block_color_sensor,
         loader=loader,
         aligner=aligner,
         logger=logger,
@@ -154,7 +144,7 @@ def main() -> None:
 
     def start_driver() -> None:
         auto.exit_autonomous()
-        for motor in config.drivetrain_motors:
+        for motor in drivetrain.motors:
             motor.set_stopping(BRAKE)
         driver.start_control_loop()
 
