@@ -86,12 +86,7 @@ def main() -> None:
     driver = DriverControl(
         "split_arcade",
         "standard",
-        config.front_right,
-        config.middle_right,
-        config.back_right,
-        config.front_left,
-        config.middle_left,
-        config.back_left,
+        drivetrain,
         config.controller_1,
         intake,
         aligner,
