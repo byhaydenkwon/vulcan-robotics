@@ -38,11 +38,3 @@ aligner_port = DigitalOut(brain.three_wire_port.a)
 match_loader_port = DigitalOut(brain.three_wire_port.b)
 
 controller_1 = Controller(PRIMARY)
-
-# Custom constants
-
-HOPPER_DEGREES_PER_BLOCK = 180
-
-# Currently only DRIVE is implemented.
-# Eventually should add INTAKE, HOPPER, etc.
-DEBUG_MODES = ["DRIVE"]
