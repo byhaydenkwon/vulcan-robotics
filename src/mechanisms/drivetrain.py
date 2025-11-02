@@ -36,7 +36,7 @@ class Drivetrain:
         self.diameter = wheel_diameter
 
     def spin_right_motors(
-        self, direction: DirectionType.DirectionType, velocity: int
+        self, direction: DirectionType.DirectionType, velocity: float
     ) -> None:
         """
         Set the velocity of the right-side motors and spin them.
@@ -46,7 +46,7 @@ class Drivetrain:
             motor.spin(direction)
 
     def spin_left_motors(
-        self, direction: DirectionType.DirectionType, velocity: int
+        self, direction: DirectionType.DirectionType, velocity: float
     ) -> None:
         """
         Set the velocity of the right-side motors and spin them.
