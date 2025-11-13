@@ -3,7 +3,7 @@ The pnuematic piston aligner at the front of the robot.
 """
 
 from vex import *
-from vex import DigitalOut
+
 from utils.display import Logger, NullLogger
 from utils.config import controller_1
 

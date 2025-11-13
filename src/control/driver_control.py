@@ -7,6 +7,7 @@ from vex import *
 from utils.enums import IntakeTargets
 from utils.display import Logger, NullLogger
 
+from mechanisms.drivetrain import Drivetrain
 from mechanisms.intake import Intake
 from mechanisms.pneumatics import GoalAligner, MatchLoader
 
@@ -21,12 +22,7 @@ class DriverControl:
         self,
         drive_mode: str,
         mechanism_mode: str,
-        front_right: Motor,
-        middle_right: Motor,
-        back_right: Motor,
-        front_left: Motor,
-        middle_left: Motor,
-        back_left: Motor,
+        drivetrain: Drivetrain,
         controller: Controller,
         intake: Intake,
         aligner: GoalAligner,
@@ -39,13 +35,6 @@ class DriverControl:
             "standard": [self._standard_mechanisms, self._pre_register_mechanisms]
         }
 
-        self.front_right = front_right
-        self.middle_right = middle_right
-        self.back_right = back_right
-        self.front_left = front_left
-        self.middle_left = middle_left
-        self.back_left = back_left
-
         self._drive_mode = self.drive_modes[drive_mode]
         self._drive_mode_kwargs = kwargs
         self._next_stop_control = False
@@ -53,6 +42,7 @@ class DriverControl:
         self._mechanism_mode = self.mechanism_modes[mechanism_mode]
 
         self.controller = controller
+        self.drivetrain = drivetrain
         self.intake = intake
         self.aligner = aligner
         self.loader = loader
@@ -119,13 +109,8 @@ class DriverControl:
         y_input = self.controller.axis3.position() * velocity / 100
         x_input = self.controller.axis1.position() * turn_velocity / 100
 
-        for motor in [self.front_right, self.middle_right, self.back_right]:
-            motor.set_velocity(y_input - x_input, PERCENT)
-            motor.spin(FORWARD)
-
-        for motor in [self.front_left, self.middle_left, self.back_left]:
-            motor.set_velocity(y_input + x_input, PERCENT)
-            motor.spin(FORWARD)
+        self.drivetrain.spin_right_motors(FORWARD, y_input - x_input)
+        self.drivetrain.spin_left_motors(FORWARD, y_input + x_input)
 
     def _standard_mechanisms(self) -> None:
         # callbacks not used to enable holding down buttons during

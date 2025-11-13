@@ -4,119 +4,102 @@ Runs VEXCode pregenerated code and sets up boilerplate.
 """
 
 from vex import *
+
 import urandom  # type: ignore
 
-import utils.config as config
-
-import mechanisms.odometry as odometry
+from utils import config
 from utils.display import Logger, NullLogger, Selection, SelectionButton, UserInterface
+
 from mechanisms.intake import Intake
 from mechanisms.pneumatics import GoalAligner, MatchLoader
+from mechanisms.drivetrain import Drivetrain
+
 from control.autonomous_control import AutonomousControl
 from control.driver_control import DriverControl
 
 
 def setup() -> None:
     """
-    A setup function containing mostly VEXCode generated code.
+    A setup function containing modified VEXCode-generated code.
     """
 
-    # wait for rotation sensor to fully initialize
-    wait(30, MSEC)
+    # wait for sensor and system setup
+    wait(350, MSEC)
 
-    # Set random seed
-    def initializeRandomSeed() -> None:
-        wait(100, MSEC)
-        random = (
-            config.brain.battery.voltage(MV)
-            + config.brain.battery.current(CurrentUnits.AMP) * 100
-            + config.brain.timer.system_high_res()
-        )
-        urandom.seed(int(random))
+    random = (
+        config.brain.battery.voltage(MV)
+        + config.brain.battery.current(CurrentUnits.AMP) * 100
+        + config.brain.timer.system_high_res()
+    )
+    urandom.seed(int(random))
 
-    initializeRandomSeed()
-
-    # add a small delay to make sure we don't print in the middle of the REPL header
-    wait(200, MSEC)
     # clear the console to make sure we don't have the REPL in the console
     print("\033[2J")
 
 
 def calibrate(logger: Logger | NullLogger) -> None:
-    logger.log(__name__, "Calibrating GPS sensor")
-    config.gps_sensor.calibrate()
-
     logger.log(__name__, "Calibrating inertial sensor")
     config.inertial_sensor.calibrate()
 
-    config.optical_sensor.set_light(100)
-    # TODO (low-priority) Have a way to recalibrate after a field adjustment or similar
-    # Right now you can just restart the code
-
 
 def main() -> None:
-    logger = NullLogger()
     setup()
+
+    logger = NullLogger()
     calibrate(logger)
 
     # Subsystems, components, and control
-    intake = Intake(
-        config.intake_bottom,
-        config.intake_top,
-        config.hopper,
-        config.controller_1,
-        logger,
-    )
-    Thread(intake.start_control_loop)
-    aligner = GoalAligner(config.aligner_out_port, False, False, logger)
-    loader = MatchLoader(config.match_loader_port, True, False, logger)
-
-    # Control
-
-    driver = DriverControl(
-        "split_arcade",
-        "standard",
-        config.front_right,
-        config.middle_right,
-        config.back_right,
-        config.front_left,
-        config.middle_left,
-        config.back_left,
-        config.controller_1,
-        intake,
-        aligner,
-        loader,
-        logger,
-        velocity=100,
-        turn_velocity=69.42067,
-    )
-    tracking = odometry.DrivetrainOdometry(
-        front_right=config.front_right,
-        middle_right=config.middle_right,
-        back_right=config.back_right,
-        front_left=config.back_left,
-        middle_left=config.middle_left,
-        back_left=config.back_left,
-        wheel_diameter=3.25,
-        logger=logger,
-    )
-    auto = AutonomousControl(
+    drivetrain = Drivetrain(
         front_right=config.front_right,
         middle_right=config.middle_right,
         back_right=config.back_right,
         front_left=config.front_left,
         middle_left=config.middle_left,
         back_left=config.back_left,
+        gear_ratio=0.625,
+        wheel_diameter=3.25,
+    )
+    intake = Intake(
+        bottom_motor=config.intake_bottom,
+        top_motor=config.intake_top,
+        hopper_motor=config.hopper,
+        logger=logger,
+    )
+    aligner = GoalAligner(
+        pneumatic=config.aligner_port,
+        internal_extended_bool=False,
+        default_extended_status=False,
+        logger=logger,
+    )
+    loader = MatchLoader(
+        pneumatic=config.match_loader_port,
+        internal_extended_bool=False,
+        default_extended_status=False,
+        logger=logger,
+    )
+
+    Thread(intake.start_control_loop)
+
+    # Control
+
+    driver = DriverControl(
+        drive_mode="split_arcade",
+        mechanism_mode="standard",
+        drivetrain=drivetrain,
+        controller=config.controller_1,
+        intake=intake,
+        aligner=aligner,
+        loader=loader,
+        logger=logger,
+        velocity=100,
+        turn_velocity=69.42067,
+    )
+    auto = AutonomousControl(
+        drivetrain=drivetrain,
         intake=intake,
         inertial=config.inertial_sensor,
-        optical=config.optical_sensor,
-        gps=config.gps_sensor,
-        block_color=config.block_color_sensor,
         loader=loader,
         aligner=aligner,
-        tracking=tracking,
-        drivetrain_velocity=100,
-        turn_velocity=50,
         logger=logger,
     )
 
@@ -131,7 +114,7 @@ def main() -> None:
             SelectionButton(0, 136, 120, 272): lambda: auto.match_auton(RIGHT),  # 2
             SelectionButton(360, 0, 480, 120): lambda: auto.match_auton(RIGHT),  # 3
             SelectionButton(360, 136, 480, 272): lambda: auto.match_auton(LEFT),  # 4
-            SelectionButton(120, 0, 360, 272): lambda: auto.skills_auton(),
+            SelectionButton(120, 0, 360, 272): lambda: auto.skills_auton(),  # Middle
         },
     )
 
@@ -157,15 +140,15 @@ def main() -> None:
 
     def start_auton() -> None:
         if brain_interface.done:
-            logging_thread = Thread(logger.start_print_loop)
-            # start the print loop only after the interface ends
+            Thread(logger.start_print_loop)
+            # start the print loop only if the interface ends
 
         if callable(interface_result["auto"]):
             interface_result["auto"]()
 
     def start_driver() -> None:
         auto.exit_autonomous()
-        for motor in config.drivetrain_motors:
+        for motor in drivetrain.motors:
             motor.set_stopping(BRAKE)
         driver.start_control_loop()
 

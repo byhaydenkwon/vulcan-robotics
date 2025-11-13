@@ -1,4 +1,4 @@
-# Development and git Practices
+# Development and Git Practices
 
 Let's document some good practices!
 
@@ -9,12 +9,13 @@ Let's document some good practices!
   * `odom` for odometry-related changes.
   * `compat` for changes in the VEX V5 API.
   * `config` for changes to things like ports, motor torques and speeds, etc.
-  * `intake`, `hopper`, etc. for specific mechanisms.
-  * `preauto` for changes to pre-match code.
+  * `intake`, `drivetrain`, etc. for specific mechanisms.
+  * `preauto` for changes to pre-match code (including display).
+  * `logging` for logging-related changes.
 * Keep commits atomic.
   * One feature, one commit. One fix, one commit. Etc.
 * Keep commits working.
-  * Especially on the `main` branch.
+  * Especially on the `main` and `dev` branches.
   * On other branches, at least look out for the obvious stuff even if you can't test. 
 * Keep commits formatted.
   * Use the [ruff linter](https://docs.astral.sh/ruff/linter/) with the settings in [pyproject.toml](pyproject.toml). It's recommended to turn on format on save in your editor settings, but at least format before a commit.
@@ -39,3 +40,13 @@ Let's document some good practices!
   * Rebase regularly to avoid big merge conflicts.
 ## Tagging/Versioning
 * TBD with notebook versioning.
+
+## Import Order
+1. Standard library imports.
+2. `from vex import *`.
+3. Imports from other external libraries.
+4. Imports from `utils/`.
+5. Imports from `mechanisms/`.
+6. *(main.py only)* Imports from `control/`.
+
+Each numbered group should be separated by a line. Use `from some_file import SomeClass` for all internal files. Do not use wildcard imports at all unless it's `from vex import *`.
