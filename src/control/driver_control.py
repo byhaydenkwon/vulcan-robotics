@@ -126,12 +126,12 @@ class DriverControl:
         else:
             self.scoring.stop_command(ScoringTargets.LOW)
 
-        if self.controller.buttonL1.pressing():
+        if self.controller.buttonL2.pressing():
             self.scoring.output(ScoringTargets.HIGH)
         else:
             self.scoring.stop_command(ScoringTargets.HIGH)
 
-        if self.controller.buttonL2.pressing():
+        if self.controller.buttonL1.pressing():
             self.scoring.output(ScoringTargets.MIDDLE)
         else:
             self.scoring.stop_command(ScoringTargets.MIDDLE)
