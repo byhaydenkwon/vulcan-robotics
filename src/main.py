@@ -50,12 +50,12 @@ def main() -> None:
 
     # Subsystems, components, and control
     drivetrain = Drivetrain(
-        front_right=config.front_right,
-        middle_right=config.middle_right,
-        back_right=config.back_right,
-        front_left=config.front_left,
-        middle_left=config.middle_left,
-        back_left=config.back_left,
+        right_1=config.right_1,
+        right_2=config.right_2,
+        right_3=config.right_3,
+        left_1=config.left_1,
+        left_2=config.left_2,
+        left_3=config.left_3,
         gear_ratio=0.625,
         wheel_diameter=3.25,
     )

@@ -12,26 +12,26 @@ from vex import *
 class Drivetrain:
     def __init__(
         self,
-        front_right: Motor,
-        middle_right: Motor,
-        back_right: Motor,
-        front_left: Motor,
-        middle_left: Motor,
-        back_left: Motor,
+        right_1: Motor,
+        right_2: Motor,
+        right_3: Motor,
+        left_1: Motor,
+        left_2: Motor,
+        left_3: Motor,
         gear_ratio: float,
         wheel_diameter: float,
     ) -> None:
-        self.right = [front_right, middle_right, back_right]
-        self.left = [front_left, middle_left, back_left]
+        self.right = [right_1, right_2, right_3]
+        self.left = [left_1, left_2, left_3]
 
         # The order of this list determines the motor starting and stopping order
         self.motors = [
-            back_right,
-            back_left,
-            middle_right,
-            middle_left,
-            front_right,
-            front_left,
+            right_3,
+            left_3,
+            right_2,
+            left_2,
+            right_1,
+            left_1,
         ]
 
         self.gear_ratio = gear_ratio
