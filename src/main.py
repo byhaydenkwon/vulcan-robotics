@@ -56,8 +56,8 @@ def main() -> None:
         left_1=config.left_1,
         left_2=config.left_2,
         left_3=config.left_3,
-        gear_ratio=0.625,
-        wheel_diameter=3.25,
+        gear_ratio=config.DRIVETRAIN_GEAR_RATIO,
+        wheel_diameter=config.DRIVETRAIN_WHEEL_DIAMETER,
     )
     scoring = Scoring(
         top_motor=config.top_motor,
@@ -96,8 +96,8 @@ def main() -> None:
         aligner=aligner,
         loader=loader,
         logger=logger,
-        velocity=100,
-        turn_velocity=69.42067,
+        velocity=config.DRIVER_VELOCITY,
+        turn_velocity=config.DRIVER_TURN_VELOCITY,
     )
     auto = AutonomousControl(
         drivetrain=drivetrain,
@@ -113,7 +113,7 @@ def main() -> None:
     # Selection screens and user interface
 
     auto_selection = Selection(
-        "images/vulcan-selection-screen.png",
+        config.AUTO_SELECTION_IMAGE,
         {
             SelectionButton(0, 0, 120, 136): lambda: auto.match_auton(LEFT),  # 1
             SelectionButton(0, 136, 120, 272): lambda: auto.match_auton(RIGHT),  # 2
@@ -124,7 +124,7 @@ def main() -> None:
     )
 
     win_point_selection = Selection(
-        "images/vulcan-wp-selection-screen.png",
+        config.AUTO_WP_SELECTION_IMAGE,
         {
             SelectionButton(0, 0, 240, 272): auto.i_do_nothing_replace_me,
             SelectionButton(240, 0, 480, 272): auto.i_do_nothing_replace_me,
