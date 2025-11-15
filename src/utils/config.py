@@ -7,12 +7,12 @@ from vex import *
 brain = Brain()
 
 # Drivetrain motors
-front_right = Motor(Ports.PORT13, GearSetting.RATIO_6_1, False)
-middle_right = Motor(Ports.PORT12, GearSetting.RATIO_6_1, False)
-back_right = Motor(Ports.PORT20, GearSetting.RATIO_6_1, False)
-front_left = Motor(Ports.PORT18, GearSetting.RATIO_6_1, True)
-middle_left = Motor(Ports.PORT19, GearSetting.RATIO_6_1, True)
-back_left = Motor(Ports.PORT11, GearSetting.RATIO_6_1, True)
+front_right = Motor(Ports.PORT1, GearSetting.RATIO_6_1, False)
+middle_right = Motor(Ports.PORT2, GearSetting.RATIO_6_1, False)
+back_right = Motor(Ports.PORT3, GearSetting.RATIO_6_1, False)
+front_left = Motor(Ports.PORT8, GearSetting.RATIO_6_1, True)
+middle_left = Motor(Ports.PORT9, GearSetting.RATIO_6_1, True)
+back_left = Motor(Ports.PORT10, GearSetting.RATIO_6_1, True)
 
 # Drivetrain torque
 front_right.set_max_torque(100, PERCENT)
