@@ -9,7 +9,7 @@ from utils.display import Logger, NullLogger
 
 from mechanisms.drivetrain import Drivetrain
 from mechanisms.scoring import Scoring
-from mechanisms.pneumatics import GoalAligner, MatchLoader
+from mechanisms.pneumatics import PneumaticToggle
 
 
 class DriverControl:
@@ -25,8 +25,8 @@ class DriverControl:
         drivetrain: Drivetrain,
         controller: Controller,
         scoring: Scoring,
-        aligner: GoalAligner,
-        loader: MatchLoader,
+        aligner: PneumaticToggle,
+        loader: PneumaticToggle,
         logger: Logger | NullLogger = NullLogger(),
         **kwargs,
     ) -> None:

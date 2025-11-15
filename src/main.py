@@ -11,7 +11,7 @@ from utils import config
 from utils.display import Logger, NullLogger, Selection, SelectionButton, UserInterface
 
 from mechanisms.scoring import Scoring
-from mechanisms.pneumatics import GoalAligner, MatchLoader
+from mechanisms.pneumatics import PneumaticToggle, NullPneumatic
 from mechanisms.drivetrain import Drivetrain
 
 from control.autonomous_control import AutonomousControl
@@ -66,18 +66,22 @@ def main() -> None:
         hopper_motor=config.hopper_motor,
         logger=logger,
     )
-    aligner = GoalAligner(
-        pneumatic=config.aligner_port,
-        internal_extended_bool=False,
-        default_extended_status=False,
-        logger=logger,
-    )
-    loader = MatchLoader(
-        pneumatic=config.match_loader_port,
-        internal_extended_bool=False,
-        default_extended_status=False,
-        logger=logger,
-    )
+    # aligner = PneumaticToggle(
+    #     pneumatic=config.aligner_port,
+    #     internal_extended_bool=False,
+    #     default_extended_status=False,
+    #     logger=logger,
+    #     name="Goal aligner",
+    # )
+    # loader = PneumaticToggle(
+    #     pneumatic=config.match_loader_port,
+    #     internal_extended_bool=False,
+    #     default_extended_status=False,
+    #     logger=logger,
+    #     name="Match loader",
+    # )
+    aligner = NullPneumatic()
+    loader = NullPneumatic()
 
     Thread(scoring.start_control_loop)
 

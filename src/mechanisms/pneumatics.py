@@ -66,35 +66,22 @@ class PneumaticToggle:
             self.extend()
 
 
-class GoalAligner(PneumaticToggle):
-    def __init__(
-        self,
-        pneumatic: DigitalOut,
-        internal_extended_bool: bool,
-        default_extended_status: bool,
-        logger: Logger | NullLogger,
-    ) -> None:
-        super().__init__(
-            pneumatic,
-            internal_extended_bool,
-            default_extended_status,
-            logger,
-            "Goal aligner",
-        )
+class NullPneumatic(PneumaticToggle):
+    """
+    Dummy pneumatics.
+    """
 
+    def __init__(self, *args, **kwargs) -> None:
+        self.name = "Dummy pneumatic"
+        self._EXTENDED_BOOL = True
+        self.pneumatic = None
+        self.extended = False
 
-class MatchLoader(PneumaticToggle):
-    def __init__(
-        self,
-        pneumatic: DigitalOut,
-        internal_extended_bool: bool,
-        default_extended_status: bool,
-        logger: Logger | NullLogger,
-    ) -> None:
-        super().__init__(
-            pneumatic,
-            internal_extended_bool,
-            default_extended_status,
-            logger,
-            "Match loader",
-        )
+    def extend(*args, **kwargs) -> None:
+        pass
+
+    def retract(*args, **kwargs) -> None:
+        pass
+
+    def toggle(*args, **kwargs) -> None:
+        pass

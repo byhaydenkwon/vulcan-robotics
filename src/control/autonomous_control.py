@@ -9,7 +9,7 @@ from utils.enums import ScoringTargets
 
 from mechanisms.drivetrain import Drivetrain
 from mechanisms.scoring import Scoring
-from mechanisms.pneumatics import GoalAligner, MatchLoader
+from mechanisms.pneumatics import PneumaticToggle
 
 
 class AutonomousExit(Exception):
@@ -30,8 +30,8 @@ class AutonomousControl:
         drivetrain: Drivetrain,
         scoring: Scoring,
         inertial: Inertial,
-        loader: MatchLoader,
-        aligner: GoalAligner,
+        loader: PneumaticToggle,
+        aligner: PneumaticToggle,
         logger: Logger | NullLogger = NullLogger(),
     ):
         self.drivetrain = drivetrain
