@@ -50,18 +50,17 @@ class AutonomousControl:
         RIGHT for positions 2 and 3; LEFT for positions 1 and 4.
         """
         try:
-            self.pivot_turn(5, goal_turn_direction, 5)
+            opposite_direction = LEFT if goal_turn_direction is RIGHT else RIGHT
+            self.pivot_turn(3, goal_turn_direction, 5)
             self.scoring.start_intake()
             self.drive(FORWARD, 40.0, 35)
-            wait(1, SECONDS)
-            self.drive(REVERSE, 35.0, 25)
-            self.scoring.stop_intake()
-            self.pivot_turn(75, goal_turn_direction, 20)
-            self.drive(FORWARD, 28.5, 25)
-            self.pivot_turn(85, LEFT if goal_turn_direction is RIGHT else RIGHT, 20)
-            self.aligner.extend()
-            self.drive(FORWARD, 30.0, 50)
-            self.scoring.output(ScoringTargets.HIGH)
+            wait(1.5, SECONDS)
+            self.drive(REVERSE, 8.0, 25)
+            self.scoring.stop_command(ScoringTargets.INTAKE)
+            self.pivot_turn(123, goal_turn_direction, 20)
+            self.drive(REVERSE, 2.5, 50)
+            self.scoring.output(ScoringTargets.MIDDLE)
+
         except AutonomousExit as e:
             self.logger.log(__name__, e.args[0])
 
