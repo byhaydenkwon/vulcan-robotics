@@ -4,11 +4,11 @@ Contains the DriverControl class with related drive and control functions.
 
 from vex import *
 
-from utils.enums import IntakeTargets
+from utils.enums import ScoringTargets
 from utils.display import Logger, NullLogger
 
 from mechanisms.drivetrain import Drivetrain
-from mechanisms.intake import Intake
+from mechanisms.scoring import Scoring
 from mechanisms.pneumatics import GoalAligner, MatchLoader
 
 
@@ -24,7 +24,7 @@ class DriverControl:
         mechanism_mode: str,
         drivetrain: Drivetrain,
         controller: Controller,
-        intake: Intake,
+        scoring: Scoring,
         aligner: GoalAligner,
         loader: MatchLoader,
         logger: Logger | NullLogger = NullLogger(),
@@ -43,7 +43,7 @@ class DriverControl:
 
         self.controller = controller
         self.drivetrain = drivetrain
-        self.intake = intake
+        self.scoring = scoring
         self.aligner = aligner
         self.loader = loader
 
@@ -117,27 +117,27 @@ class DriverControl:
         # autonomous period and immediately having the functions call
         # when the driver control period starts
         if self.controller.buttonR1.pressing():
-            self.intake.start_intake()
+            self.scoring.start_intake()
         else:
-            self.intake.stop_command(IntakeTargets.INTAKE)
+            self.scoring.stop_command(ScoringTargets.INTAKE)
 
         if self.controller.buttonR2.pressing():
-            self.intake.output(IntakeTargets.LOW)
+            self.scoring.output(ScoringTargets.LOW)
         else:
-            self.intake.stop_command(IntakeTargets.LOW)
+            self.scoring.stop_command(ScoringTargets.LOW)
 
         if self.controller.buttonL1.pressing():
-            self.intake.output(IntakeTargets.HIGH)
+            self.scoring.output(ScoringTargets.HIGH)
         else:
-            self.intake.stop_command(IntakeTargets.HIGH)
+            self.scoring.stop_command(ScoringTargets.HIGH)
 
         if self.controller.buttonL2.pressing():
-            self.intake.output(IntakeTargets.MIDDLE)
+            self.scoring.output(ScoringTargets.MIDDLE)
         else:
-            self.intake.stop_command(IntakeTargets.MIDDLE)
+            self.scoring.stop_command(ScoringTargets.MIDDLE)
 
         if self.controller.buttonDown.pressing():
-            self.intake.stop_intake()
+            self.scoring.stop_intake()
 
         # y: future wing control
         # left: future tube intake

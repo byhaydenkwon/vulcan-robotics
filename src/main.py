@@ -10,7 +10,7 @@ import urandom  # type: ignore
 from utils import config
 from utils.display import Logger, NullLogger, Selection, SelectionButton, UserInterface
 
-from mechanisms.intake import Intake
+from mechanisms.scoring import Scoring
 from mechanisms.pneumatics import GoalAligner, MatchLoader
 from mechanisms.drivetrain import Drivetrain
 
@@ -59,7 +59,7 @@ def main() -> None:
         gear_ratio=0.625,
         wheel_diameter=3.25,
     )
-    intake = Intake(
+    scoring = Scoring(
         bottom_motor=config.intake_bottom,
         top_motor=config.intake_top,
         hopper_motor=config.hopper,
@@ -78,7 +78,7 @@ def main() -> None:
         logger=logger,
     )
 
-    Thread(intake.start_control_loop)
+    Thread(scoring.start_control_loop)
 
     # Control
 
@@ -87,7 +87,7 @@ def main() -> None:
         mechanism_mode="standard",
         drivetrain=drivetrain,
         controller=config.controller_1,
-        intake=intake,
+        scoring=scoring,
         aligner=aligner,
         loader=loader,
         logger=logger,
@@ -96,7 +96,7 @@ def main() -> None:
     )
     auto = AutonomousControl(
         drivetrain=drivetrain,
-        intake=intake,
+        scoring=scoring,
         inertial=config.inertial_sensor,
         loader=loader,
         aligner=aligner,
