@@ -20,14 +20,17 @@ class Scoring:
 
     def __init__(
         self,
-        bottom_motor: Motor,
         top_motor: Motor,
+        middle_motor: Motor,
+        intake_motor: Motor,
         hopper_motor: Motor,
         logger: Logger | NullLogger = NullLogger(),
     ) -> None:
-        self.bottom = bottom_motor
         self.top = top_motor
+        self.middle = middle_motor
+        self.intake = intake_motor
         self.hopper = hopper_motor
+
         self.logger = logger
 
         self.target_states: dict[ScoringTargetValue, ScoringStateValue] = {
@@ -57,26 +60,31 @@ class Scoring:
                     pass  # this is REQUIRED or the robot will randomly break
 
             if active == ScoringStates.OFF:
-                self.bottom.stop()
                 self.top.stop()
+                self.middle.stop()
+                self.intake.stop()
                 self.hopper.stop()
             elif active == ScoringStates.INTAKING:
-                self.bottom.spin(FORWARD, 100, PERCENT)
                 self.top.stop()
+                self.middle.spin(FORWARD, 100, PERCENT)
+                self.intake.spin(FORWARD, 100, PERCENT)
                 self.hopper.spin(FORWARD, 100, PERCENT)
             elif active == ScoringStates.SCORING_LOW:
-                self.bottom.spin(REVERSE, 100, PERCENT)
                 self.top.stop()
+                self.middle.spin(REVERSE, 100, PERCENT)
+                self.intake.spin(REVERSE, 100, PERCENT)
                 self.hopper.spin(REVERSE, 100, PERCENT)
             elif active == ScoringStates.SCORING_MIDDLE:
-                self.bottom.spin(FORWARD, 100, PERCENT)
-                self.top.spin(FORWARD, 100, PERCENT)
+                self.top.spin(REVERSE, 100, PERCENT)
+                self.middle.spin(FORWARD, 100, PERCENT)
+                self.intake.stop()
                 self.hopper.spin(REVERSE, 100, PERCENT)
             elif active == ScoringStates.SCORING_HIGH:
-                self.bottom.spin(FORWARD, 100, PERCENT)
-                self.top.spin(REVERSE, 100, PERCENT)
+                self.top.spin(FORWARD, 100, PERCENT)
+                self.middle.spin(FORWARD, 100, PERCENT)
+                self.intake.stop()
                 self.hopper.spin(REVERSE, 100, PERCENT)
-            if len(self.stack) > 4:
+            if len(self.stack) > len(self.target_states):
                 self.stack = self.stack[4:]
                 # this prevents issues when the buttons are spammed extremely quickly
 

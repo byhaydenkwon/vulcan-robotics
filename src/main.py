@@ -60,9 +60,10 @@ def main() -> None:
         wheel_diameter=3.25,
     )
     scoring = Scoring(
-        bottom_motor=config.intake_bottom,
-        top_motor=config.intake_top,
-        hopper_motor=config.hopper,
+        top_motor=config.top_motor,
+        middle_motor=config.middle_motor,
+        intake_motor=config.intake_motor,
+        hopper_motor=config.hopper_motor,
         logger=logger,
     )
     aligner = GoalAligner(
