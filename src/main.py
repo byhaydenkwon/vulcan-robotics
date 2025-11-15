@@ -87,7 +87,7 @@ def main() -> None:
         drive_mode="split_arcade",
         mechanism_mode="standard",
         drivetrain=drivetrain,
-        controller=config.controller_1,
+        controller=config.controller,
         scoring=scoring,
         aligner=aligner,
         loader=loader,

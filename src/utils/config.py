@@ -35,4 +35,4 @@ inertial_sensor = Inertial(Ports.PORT16)
 aligner_port = DigitalOut(brain.three_wire_port.a)
 match_loader_port = DigitalOut(brain.three_wire_port.b)
 
-controller_1 = Controller(PRIMARY)
+controller = Controller(PRIMARY)
