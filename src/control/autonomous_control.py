@@ -51,7 +51,7 @@ class AutonomousControl:
         """
         try:
             opposite_direction = LEFT if goal_turn_direction is RIGHT else RIGHT
-            self.pivot_turn(3, goal_turn_direction, 5)
+            self.pivot_turn(1, goal_turn_direction, 5)
             self.scoring.start_intake()
             self.drive(FORWARD, 40.0, 35)
             wait(1.5, SECONDS)
