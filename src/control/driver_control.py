@@ -4,17 +4,17 @@ Contains the DriverControl class with related drive and control functions.
 
 from vex import *
 
-from utils.enums import IntakeTargets
+from utils.enums import ScoringTargets
 from utils.display import Logger, NullLogger
 
 from mechanisms.drivetrain import Drivetrain
-from mechanisms.intake import Intake
-from mechanisms.pneumatics import GoalAligner, MatchLoader
+from mechanisms.scoring import Scoring
+from mechanisms.pneumatics import PneumaticToggle
 
 
 class DriverControl:
     """
-    Driver control class. Set the initial control mode during initalization (must be valid).
+    Driver control class. Set the initial control mode during initialization (must be valid).
     Run start_control_loop() to start the driver control loop.
     """
 
@@ -24,9 +24,9 @@ class DriverControl:
         mechanism_mode: str,
         drivetrain: Drivetrain,
         controller: Controller,
-        intake: Intake,
-        aligner: GoalAligner,
-        loader: MatchLoader,
+        scoring: Scoring,
+        aligner: PneumaticToggle,
+        loader: PneumaticToggle,
         logger: Logger | NullLogger = NullLogger(),
         **kwargs,
     ) -> None:
@@ -43,7 +43,7 @@ class DriverControl:
 
         self.controller = controller
         self.drivetrain = drivetrain
-        self.intake = intake
+        self.scoring = scoring
         self.aligner = aligner
         self.loader = loader
 
@@ -117,31 +117,38 @@ class DriverControl:
         # autonomous period and immediately having the functions call
         # when the driver control period starts
         if self.controller.buttonR1.pressing():
-            self.intake.start_intake()
+            self.scoring.start_intake()
         else:
-            self.intake.stop_command(IntakeTargets.INTAKE)
+            self.scoring.stop_command(ScoringTargets.INTAKE)
 
         if self.controller.buttonR2.pressing():
-            self.intake.output(IntakeTargets.LOW)
+            self.scoring.output(ScoringTargets.LOW)
         else:
-            self.intake.stop_command(IntakeTargets.LOW)
-
-        if self.controller.buttonL1.pressing():
-            self.intake.output(IntakeTargets.HIGH)
-        else:
-            self.intake.stop_command(IntakeTargets.HIGH)
+            self.scoring.stop_command(ScoringTargets.LOW)
 
         if self.controller.buttonL2.pressing():
-            self.intake.output(IntakeTargets.MIDDLE)
+            self.scoring.output(ScoringTargets.HIGH)
         else:
-            self.intake.stop_command(IntakeTargets.MIDDLE)
+            self.scoring.stop_command(ScoringTargets.HIGH)
+
+        if self.controller.buttonL1.pressing():
+            self.scoring.output(ScoringTargets.MIDDLE)
+        else:
+            self.scoring.stop_command(ScoringTargets.MIDDLE)
 
         if self.controller.buttonDown.pressing():
-            self.intake.stop_intake()
+            self.scoring.stop_intake()
 
         # y: future wing control
         # left: future tube intake
 
     def _pre_register_mechanisms(self) -> None:
-        self.controller.buttonA.pressed(self.aligner.toggle)
-        self.controller.buttonY.pressed(self.loader.toggle)
+        def smart_toggle_pneumatics() -> None:
+            if self.aligner.extended:
+                self.loader.extend()
+                Timer().event(self.aligner.retract, 100)
+            else:
+                self.aligner.extend()
+                Timer().event(self.loader.retract, 100)
+
+        self.controller.buttonA.pressed(smart_toggle_pneumatics)

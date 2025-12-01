@@ -4,77 +4,87 @@ Contains the Intake class.
 
 from vex import *
 
-from utils.enums import IntakeStates, IntakeStateValue, IntakeTargets, IntakeTargetValue
+from utils.enums import (
+    ScoringStates,
+    ScoringStateValue,
+    ScoringTargets,
+    ScoringTargetValue,
+)
 from utils.display import Logger, NullLogger
 
 
-class Intake:
+class Scoring:
     """
-    A stack-based intake control class.
+    A stack-based scoring control class.
     """
 
     def __init__(
         self,
-        bottom_motor: Motor,
         top_motor: Motor,
+        middle_motor: Motor,
+        intake_motor: Motor,
         hopper_motor: Motor,
         logger: Logger | NullLogger = NullLogger(),
     ) -> None:
-        self.bottom = bottom_motor
         self.top = top_motor
+        self.middle = middle_motor
+        self.intake = intake_motor
         self.hopper = hopper_motor
+
         self.logger = logger
 
-        self.target_states: dict[IntakeTargetValue, IntakeStateValue] = {
-            IntakeTargets.INTAKE: IntakeStates.INTAKING,
-            IntakeTargets.LOW: IntakeStates.OUTTAKING_LOW,
-            IntakeTargets.MIDDLE: IntakeStates.OUTTAKING_MIDDLE,
-            IntakeTargets.HIGH: IntakeStates.OUTTAKING_HIGH,
+        self.target_states: dict[ScoringTargetValue, ScoringStateValue] = {
+            ScoringTargets.INTAKE: ScoringStates.INTAKING,
+            ScoringTargets.LOW: ScoringStates.SCORING_LOW,
+            ScoringTargets.MIDDLE: ScoringStates.SCORING_MIDDLE,
+            ScoringTargets.HIGH: ScoringStates.SCORING_HIGH,
         }
 
         # Okay, technically not a stack. Last in is not always first out.
         # But close enough.
-        self.stack: list[IntakeStateValue] = []
+        self.stack: list[ScoringStateValue] = []
 
         self._next_stop_control = False
 
     def start_control_loop(self) -> None:
         """
-        Starts the intake stack control loop.
+        Starts the scoring stack control loop.
         """
         while not self._next_stop_control:
             if not self.stack:
-                active = IntakeStates.OFF
+                active = ScoringStates.OFF
             else:
                 try:
                     active = self.stack[-1]
                 except IndexError:
-                    from utils import config
+                    pass  # this is REQUIRED or the robot will randomly break
 
-                    config.brain.screen.clear_screen(Color.RED)
-                    # if the error is fixed ever
-
-            if active == IntakeStates.OFF:
-                self.bottom.stop()
+            if active == ScoringStates.OFF:
                 self.top.stop()
+                self.middle.stop()
+                self.intake.stop()
                 self.hopper.stop()
-            elif active == IntakeStates.INTAKING:
-                self.bottom.spin(FORWARD, 100, PERCENT)
+            elif active == ScoringStates.INTAKING:
                 self.top.stop()
+                self.middle.spin(FORWARD, 100, PERCENT)
+                self.intake.spin(FORWARD, 100, PERCENT)
                 self.hopper.spin(FORWARD, 100, PERCENT)
-            elif active == IntakeStates.OUTTAKING_LOW:
-                self.bottom.spin(REVERSE, 100, PERCENT)
+            elif active == ScoringStates.SCORING_LOW:
                 self.top.stop()
+                self.middle.spin(REVERSE, 100, PERCENT)
+                self.intake.spin(REVERSE, 100, PERCENT)
                 self.hopper.spin(REVERSE, 100, PERCENT)
-            elif active == IntakeStates.OUTTAKING_MIDDLE:
-                self.bottom.spin(FORWARD, 100, PERCENT)
-                self.top.spin(FORWARD, 100, PERCENT)
-                self.hopper.spin(REVERSE, 100, PERCENT)
-            elif active == IntakeStates.OUTTAKING_HIGH:
-                self.bottom.spin(FORWARD, 100, PERCENT)
+            elif active == ScoringStates.SCORING_MIDDLE:
                 self.top.spin(REVERSE, 100, PERCENT)
+                self.middle.spin(FORWARD, 100, PERCENT)
+                self.intake.stop()
                 self.hopper.spin(REVERSE, 100, PERCENT)
-            if len(self.stack) > 4:
+            elif active == ScoringStates.SCORING_HIGH:
+                self.top.spin(FORWARD, 100, PERCENT)
+                self.middle.spin(FORWARD, 100, PERCENT)
+                self.intake.stop()
+                self.hopper.spin(REVERSE, 100, PERCENT)
+            if len(self.stack) > len(self.target_states):
                 self.stack = self.stack[4:]
                 # this prevents issues when the buttons are spammed extremely quickly
 
@@ -82,7 +92,7 @@ class Intake:
 
     def stop_control_loop(self) -> None:
         """
-        Stops the intake control loop.
+        Stops the scoring control loop.
         """
         self._next_stop_control = True
 
@@ -92,22 +102,22 @@ class Intake:
         Runs indefinitely if no duration is provided.
         """
 
-        if IntakeStates.INTAKING not in self.stack:
-            self.stack.append(IntakeStates.INTAKING)
+        if ScoringStates.INTAKING not in self.stack:
+            self.stack.append(ScoringStates.INTAKING)
 
         if duration:
             timer = Timer()
-            timer.event(lambda: self.stop_command(IntakeTargets.INTAKE), duration)
+            timer.event(lambda: self.stop_command(ScoringTargets.INTAKE), duration)
 
         self.logger.log(
             __name__,
-            "Starting intake + "
+            "Starting scoring + "
             + ("for " + str(duration) + "ms" if duration else "indefinitely"),
         )
 
-    def output(self, target: IntakeTargetValue, duration: int | None = None):
+    def output(self, target: ScoringTargetValue, duration: int | None = None):
         """
-        Outputs the intake at the specified level for a duration in milliseconds.
+        Outputs blocks at the specified level for a duration in milliseconds.
         Runs indefinitely if no duration is provided.
         """
         try:
@@ -127,9 +137,9 @@ class Intake:
             new_state + ("for " + str(duration) + "ms" if duration else "indefinitely"),
         )
 
-    def stop_command(self, stop: IntakeTargetValue) -> None:
+    def stop_command(self, stop: ScoringTargetValue) -> None:
         """
-        Removes all IntakeStates of the passed IntakeTarget from the command stack.
+        Removes all ScoringStates of the passed ScoringTarget from the command stack.
         """
         # Remove everything, because there should never be duplicates.
         self.stack = [
@@ -139,7 +149,7 @@ class Intake:
 
     def stop_intake(self) -> None:
         """
-        Completely stops the intake by resetting the intake command stack.
+        Completely stops scoring by resetting the command stack.
         """
         self.stack = []
-        self.logger.log(__name__, "Stopping all intake commands")
+        self.logger.log(__name__, "Stopping all scoring commands")

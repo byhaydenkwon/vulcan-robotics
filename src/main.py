@@ -10,8 +10,8 @@ import urandom  # type: ignore
 from utils import config
 from utils.display import Logger, NullLogger, Selection, SelectionButton, UserInterface
 
-from mechanisms.intake import Intake
-from mechanisms.pneumatics import GoalAligner, MatchLoader
+from mechanisms.scoring import Scoring
+from mechanisms.pneumatics import PneumaticToggle, NullPneumatic
 from mechanisms.drivetrain import Drivetrain
 
 from control.autonomous_control import AutonomousControl
@@ -50,35 +50,40 @@ def main() -> None:
 
     # Subsystems, components, and control
     drivetrain = Drivetrain(
-        front_right=config.front_right,
-        middle_right=config.middle_right,
-        back_right=config.back_right,
-        front_left=config.front_left,
-        middle_left=config.middle_left,
-        back_left=config.back_left,
-        gear_ratio=0.625,
-        wheel_diameter=3.25,
+        right_1=config.right_1,
+        right_2=config.right_2,
+        right_3=config.right_3,
+        left_1=config.left_1,
+        left_2=config.left_2,
+        left_3=config.left_3,
+        gear_ratio=config.DRIVETRAIN_GEAR_RATIO,
+        wheel_diameter=config.DRIVETRAIN_WHEEL_DIAMETER,
     )
-    intake = Intake(
-        bottom_motor=config.intake_bottom,
-        top_motor=config.intake_top,
-        hopper_motor=config.hopper,
+    scoring = Scoring(
+        top_motor=config.top_motor,
+        middle_motor=config.middle_motor,
+        intake_motor=config.intake_motor,
+        hopper_motor=config.hopper_motor,
         logger=logger,
     )
-    aligner = GoalAligner(
-        pneumatic=config.aligner_port,
-        internal_extended_bool=False,
-        default_extended_status=False,
-        logger=logger,
-    )
-    loader = MatchLoader(
-        pneumatic=config.match_loader_port,
-        internal_extended_bool=False,
-        default_extended_status=False,
-        logger=logger,
-    )
+    # aligner = PneumaticToggle(
+    #     pneumatic=config.aligner_port,
+    #     internal_extended_bool=False,
+    #     default_extended_status=False,
+    #     logger=logger,
+    #     name="Goal aligner",
+    # )
+    # loader = PneumaticToggle(
+    #     pneumatic=config.match_loader_port,
+    #     internal_extended_bool=False,
+    #     default_extended_status=False,
+    #     logger=logger,
+    #     name="Match loader",
+    # )
+    aligner = NullPneumatic()
+    loader = NullPneumatic()
 
-    Thread(intake.start_control_loop)
+    Thread(scoring.start_control_loop)
 
     # Control
 
@@ -86,29 +91,29 @@ def main() -> None:
         drive_mode="split_arcade",
         mechanism_mode="standard",
         drivetrain=drivetrain,
-        controller=config.controller_1,
-        intake=intake,
+        controller=config.controller,
+        scoring=scoring,
         aligner=aligner,
         loader=loader,
         logger=logger,
-        velocity=100,
-        turn_velocity=69.42067,
+        velocity=config.DRIVER_VELOCITY,
+        turn_velocity=config.DRIVER_TURN_VELOCITY,
     )
     auto = AutonomousControl(
         drivetrain=drivetrain,
-        intake=intake,
+        scoring=scoring,
         inertial=config.inertial_sensor,
         loader=loader,
         aligner=aligner,
         logger=logger,
     )
 
-    logger.log(__name__, "All subsystems successfully initalized")
+    logger.log(__name__, "All subsystems successfully initialized")
 
     # Selection screens and user interface
 
     auto_selection = Selection(
-        "images/vulcan-selection-screen.png",
+        config.AUTO_SELECTION_IMAGE,
         {
             SelectionButton(0, 0, 120, 136): lambda: auto.match_auton(LEFT),  # 1
             SelectionButton(0, 136, 120, 272): lambda: auto.match_auton(RIGHT),  # 2
@@ -119,7 +124,7 @@ def main() -> None:
     )
 
     win_point_selection = Selection(
-        "images/vulcan-wp-selection-screen.png",
+        config.AUTO_WP_SELECTION_IMAGE,
         {
             SelectionButton(0, 0, 240, 272): auto.i_do_nothing_replace_me,
             SelectionButton(240, 0, 480, 272): auto.i_do_nothing_replace_me,

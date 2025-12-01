@@ -5,11 +5,11 @@ Contains the AutonomousControl class for autonomous code.
 from vex import *
 
 from utils.display import Logger, NullLogger
-from utils.enums import IntakeTargets
+from utils.enums import ScoringTargets
 
 from mechanisms.drivetrain import Drivetrain
-from mechanisms.intake import Intake
-from mechanisms.pneumatics import GoalAligner, MatchLoader
+from mechanisms.scoring import Scoring
+from mechanisms.pneumatics import PneumaticToggle
 
 
 class AutonomousExit(Exception):
@@ -28,14 +28,14 @@ class AutonomousControl:
     def __init__(
         self,
         drivetrain: Drivetrain,
-        intake: Intake,
+        scoring: Scoring,
         inertial: Inertial,
-        loader: MatchLoader,
-        aligner: GoalAligner,
+        loader: PneumaticToggle,
+        aligner: PneumaticToggle,
         logger: Logger | NullLogger = NullLogger(),
     ):
         self.drivetrain = drivetrain
-        self.intake = intake
+        self.scoring = scoring
         self.loader = loader
         self.aligner = aligner
 
@@ -50,24 +50,23 @@ class AutonomousControl:
         RIGHT for positions 2 and 3; LEFT for positions 1 and 4.
         """
         try:
-            self.pivot_turn(5, goal_turn_direction, 7)
-            self.intake.start_intake()
+            opposite_direction = LEFT if goal_turn_direction is RIGHT else RIGHT
+            self.pivot_turn(1, goal_turn_direction, 5)
+            self.scoring.start_intake()
             self.drive(FORWARD, 40.0, 35)
-            wait(1, SECONDS)
-            self.drive(REVERSE, 35.0, 25)
-            self.intake.stop_intake()
-            self.pivot_turn(75, goal_turn_direction, 20)
-            self.drive(FORWARD, 28.5, 25)
-            self.pivot_turn(90, LEFT if goal_turn_direction is RIGHT else RIGHT, 20)
-            self.aligner.extend()
-            self.drive(FORWARD, 23.0, 50)
-            self.intake.output(IntakeTargets.HIGH)
+            wait(1.5, SECONDS)
+            self.drive(REVERSE, 8.0, 25)
+            self.scoring.stop_command(ScoringTargets.INTAKE)
+            self.pivot_turn(123, goal_turn_direction, 20)
+            self.drive(REVERSE, 2.5, 50)
+            self.scoring.output(ScoringTargets.MIDDLE)
+
         except AutonomousExit as e:
             self.logger.log(__name__, e.args[0])
 
     def skills_auton(self) -> None:
-        self.intake.output(IntakeTargets.LOW)
-        self.drive(FORWARD, 20, 100)
+        self.scoring.output(ScoringTargets.LOW)
+        self.drive(FORWARD, 24, 60)
 
     def drive(
         self,
@@ -111,9 +110,9 @@ class AutonomousControl:
             lower_turn_difference = turn_target - turn_target * 0.25
             upper_turn_difference = turn_target + turn_target * 0.25
         else:
-            lower_turn_difference = turn_target - 5
-            upper_turn_difference = turn_target + 5
-        # Allow for 5 degrees of error in each direction, or ten degrees total.
+            lower_turn_difference = turn_target - 2.5
+            upper_turn_difference = turn_target + 2.5
+        # Allow for 2.5 degrees of error in each direction, or 5 degrees total.
         # 25% if the target itself is less than 6 degrees; maximum 3 deg total range in this case.
         # Try adjusting this value if it doesn't like turning lower values.
 
@@ -142,7 +141,7 @@ class AutonomousControl:
         # raise AutonomousExit in drivetrain functions if routine not finished
         self._stop = True
         self.drivetrain.stop_motors()
-        self.intake.stop_intake()
+        self.scoring.stop_intake()
         self.logger.log(__name__, "Autonomous code stopped")
 
     @staticmethod
