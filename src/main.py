@@ -108,7 +108,7 @@ def main() -> None:
         logger=logger,
     )
 
-    logger.log(__name__, "All subsystems successfully initalized")
+    logger.log(__name__, "All subsystems successfully initialized")
 
     # Selection screens and user interface
 

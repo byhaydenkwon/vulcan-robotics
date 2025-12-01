@@ -1,5 +1,5 @@
 """
-The pnuematic piston aligner at the front of the robot.
+The pneumatic piston aligner at the front of the robot.
 """
 
 from vex import *

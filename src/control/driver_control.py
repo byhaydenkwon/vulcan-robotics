@@ -14,7 +14,7 @@ from mechanisms.pneumatics import PneumaticToggle
 
 class DriverControl:
     """
-    Driver control class. Set the initial control mode during initalization (must be valid).
+    Driver control class. Set the initial control mode during initialization (must be valid).
     Run start_control_loop() to start the driver control loop.
     """
 
