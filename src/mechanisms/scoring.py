@@ -75,12 +75,12 @@ class Scoring:
                 self.middle.spin(REVERSE, 100, PERCENT)
                 self.intake.spin(REVERSE, 100, PERCENT)
                 self.hopper.spin(REVERSE, 100, PERCENT)
-            elif active == ScoringStates.SCORING_MIDDLE:
+            elif active == ScoringStates.SCORING_HIGH:
                 self.top.spin(REVERSE, 100, PERCENT)
                 self.middle.spin(FORWARD, 100, PERCENT)
                 self.intake.stop()
                 self.hopper.spin(REVERSE, 100, PERCENT)
-            elif active == ScoringStates.SCORING_HIGH:
+            elif active == ScoringStates.SCORING_MIDDLE:
                 self.top.spin(FORWARD, 100, PERCENT)
                 self.middle.spin(FORWARD, 100, PERCENT)
                 self.intake.stop()
