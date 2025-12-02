@@ -80,8 +80,14 @@ def main() -> None:
     #     logger=logger,
     #     name="Match loader",
     # )
+    loader = PneumaticToggle(
+        pneumatic=config.aligner_port,
+        internal_extended_bool=True,
+        default_extended_status=False,
+        logger=logger,
+        name="Goal aligner",
+    )
     aligner = NullPneumatic()
-    loader = NullPneumatic()
 
     Thread(scoring.start_control_loop)
 

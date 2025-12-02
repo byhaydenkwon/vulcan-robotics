@@ -143,12 +143,4 @@ class DriverControl:
         # left: future tube intake
 
     def _pre_register_mechanisms(self) -> None:
-        def smart_toggle_pneumatics() -> None:
-            if self.aligner.extended:
-                self.loader.extend()
-                Timer().event(self.aligner.retract, 100)
-            else:
-                self.aligner.extend()
-                Timer().event(self.loader.retract, 100)
-
-        self.controller.buttonA.pressed(smart_toggle_pneumatics)
+        self.controller.buttonA.pressed(self.loader.toggle)
