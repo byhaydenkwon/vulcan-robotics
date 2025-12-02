@@ -5,6 +5,7 @@ class ScoringStates:
     SCORING_LOW = "SCORING_LOW"
     SCORING_MIDDLE = "SCORING_MIDDLE"
     SCORING_HIGH = "SCORING_HIGH"
+    FLUSHING = "FLUSHING"
     JAMMED = "JAMMED"  # not currently used
 
 
@@ -19,6 +20,7 @@ class ScoringTargets:
     LOW = "LOW"
     MIDDLE = "MIDDLE"
     HIGH = "HIGH"
+    FLUSH = "FLUSH"
 
 
 ScoringTargetValue = str

@@ -136,8 +136,10 @@ class DriverControl:
         else:
             self.scoring.stop_command(ScoringTargets.MIDDLE)
 
-        if self.controller.buttonDown.pressing():
-            self.scoring.stop_intake()
+        if self.controller.buttonRight.pressing():
+            self.scoring.output(ScoringTargets.FLUSH)
+        else:
+            self.scoring.stop_command(ScoringTargets.FLUSH)
 
         # y: future wing control
         # left: future tube intake

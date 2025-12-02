@@ -38,6 +38,7 @@ class Scoring:
             ScoringTargets.LOW: ScoringStates.SCORING_LOW,
             ScoringTargets.MIDDLE: ScoringStates.SCORING_MIDDLE,
             ScoringTargets.HIGH: ScoringStates.SCORING_HIGH,
+            ScoringTargets.FLUSH: ScoringStates.FLUSHING,
         }
 
         # Okay, technically not a stack. Last in is not always first out.
@@ -84,8 +85,13 @@ class Scoring:
                 self.middle.spin(FORWARD, 100, PERCENT)
                 self.intake.stop()
                 self.hopper.spin(REVERSE, 100, PERCENT)
+            elif active == ScoringStates.FLUSHING:
+                self.top.spin(FORWARD, 100, PERCENT)
+                self.middle.spin(FORWARD, 100, PERCENT)
+                self.intake.spin(FORWARD, 100, PERCENT)
+                self.hopper.spin(REVERSE, 100, PERCENT)
             if len(self.stack) > len(self.target_states):
-                self.stack = self.stack[4:]
+                self.stack = self.stack[5:]
                 # this prevents issues when the buttons are spammed extremely quickly
 
             wait(15, MSEC)
