@@ -1,4 +1,6 @@
 #include "main.h"
+
+#include "config.hpp"
 #include "lemlib/chassis/chassis.hpp"
 #include "lemlib/chassis/trackingWheel.hpp"
 #include "pros/rotation.hpp"
@@ -35,7 +37,7 @@ lemlib::ControllerSettings lateral_controller(
     3,    // large error range, in inches
     500,  // large error range timeout, in milliseconds
     20    // maximum acceleration (slew)
-    );
+);
 
 // angular PID controller
 lemlib::ControllerSettings angular_controller(
@@ -48,7 +50,7 @@ lemlib::ControllerSettings angular_controller(
     3,    // large error range, in degrees
     500,  // large error range timeout, in milliseconds
     0     // maximum acceleration (slew)
-    );
+);
 
 lemlib::Chassis chassis(drivetrain, lateral_controller, angular_controller,
                         sensors);
