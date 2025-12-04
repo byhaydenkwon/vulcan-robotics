@@ -15,7 +15,7 @@ inline const std::vector<int> DT_LEFT_PORTS{11, 12, -13};
 // gearset and wheels. use lemlib::Omniwheel namespace, since many wheels'
 // names are different from their actual size
 constexpr pros::MotorGearset DT_GEARSET{pros::MotorGearset::blue};
-constexpr float DT_WHEELS{lemlib::Omniwheel::NEW_325};
+constexpr float DT_WHEELS{lemlib::Omniwheel::NEW_2};
 
 // width of the robot, measured from middle of wheels
 constexpr float DT_TRACK_WIDTH{13.875};
