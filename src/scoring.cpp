@@ -62,6 +62,14 @@ class Scoring {
         target_states{State::ScoringLow, State::ScoringMiddle,
                       State::ScoringHigh};
 
+    void control_loop() {}
+
+    void spin_score_intake() {}
+    void spin_score_flush() {}
+    void spin_score_low() {}
+    void spin_score_middle() {}
+    void spin_score_high() {}
+
     pros::Motor top_;
     pros::Motor middle_;
     pros::Motor intake_;
