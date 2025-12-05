@@ -13,6 +13,8 @@
 void initialize() {
     pros::lcd::initialize();  // initialize brain screen
     config::chassis.calibrate();
+
+    config::scoring.start_control_loop();
 }
 
 /**
