@@ -39,8 +39,8 @@ constexpr bool LOADER_EXTENDED_IS_LOW{false};
 
 // odometry
 constexpr int IMU_PORT{17};
-constexpr int ROTATION_PARALLEL_PORT{-9};
-constexpr int ROTATION_PERPENDICULAR_PORT{20};
+constexpr int ROTATION_PARALLEL_PORT{9};
+constexpr int ROTATION_PERPENDICULAR_PORT{19};
 constexpr float TRACKING_WHEELS{lemlib::Omniwheel::NEW_2};
 
 constexpr float PARALLEL_TRACKING_OFFSET{-2.125};  // left is negative
@@ -98,15 +98,15 @@ lemlib::ControllerSettings lateral_controller(
 );
 
 lemlib::ControllerSettings angular_controller(
-    2,    // proportional gain (kP)
-    0,    // integral gain (kI)
-    10,   // derivative gain (kD)
-    3,    // anti windup
-    1,    // small error range, in degrees
-    100,  // small error range timeout, in milliseconds
-    3,    // large error range, in degrees
-    500,  // large error range timeout, in milliseconds
-    0     // maximum acceleration (slew)
+    3,   // proportional gain (kP)
+    0,   // integral gain (kI)
+    12,  // derivative gain (kD)
+    0,   // anti windup
+    0,   // small error range, in degrees
+    0,   // small error range timeout, in milliseconds
+    0,   // large error range, in degrees
+    0,   // large error range timeout, in milliseconds
+    0    // maximum acceleration (slew)
 );
 
 lemlib::Chassis chassis(drivetrain, lateral_controller, angular_controller,
