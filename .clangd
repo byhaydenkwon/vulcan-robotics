@@ -1,2 +1,7 @@
 CompileFlags:
   Remove: ["-mfloat-abi=", "-mfpu=", "-mcpu="]
+
+Diagnostics:
+  ClangTidy:
+    Add: ["modernize*", "bugprone-*", "performance*-"]
+  UnusedIncludes: None
