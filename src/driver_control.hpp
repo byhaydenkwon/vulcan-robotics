@@ -9,18 +9,21 @@
 /// Driver control class.
 class DriverControl {
    public:
-    DriverControl(lemlib::Chassis chassis, pros::Controller controller,
-                  Scoring scoring, pros::adi::Pneumatics aligner,
-                  pros::adi::Pneumatics loader)
+    DriverControl(lemlib::Chassis& chassis, pros::Controller& controller,
+                  Scoring& scoring, pros::adi::Pneumatics& aligner,
+                  pros::adi::Pneumatics& loader, int drive_velocity,
+                  int turn_velocity)
         : chassis_{chassis},
           controller_{controller},
           scoring_{scoring},
           aligner_{aligner},
-          loader_{loader} {}
+          loader_{loader},
+          drive_velocity_{drive_velocity},
+          turn_velocity_{turn_velocity} {}
 
-    control_loop() {
+    void control_loop() {
         while (true) {
-            split_arcade_drive();
+            split_arcade_drive(drive_velocity_, turn_velocity_);
             mechanism_control();
         }
     }
@@ -29,13 +32,13 @@ class DriverControl {
     void split_arcade_drive(int drive_velocity, int turn_velocity);
     void mechanism_control();
 
-    int drive_velocity{100.0};
-    int turn_velocity{75.0};
+    int drive_velocity_{100};
+    int turn_velocity_{75};
 
-    lemlib::Chassis chassis_;
-    pros::Controller controller_;
+    lemlib::Chassis& chassis_;
+    pros::Controller& controller_;
 
-    Scoring scoring_;
-    pros::adi::Pneumatics aligner;
-    pros::adi::Pneumatics loader;
-}
+    Scoring& scoring_;
+    pros::adi::Pneumatics& aligner_;
+    pros::adi::Pneumatics& loader_;
+};
