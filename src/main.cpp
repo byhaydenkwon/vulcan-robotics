@@ -1,9 +1,7 @@
 #include "main.h"
 
 #include "config.hpp"
-#include "lemlib/chassis/chassis.hpp"
-#include "lemlib/chassis/trackingWheel.hpp"
-#include "pros/rotation.hpp"
+#include "lemlib/api.hpp"
 
 pros::Controller controller(pros::E_CONTROLLER_MASTER);
 
