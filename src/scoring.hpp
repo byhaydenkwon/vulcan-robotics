@@ -64,7 +64,7 @@ class Scoring {
     void spin_score_middle();
     void spin_score_low();
 
-    static void spin_motor_percent(pros::Motor motor, int percent);
+    static void spin_motor_percent(const pros::Motor& motor, float percent);
 
     pros::Motor top_;
     pros::Motor middle_;

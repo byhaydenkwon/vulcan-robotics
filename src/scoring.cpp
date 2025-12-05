@@ -116,7 +116,7 @@ void Scoring::spin_score_low() {
 
 /// Spin a `pros::Motor` based on percentage of max velocity, rounded up to
 /// the nearest RPM.
-static void spin_motor_percent(const pros::Motor& motor, float percent) {
+void Scoring::spin_motor_percent(const pros::Motor& motor, float percent) {
     int max_rpm;
     const pros::MotorGears gearset{motor.get_gearing()};
 
