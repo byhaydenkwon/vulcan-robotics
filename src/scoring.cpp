@@ -1,8 +1,9 @@
 /// The scoring mechanism.
 #include "scoring.hpp"
 
-#include <array>
 #include <cmath>
+#include <ranges>
+#include <vector>
 
 #include "lemlib/api.hpp"
 #include "main.h"
@@ -19,9 +20,11 @@ Scoring::State Scoring::get_state_for_score_target(
 }
 
 void Scoring::push_active_state(Scoring::State state) {
+    // * we don't risk stopping the entire robot
     if (state_list_mutex_.take(200)) {
-        // * we don't risk stopping the entire robot
-        active_state_list_.push_back(state);
+        if (!std::ranges::contains(active_state_list_, state)) {
+            active_state_list_.push_back(state);
+        }
         state_list_mutex_.give();
     } else {
         printf("STATE LIST MUTEX TIMED OUT WHILE PUSHING STATE\n");
