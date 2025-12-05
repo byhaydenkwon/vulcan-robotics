@@ -96,19 +96,19 @@ void Scoring::spin_flush() {
     spin_motor_percent(hopper_, -100);
 }
 void Scoring::spin_score_high() {
-    spin_motor_percent(top_, 100);
-    spin_motor_percent(middle_, 100);
-    intake_.brake();
-    spin_motor_percent(hopper_, -100);
-}
-void Scoring::spin_score_middle() {
     spin_motor_percent(top_, -100);
     spin_motor_percent(middle_, 100);
     intake_.brake();
     spin_motor_percent(hopper_, -100);
 }
+void Scoring::spin_score_middle() {
+    spin_motor_percent(top_, 100);
+    spin_motor_percent(middle_, 100);
+    intake_.brake();
+    spin_motor_percent(hopper_, -100);
+}
 void Scoring::spin_score_low() {
-    top_.brake();
+    spin_motor_percent(top_, 100);
     spin_motor_percent(middle_, -100);
     spin_motor_percent(intake_, -100);
     spin_motor_percent(hopper_, -100);
