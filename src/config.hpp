@@ -34,11 +34,8 @@ constexpr int MIDDLE_MOTOR_PORT{-10};
 constexpr int HOPPER_MOTOR_PORT{-2};
 
 // pneumatics
-constexpr int ALIGNER_PORT{'a'};
-constexpr int LOADER_PORT{'b'};
-
-constexpr bool ALIGNER_EXTENDED_IS_LOW{true};
-constexpr bool LOADER_EXTENDED_IS_LOW{true};
+constexpr int LOADER_PORT{'a'};
+constexpr bool LOADER_EXTENDED_IS_LOW{false};
 
 // odometry
 constexpr int IMU_PORT{17};
@@ -71,7 +68,6 @@ pros::Motor middle_motor(MIDDLE_MOTOR_PORT);
 pros::Motor hopper_motor(HOPPER_MOTOR_PORT);
 
 // pneumatics
-pros::adi::Pneumatics aligner(ALIGNER_PORT, false, ALIGNER_EXTENDED_IS_LOW);
 pros::adi::Pneumatics loader(LOADER_PORT, false, LOADER_EXTENDED_IS_LOW);
 
 // odometry
@@ -118,6 +114,6 @@ lemlib::Chassis chassis(drivetrain, lateral_controller, angular_controller,
 
 // code
 Scoring scoring(top_motor, middle_motor, intake_motor, hopper_motor);
-DriverControl driver_control(chassis, controller, scoring, aligner, loader,
+DriverControl driver_control(chassis, controller, scoring, loader,
                              DRIVE_VELOCITY_PERCENT, TURN_VELOCITY_PERCENT);
 }  // namespace config
