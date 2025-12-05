@@ -1,57 +1,8 @@
 #include "main.h"
 
 #include "config.hpp"
+#include "driver_control.hpp"
 #include "lemlib/api.hpp"
-
-pros::Controller controller(pros::E_CONTROLLER_MASTER);
-
-pros::MotorGroup left_motors({-14, -15, 16}, pros::MotorGearset::ratio_6_to_1);
-pros::MotorGroup right_motors({11, 12, -13}, pros::MotorGearset::ratio_6_to_1);
-
-const lemlib::Drivetrain drivetrain(&left_motors, &right_motors, 13.875,
-                                    lemlib::Omniwheel::NEW_325, 600, 2);
-
-pros::Imu imu(17);
-
-pros::Rotation parallel_sensor(-9);
-pros::Rotation perpendicular_sensor(20);
-
-lemlib::TrackingWheel parallel_wheel(&parallel_sensor, lemlib::Omniwheel::NEW_2,
-                                     -2.125);
-lemlib::TrackingWheel perpendicular_wheel(&perpendicular_sensor,
-                                          lemlib::Omniwheel::NEW_2, -0.6875);
-
-lemlib::OdomSensors sensors(&parallel_wheel, nullptr, &perpendicular_wheel,
-                            nullptr, &imu);
-
-// lateral PID controller
-lemlib::ControllerSettings lateral_controller(
-    10,   // proportional gain (kP)
-    0,    // integral gain (kI)
-    3,    // derivative gain (kD)
-    3,    // anti windup
-    1,    // small error range, in inches
-    100,  // small error range timeout, in milliseconds
-    3,    // large error range, in inches
-    500,  // large error range timeout, in milliseconds
-    20    // maximum acceleration (slew)
-);
-
-// angular PID controller
-lemlib::ControllerSettings angular_controller(
-    2,    // proportional gain (kP)
-    0,    // integral gain (kI)
-    10,   // derivative gain (kD)
-    3,    // anti windup
-    1,    // small error range, in degrees
-    100,  // small error range timeout, in milliseconds
-    3,    // large error range, in degrees
-    500,  // large error range timeout, in milliseconds
-    0     // maximum acceleration (slew)
-);
-
-lemlib::Chassis chassis(drivetrain, lateral_controller, angular_controller,
-                        sensors);
 
 /**
  * Runs initialization code. This occurs as soon as the program is started.
@@ -61,7 +12,7 @@ lemlib::Chassis chassis(drivetrain, lateral_controller, angular_controller,
  */
 void initialize() {
     pros::lcd::initialize();  // initialize brain screen
-    chassis.calibrate();
+    config::chassis.calibrate();
 }
 
 /**
@@ -93,11 +44,7 @@ void competition_initialize() {}
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-void autonomous() {
-    chassis.setPose(0, 0, 0);
-
-    chassis.turnToHeading(90, 1000000);
-}
+void autonomous() { config::chassis.turnToHeading(90, 100000); }
 
 /**
  * Runs the operator control code. This function will be started in its own task
@@ -112,13 +59,4 @@ void autonomous() {
  * operator control task will be stopped. Re-enabling the robot will restart the
  * task, not resume it from where it left off.
  */
-void opcontrol() {
-    while (true) {
-        int y_input = controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
-        int x_input = controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
-
-        chassis.arcade(y_input, x_input, true);
-
-        pros::delay(20);
-    }
-}
+void opcontrol() { config::driver_control.control_loop(); }
