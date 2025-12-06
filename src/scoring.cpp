@@ -90,7 +90,7 @@ void Scoring::spin_intake() {
     spin_motor_percent(hopper_, 100);
 }
 void Scoring::spin_flush() {
-    spin_motor_percent(top_, -100);
+    spin_motor_percent(top_, 100);
     spin_motor_percent(middle_, 100);
     spin_motor_percent(intake_, 100);
     spin_motor_percent(hopper_, -100);
