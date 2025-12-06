@@ -6,8 +6,6 @@
 
 using namespace config;
 
-ASSET(match_auton_txt);
-
 /**
  * Runs initialization code. This occurs as soon as the program is started.
  *
@@ -52,7 +50,15 @@ void competition_initialize() {}
  */
 void autonomous() {
     chassis.setPose(0, 0, 0);
-    chassis.follow(match_auton_txt, 2, 15000);
+    chassis.moveToPose(-4.028, 29.942, 270, 2300, {}, false);
+    loader.extend();
+    chassis.moveToPoint(-5.583, 29.942, 1000, {}, false);
+    scoring.intake();
+    pros::delay(1500);
+    scoring.stop_intaking();
+    chassis.moveToPoint(23.72, 29.942, 2000, {.forwards = false}, false);
+    loader.retract();
+    scoring.score(Scoring::ScoreTarget::High);
 }
 
 /**
