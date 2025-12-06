@@ -3,6 +3,7 @@
 
 #include <vector>
 
+#include "autonomous_control.hpp"
 #include "driver_control.hpp"
 #include "lemlib/api.hpp"
 #include "main.h"
@@ -123,4 +124,5 @@ lemlib::Chassis chassis(drivetrain, lateral_controller, angular_controller,
 Scoring scoring(top_motor, middle_motor, intake_motor, hopper_motor);
 DriverControl driver_control(chassis, controller, scoring, loader,
                              DRIVE_VELOCITY_PERCENT, TURN_VELOCITY_PERCENT);
+AutonomousControl autonomous_control(chassis, scoring, loader);
 }  // namespace config

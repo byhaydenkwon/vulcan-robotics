@@ -1,5 +1,6 @@
 #include "main.h"
 
+#include "autonomous_control.hpp"
 #include "config.hpp"
 #include "driver_control.hpp"
 #include "lemlib/api.hpp"
@@ -48,18 +49,7 @@ void competition_initialize() {}
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-void autonomous() {
-    chassis.setPose(0, 0, 0);
-    chassis.moveToPose(-4.028, 29.942, 270, 2300, {}, false);
-    loader.extend();
-    chassis.moveToPoint(-5.583, 29.942, 1000, {}, false);
-    scoring.intake();
-    pros::delay(1500);
-    scoring.stop_intaking();
-    chassis.moveToPoint(23.72, 29.942, 2000, {.forwards = false}, false);
-    loader.retract();
-    scoring.score(Scoring::ScoreTarget::High);
-}
+void autonomous() { autonomous_control.match_right(); }
 
 /**
  * Runs the operator control code. This function will be started in its own task
