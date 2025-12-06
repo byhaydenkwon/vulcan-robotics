@@ -30,17 +30,17 @@ void DriverControl::mechanism_control() {
     }
 
     if (controller_.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2)) {
-        scoring_.score(Scoring::ScoreTarget::High);
+        scoring_.score(Scoring::ScoreTarget::Middle);
     } else if (controller_.get_digital_new_release(
                    pros::E_CONTROLLER_DIGITAL_L2)) {
-        scoring_.stop_scoring(Scoring::ScoreTarget::High);
+        scoring_.stop_scoring(Scoring::ScoreTarget::Middle);
     }
 
     if (controller_.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L1)) {
-        scoring_.score(Scoring::ScoreTarget::Middle);
+        scoring_.score(Scoring::ScoreTarget::High);
     } else if (controller_.get_digital_new_release(
                    pros::E_CONTROLLER_DIGITAL_L1)) {
-        scoring_.stop_scoring(Scoring::ScoreTarget::Middle);
+        scoring_.stop_scoring(Scoring::ScoreTarget::High);
     }
 
     if (controller_.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
