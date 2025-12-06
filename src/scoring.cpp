@@ -114,7 +114,7 @@ void Scoring::spin_score_middle() {
     spin_motor_percent(top_, 100);
     spin_motor_percent(middle_, 100);
     intake_.brake();
-    spin_motor_percent(hopper_, -100);
+    spin_motor_percent(hopper_, -75);
 }
 void Scoring::spin_score_low() {
     spin_motor_percent(top_, 100);
