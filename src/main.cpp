@@ -68,4 +68,7 @@ void autonomous() {
  * operator control task will be stopped. Re-enabling the robot will restart the
  * task, not resume it from where it left off.
  */
-void opcontrol() { driver_control.control_loop(); }
+void opcontrol() {
+    scoring.stop_all();
+    driver_control.control_loop();
+}

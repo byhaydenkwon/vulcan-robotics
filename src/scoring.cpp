@@ -31,12 +31,21 @@ void Scoring::push_active_state(Scoring::State state) {
     }
 }
 
-void Scoring::remove_all_states(Scoring::State state) {
+void Scoring::remove_all_of_state(Scoring::State state) {
     if (state_list_mutex_.take(200)) {
         std::erase(active_state_list_, state);
         state_list_mutex_.give();
     } else {
         printf("STATE LIST MUTEX TIMED OUT WHILE REMOVING STATE");
+    }
+}
+
+void Scoring::clear_all_states() {
+    if (state_list_mutex_.take(200)) {
+        active_state_list_.clear();
+        state_list_mutex_.give();
+    } else {
+        printf("STATE LIST MUTEX TIMED OUT WHILE CLEARING STATES");
     }
 }
 

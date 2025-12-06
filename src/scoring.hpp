@@ -28,11 +28,13 @@ class Scoring {
         push_active_state(get_state_for_score_target(target));
     }
 
-    void stop_intaking() { remove_all_states(State::Intaking); }
-    void stop_flushing() { remove_all_states(State::Flushing); }
+    void stop_intaking() { remove_all_of_state(State::Intaking); }
+    void stop_flushing() { remove_all_of_state(State::Flushing); }
     void stop_scoring(ScoreTarget target) {
-        remove_all_states(get_state_for_score_target(target));
+        remove_all_of_state(get_state_for_score_target(target));
     }
+
+    void stop_all() { clear_all_states(); }
 
    private:
     enum class State {
@@ -53,7 +55,8 @@ class Scoring {
                        State::ScoringHigh};
 
     void push_active_state(State state);
-    void remove_all_states(State state);
+    void remove_all_of_state(State state);
+    void clear_all_states();
 
     void control_loop();
 
