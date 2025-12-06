@@ -23,6 +23,7 @@ class DriverControl {
         while (true) {
             split_arcade_drive(drive_velocity_, turn_velocity_);
             mechanism_control();
+            pros::delay(10);
         }
     }
 
