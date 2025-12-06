@@ -4,6 +4,8 @@
 #include "driver_control.hpp"
 #include "lemlib/api.hpp"
 
+using namespace config;
+
 ASSET(match_auton_txt);
 
 /**
@@ -14,9 +16,9 @@ ASSET(match_auton_txt);
  */
 void initialize() {
     pros::lcd::initialize();  // initialize brain screen
-    config::chassis.calibrate();
+    chassis.calibrate();
 
-    config::scoring.start_control_loop();
+    scoring.start_control_loop();
 }
 
 /**
@@ -49,8 +51,8 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
-    config::chassis.setPose(0, 0, 0);
-    config::chassis.follow(match_auton_txt, 2, 15000);
+    chassis.setPose(0, 0, 0);
+    chassis.follow(match_auton_txt, 2, 15000);
 }
 
 /**
@@ -66,4 +68,4 @@ void autonomous() {
  * operator control task will be stopped. Re-enabling the robot will restart the
  * task, not resume it from where it left off.
  */
-void opcontrol() { config::driver_control.control_loop(); }
+void opcontrol() { driver_control.control_loop(); }
