@@ -23,13 +23,11 @@ class Scoring {
     void stop_control_loop() { stop_next_ = true; }
 
     void intake() { push_active_state(State::Intaking); }
-    void flush() { push_active_state(State::Flushing); }
     void score(ScoreTarget target) {
         push_active_state(get_state_for_score_target(target));
     }
 
     void stop_intaking() { remove_all_of_state(State::Intaking); }
-    void stop_flushing() { remove_all_of_state(State::Flushing); }
     void stop_scoring(ScoreTarget target) {
         remove_all_of_state(get_state_for_score_target(target));
     }
@@ -43,7 +41,6 @@ class Scoring {
         ScoringLow,
         ScoringMiddle,
         ScoringHigh,
-        Flushing,
         InvalidCount
     };
 
@@ -62,7 +59,6 @@ class Scoring {
 
     void spin_stop();
     void spin_intake();
-    void spin_flush();
     void spin_score_high();
     void spin_score_middle();
     void spin_score_low();

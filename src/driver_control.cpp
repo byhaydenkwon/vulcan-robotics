@@ -43,13 +43,6 @@ void DriverControl::mechanism_control() {
         scoring_.stop_scoring(Scoring::ScoreTarget::High);
     }
 
-    if (controller_.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
-        scoring_.flush();
-    } else if (controller_.get_digital_new_release(
-                   pros::E_CONTROLLER_DIGITAL_RIGHT)) {
-        scoring_.stop_flushing();
-    }
-
     if (controller_.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A)) {
         loader_.toggle();
     }
