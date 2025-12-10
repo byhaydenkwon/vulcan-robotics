@@ -9,13 +9,17 @@
 class Scoring {
    public:
     enum class ScoreTarget { Low, Middle, High, InvalidCount };
+    enum class ColorSorting { None, Red, Blue, InvalidCount };
 
     Scoring(pros::Motor& top_motor, pros::Motor& middle_motor,
-            pros::Motor& intake_motor, pros::Motor& hopper_motor)
+            pros::Motor& intake_motor, pros::Motor& hopper_motor,
+            pros::Optical& left_optical, pros::Optical& right_optical)
         : top_{top_motor},
           middle_{middle_motor},
           intake_{intake_motor},
-          hopper_{hopper_motor} {
+          hopper_{hopper_motor},
+          left_optical_{left_optical},
+          right_optical_{right_optical} {
         active_state_list_.reserve(static_cast<int>(State::InvalidCount));
     }
 
@@ -33,6 +37,8 @@ class Scoring {
     }
 
     void stop_all() { clear_all_states(); }
+
+    ColorSorting color_sorting_mode_{ColorSorting::None};
 
    private:
     enum class State {
@@ -69,6 +75,8 @@ class Scoring {
     pros::Motor& middle_;
     pros::Motor& intake_;
     pros::Motor& hopper_;
+    pros::Optical& left_optical_;
+    pros::Optical& right_optical_;
 
     // technically not a stack, but close!
     // elements are removed from the middle of the list
