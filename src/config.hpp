@@ -54,6 +54,10 @@ constexpr float TRACKING_WHEELS{lemlib::Omniwheel::NEW_2};
 constexpr float PARALLEL_TRACKING_OFFSET{-2.125};  // left is negative
 constexpr float PERPENDICULAR_TRACKING_OFFSET{-0.6875};
 
+// other sensors
+constexpr int OPTICAL_LEFT_PORT{4};
+constexpr int OPTICAL_RIGHT_PORT{18};
+
 // code
 constexpr int DRIVE_VELOCITY_PERCENT = 100;
 constexpr int TURN_VELOCITY_PERCENT = 70;
@@ -119,6 +123,10 @@ lemlib::ControllerSettings angular_controller(
 
 lemlib::Chassis chassis(drivetrain, lateral_controller, angular_controller,
                         odom_sensors);
+
+// other sensors
+pros::Optical left_optical(OPTICAL_LEFT_PORT);
+pros::Optical right_optical(OPTICAL_RIGHT_PORT);
 
 // code
 Scoring scoring(top_motor, middle_motor, intake_motor, hopper_motor);
