@@ -10,8 +10,8 @@ class Scoring {
    public:
     enum class ScoreTarget { Low, Middle, High, InvalidCount };
 
-    Scoring(pros::Motor top_motor, pros::Motor middle_motor,
-            pros::Motor intake_motor, pros::Motor hopper_motor)
+    Scoring(pros::Motor& top_motor, pros::Motor& middle_motor,
+            pros::Motor& intake_motor, pros::Motor& hopper_motor)
         : top_{top_motor},
           middle_{middle_motor},
           intake_{intake_motor},
@@ -65,14 +65,15 @@ class Scoring {
 
     static void spin_motor_percent(const pros::Motor& motor, float percent);
 
-    pros::Motor top_;
-    pros::Motor middle_;
-    pros::Motor intake_;
-    pros::Motor hopper_;
+    pros::Motor& top_;
+    pros::Motor& middle_;
+    pros::Motor& intake_;
+    pros::Motor& hopper_;
 
     // technically not a stack, but close!
     // elements are removed from the middle of the list
     std::vector<State> active_state_list_{};  // reserved to state count
     pros::Mutex state_list_mutex_;
+
     bool stop_next_{false};
 };
