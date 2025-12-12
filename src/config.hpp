@@ -45,6 +45,9 @@ constexpr int HOPPER_MOTOR_PORT{-2};
 constexpr int LOADER_PORT{'a'};
 constexpr bool LOADER_EXTENDED_IS_LOW{false};
 
+constexpr int WING_PORT('b');
+constexpr bool WING_EXTENDED_IS_LOW{false};
+
 // odometry
 constexpr int IMU_PORT{17};
 constexpr int ROTATION_PARALLEL_PORT{9};
@@ -81,6 +84,7 @@ pros::Motor hopper_motor(HOPPER_MOTOR_PORT);
 
 // pneumatics
 pros::adi::Pneumatics loader(LOADER_PORT, false, LOADER_EXTENDED_IS_LOW);
+pros::adi::Pneumatics wing(WING_PORT, false, WING_EXTENDED_IS_LOW);
 
 // odometry
 pros::IMU imu(IMU_PORT);
@@ -131,7 +135,7 @@ pros::Optical right_optical(OPTICAL_RIGHT_PORT);
 // code
 Scoring scoring(top_motor, middle_motor, intake_motor, hopper_motor,
                 left_optical, right_optical);
-DriverControl driver_control(chassis, controller, scoring, loader,
+DriverControl driver_control(chassis, controller, scoring, loader, wing,
                              DRIVE_VELOCITY_PERCENT, TURN_VELOCITY_PERCENT);
-AutonomousControl autonomous_control(chassis, scoring, loader);
+AutonomousControl autonomous_control(chassis, scoring, loader, wing);
 }  // namespace config
