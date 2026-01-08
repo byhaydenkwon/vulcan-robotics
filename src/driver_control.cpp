@@ -50,4 +50,8 @@ void DriverControl::mechanism_control() {
     if (controller_.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)) {
         wing_.toggle();
     }
+
+    if (controller_.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN)) {
+        double_park_.toggle();
+    }
 }

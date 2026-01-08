@@ -2,6 +2,7 @@
 
 #include "lemlib/api.hpp"
 #include "main.h"
+#include "pros/adi.hpp"
 #include "scoring.hpp"
 
 // TODO see issue #72
@@ -11,12 +12,14 @@ class DriverControl {
    public:
     DriverControl(lemlib::Chassis& chassis, pros::Controller& controller,
                   Scoring& scoring, pros::adi::Pneumatics& loader,
-                  pros::adi::Pneumatics& wing, int drive_velocity,
+                  pros::adi::Pneumatics& wing,
+                  pros::adi::Pneumatics& double_park, int drive_velocity,
                   int turn_velocity)
         : chassis_{chassis},
           controller_{controller},
           scoring_{scoring},
           loader_{loader},
+          double_park_{double_park},
           wing_{wing},
           drive_velocity_{drive_velocity},
           turn_velocity_{turn_velocity} {}
@@ -42,4 +45,5 @@ class DriverControl {
     Scoring& scoring_;
     pros::adi::Pneumatics& loader_;
     pros::adi::Pneumatics& wing_;
+    pros::adi::Pneumatics& double_park_;
 };
