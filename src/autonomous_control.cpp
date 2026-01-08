@@ -26,7 +26,7 @@ void AutonomousControl::match_left() {
     chassis_.moveToPose(10.028, 33.942, 270, 2300, {}, false);
     loader_.extend();
     pros::delay(500);
-    chassis_.moveToPoint(-1.528, 28.942, 1000, {}, false);
+    chassis_.moveToPoint(-3.528, 33.942, 1000, {}, false);
     scoring_.intake();
     pros::delay(1500);
     chassis_.moveToPoint(23.72, 32.73675, 2000, {.forwards = false}, false);
