@@ -2,8 +2,8 @@
 
 #include "lemlib/api.hpp"
 #include "main.h"
+#include "mechanisms/scoring.hpp"
 #include "pros/misc.h"
-#include "scoring.hpp"
 
 void DriverControl::split_arcade_drive(int drive_velocity, int turn_velocity) {
     int drive_command{controller_.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y) *

@@ -3,11 +3,11 @@
 
 #include <vector>
 
-#include "autonomous_control.hpp"
-#include "driver_control.hpp"
+#include "control/autonomous_control.hpp"
+#include "control/driver_control.hpp"
 #include "lemlib/api.hpp"
 #include "main.h"
-#include "scoring.hpp"
+#include "mechanisms/scoring.hpp"
 
 namespace config {
 // drivetrain

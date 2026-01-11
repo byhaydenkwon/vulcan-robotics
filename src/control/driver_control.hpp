@@ -2,8 +2,8 @@
 
 #include "lemlib/api.hpp"
 #include "main.h"
+#include "mechanisms/scoring.hpp"
 #include "pros/adi.hpp"
-#include "scoring.hpp"
 
 // TODO see issue #72
 

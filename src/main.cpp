@@ -1,8 +1,8 @@
 #include "main.h"
 
-#include "autonomous_control.hpp"
 #include "config.hpp"
-#include "driver_control.hpp"
+#include "control/autonomous_control.hpp"
+#include "control/driver_control.hpp"
 #include "lemlib/api.hpp"
 
 using namespace config;

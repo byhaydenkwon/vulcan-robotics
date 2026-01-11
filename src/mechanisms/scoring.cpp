@@ -1,5 +1,5 @@
 /// The scoring mechanism.
-#include "scoring.hpp"
+#include "mechanisms/scoring.hpp"
 
 #include <cmath>
 #include <ranges>
