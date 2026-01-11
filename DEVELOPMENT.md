@@ -1,6 +1,35 @@
 # Development and Git Practices
 
-Let's document some good practices!
+## Strange Setup Workarounds
+*This section is Linux-only.*  
+
+This is less than ideal, but it'll work. Basically,
+```
+pros build-compile-commands
+```
+really, really doesn't want to work on its own. The best workaround I've found is to install [Bear](https://github.com/rizsotto/Bear) and use `bear -- pros make all`; however, this leads to issues with the standard library headers not being recognized. To set this up correctly, there is a bit of strangeness we must work with.
+
+The workaround is to put paths in `.clangd`, like so:
+```
+CompileFlags:
+  Add:
+    - -I/home/undonepotato/.config/VSCodium/User/globalStorage/sigbots.pros/install/pros-toolchain-linux/arm-none-eabi/include/c++/13.3.1
+    - -I/home/undonepotato/.config/VSCodium/User/globalStorage/sigbots.pros/install/pros-toolchain-linux/arm-none-eabi/include/c++/13.3.1/arm-none-eabi
+```
+In general, your path will be:
+```
+~/.config/VSCode/User/globalStorage/sigbots.pros/install/pros-toolchain-linux/arm-none-eabi/include/c++/(your version number)
+```
+Replace `~` with your home path and `(your version number)` with the version number you find in that directory, then add this to `.clangd.disabled`:
+```
+CompileFlags:
+  Add:
+    -I(your path here)
+    -I(your path here)/arm-none-eabi
+```
+
+Rename the file to `.clangd`, and you should be ready to go. Do not commit this file to version control.
+
 
 ## Commits
 * Use [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/), preferably with the relevant [VSCode extension](https://marketplace.visualstudio.com/items?itemName=vivaxy.vscode-conventional-commits). Use the following scopes:
@@ -9,7 +38,7 @@ Let's document some good practices!
   * `odom` for odometry-related changes.
   * `compat` for changes in the VEX V5 API.
   * `config` for changes to things like ports, motor torques and speeds, etc.
-  * `intake`, `drivetrain`, etc. for specific mechanisms.
+  * `scoring`, `drivetrain`, etc. for specific mechanisms.
   * `preauto` for changes to pre-match code (including display).
   * `logging` for logging-related changes.
 * Keep commits atomic.
@@ -18,7 +47,8 @@ Let's document some good practices!
   * Especially on the `main` and `dev` branches.
   * On other branches, at least look out for the obvious stuff even if you can't test. 
 * Keep commits formatted.
-  * Use the [ruff linter](https://docs.astral.sh/ruff/linter/) with the settings in [pyproject.toml](pyproject.toml). It's recommended to turn on format on save in your editor settings, but at least format before a commit.
+  * For Python: use the [ruff linter](https://docs.astral.sh/ruff/linter/) with the settings in [pyproject.toml](pyproject.toml). It's recommended to turn on format on save in your editor settings, but at least format before a commit.
+  * For C++: Use [clangd](https://clangd.llvm.org), for example with the VSCode extension. It should recognize the project's .clang-format.
 
 ## Branching
 
@@ -40,13 +70,3 @@ Let's document some good practices!
   * Rebase regularly to avoid big merge conflicts.
 ## Tagging/Versioning
 * TBD with notebook versioning.
-
-## Import Order
-1. Standard library imports.
-2. `from vex import *`.
-3. Imports from other external libraries.
-4. Imports from `utils/`.
-5. Imports from `mechanisms/`.
-6. *(main.py only)* Imports from `control/`.
-
-Each numbered group should be separated by a line. Use `from some_file import SomeClass` for all internal files. Do not use wildcard imports at all unless it's `from vex import *`.

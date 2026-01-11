@@ -1,0 +1,10 @@
+CompileFlags:
+  Add:
+    - -I(YOUR PATH HERE)
+    - -I(YOUR PATH HERE)/arm-none-eabi
+  Remove: ["-mfloat-abi=", "-mfpu=", "-mcpu="]
+
+Diagnostics:
+  ClangTidy:
+    Add: ["modernize*", "bugprone-*", "performance*-"]
+  UnusedIncludes: None

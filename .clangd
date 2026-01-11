@@ -1,4 +1,7 @@
 CompileFlags:
+  Add:
+    - -I/home/undonepotato/.config/VSCodium/User/globalStorage/sigbots.pros/install/pros-toolchain-linux/arm-none-eabi/include/c++/13.3.1
+    - -I/home/undonepotato/.config/VSCodium/User/globalStorage/sigbots.pros/install/pros-toolchain-linux/arm-none-eabi/include/c++/13.3.1/arm-none-eabi
   Remove: ["-mfloat-abi=", "-mfpu=", "-mcpu="]
 
 Diagnostics:
