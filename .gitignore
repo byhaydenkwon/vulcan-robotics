@@ -13,6 +13,29 @@
 # Built Visual Studio Code Extensions
 *.vsix
 
+# -----C++----
+
+# Compiled Object files
+*.o
+*.obj
+
+# Executables
+*.bin
+*.elf
+
+# PROS
+bin/
+.vscode/
+.cache/
+compile_commands.json
+temp.log
+temp.errors
+*.ini
+.d/
+
+# Check DEVELOPMENT.md
+.clangd
+
 
 # -----Python-----
 
