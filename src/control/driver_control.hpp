@@ -4,18 +4,20 @@
 #include "main.h"
 #include "mechanisms/scoring.hpp"
 #include "pros/adi.hpp"
+#include "utils/settings.hpp"
 
 // TODO see issue #72
 
 /// Driver control class.
 class DriverControl {
    public:
-    DriverControl(lemlib::Chassis& chassis, pros::Controller& controller,
-                  Scoring& scoring, pros::adi::Pneumatics& loader,
-                  pros::adi::Pneumatics& wing,
+    DriverControl(Settings& settings, lemlib::Chassis& chassis,
+                  pros::Controller& controller, Scoring& scoring,
+                  pros::adi::Pneumatics& loader, pros::adi::Pneumatics& wing,
                   pros::adi::Pneumatics& double_park, int drive_velocity,
                   int turn_velocity)
-        : chassis_{chassis},
+        : settings_{settings},
+          chassis_{chassis},
           controller_{controller},
           scoring_{scoring},
           loader_{loader},
@@ -39,6 +41,7 @@ class DriverControl {
     int drive_velocity_{100};
     int turn_velocity_{75};
 
+    Settings& settings_;
     lemlib::Chassis& chassis_;
     pros::Controller& controller_;
 

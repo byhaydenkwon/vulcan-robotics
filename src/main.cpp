@@ -1,9 +1,9 @@
 #include "main.h"
 
-#include "config.hpp"
 #include "control/autonomous_control.hpp"
 #include "control/driver_control.hpp"
 #include "lemlib/api.hpp"
+#include "utils/config.hpp"
 
 using namespace config;
 

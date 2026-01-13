@@ -8,6 +8,7 @@
 #include "lemlib/api.hpp"
 #include "main.h"
 #include "mechanisms/scoring.hpp"
+#include "utils/settings.hpp"
 
 namespace config {
 // drivetrain
@@ -138,10 +139,13 @@ pros::Optical left_optical(OPTICAL_LEFT_PORT);
 pros::Optical right_optical(OPTICAL_RIGHT_PORT);
 
 // code
+Settings& global_settings = Settings::instance();
+
 Scoring scoring(top_motor, middle_motor, intake_motor, hopper_motor,
                 left_optical, right_optical);
-DriverControl driver_control(chassis, controller, scoring, loader, wing,
-                             double_park, DRIVE_VELOCITY_PERCENT,
+DriverControl driver_control(global_settings, chassis, controller, scoring,
+                             loader, wing, double_park, DRIVE_VELOCITY_PERCENT,
                              TURN_VELOCITY_PERCENT);
-AutonomousControl autonomous_control(chassis, scoring, loader, wing);
+AutonomousControl autonomous_control(global_settings, chassis, scoring, loader,
+                                     wing);
 }  // namespace config
