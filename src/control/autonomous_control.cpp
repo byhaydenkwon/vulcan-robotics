@@ -16,7 +16,12 @@ void AutonomousControl::match_right() {
     loader_.retract();
     scoring_.score(Scoring::ScoreTarget::High);
     pros::delay(3000);
-    chassis_.moveToPose(-15.0, 23.9, 90, 2300, {}, false);
+    // chassis_.moveToPose(-15.0, 10.0, 270, 2300, {}, false);
+    // wing_.extend();
+    // chassis_.moveToPoint(-35.0, 10.0, 2300, {}, false);
+    // chassis_.moveToPoint(-15.0, 10.0, 2300, {}, false);
+    // wing_.retract();
+
     // chassis_.moveToPose(-15, 38, float theta, int timeout)
 }
 
