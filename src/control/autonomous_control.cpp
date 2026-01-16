@@ -11,18 +11,21 @@ void AutonomousControl::match_right() {
     chassis_.moveToPoint(8.028, 29.942, 1000, {.maxSpeed = 80.0}, false);
     scoring_.intake();
     pros::delay(700);
-    chassis_.moveToPoint(-27.72, 29.8, 2000, {.forwards = false}, false);
+    chassis_.moveToPoint(-27.72, 31.0, 2000, {.forwards = false}, false);
     scoring_.stop_intaking();
     loader_.retract();
     scoring_.score(Scoring::ScoreTarget::High);
-    pros::delay(3000);
-    // chassis_.moveToPose(-15.0, 10.0, 270, 2300, {}, false);
-    // wing_.extend();
-    // chassis_.moveToPoint(-35.0, 10.0, 2300, {}, false);
-    // chassis_.moveToPoint(-15.0, 10.0, 2300, {}, false);
-    // wing_.retract();
-
-    // chassis_.moveToPose(-15, 38, float theta, int timeout)
+    pros::delay(1500);
+    chassis_.moveToPose(-15.0, 14.0, 270, 2300, {}, false);
+    scoring_.stop_scoring(Scoring::ScoreTarget::High);
+    wing_.extend();
+    pros::delay(200);
+    wing_.retract();
+    chassis_.moveToPoint(-45.0, 24.0, 2300, {}, false);
+    chassis_.moveToPose(-15.0, 25.0, 270, 2300, {.forwards = false}, false);
+    wing_.retract();
+    // scoring_.intake();
+    // chassis_.moveToPose()
 }
 
 void AutonomousControl::match_left() {
