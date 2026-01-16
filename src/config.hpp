@@ -53,7 +53,7 @@ constexpr bool DOUBLE_PARK_EXTENDED_IS_LOW{false};
 
 // odometry
 constexpr int IMU_PORT{17};
-constexpr int ROTATION_PARALLEL_PORT{9};
+constexpr int ROTATION_PARALLEL_PORT{8};
 constexpr int ROTATION_PERPENDICULAR_PORT{19};
 constexpr float TRACKING_WHEELS{lemlib::Omniwheel::NEW_2};
 
