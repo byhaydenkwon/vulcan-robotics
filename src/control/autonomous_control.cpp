@@ -33,15 +33,15 @@ void AutonomousControl::match_left() {
     chassis_.moveToPose(10.028, 33.942, 270, 2300, {}, false);
     loader_.extend();
     pros::delay(500);
-    chassis_.moveToPoint(-3.528, 33.942, 1000, {}, false);
+    chassis_.moveToPoint(-8.028, 29.942, 1000, {}, false);
     scoring_.intake();
-    pros::delay(1500);
-    chassis_.moveToPoint(23.72, 32.73675, 2000, {.forwards = false}, false);
+    pros::delay(700);
+    chassis_.moveToPoint(27.72, 31.75, 2000, {.forwards = false}, false);
     scoring_.stop_intaking();
     loader_.retract();
     scoring_.score(Scoring::ScoreTarget::High);
-    chassis_.moveToPoint(23.72, 26, 2000, {.forwards = false}, false);
-    chassis_.moveToPoint(23.72, 32.736756, 2000, {}, false);
+    // chassis_.moveToPoint(23.72, 26, 2000, {.forwards = false}, false);
+    // chassis_.moveToPoint(23.72, 32.736756, 2000, {}, false);
     // wing_.extend();
 }
 
