@@ -66,7 +66,6 @@ void Scoring::control_loop() {
             case State::Intaking:
                 spin_intake();
                 break;
-                break;
             case State::ScoringLow:
                 spin_score_low();
                 break;
