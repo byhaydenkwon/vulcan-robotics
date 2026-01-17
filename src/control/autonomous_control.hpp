@@ -3,13 +3,19 @@
 #include "lemlib/api.hpp"
 #include "main.h"
 #include "mechanisms/scoring.hpp"
+#include "pros/adi.hpp"
 
 class AutonomousControl {
    public:
     AutonomousControl(lemlib::Chassis& chassis, Scoring& scoring,
                       pros::adi::Pneumatics& loader,
-                      pros::adi::Pneumatics& wing)
-        : chassis_(chassis), scoring_(scoring), loader_(loader), wing_{wing} {};
+                      pros::adi::Pneumatics& wing,
+                      pros::adi::Pneumatics& double_park)
+        : chassis_(chassis),
+          scoring_(scoring),
+          loader_(loader),
+          wing_{wing},
+          double_park_{double_park} {};
     void match_right();
     void match_left();
     void skills();
@@ -19,4 +25,5 @@ class AutonomousControl {
     Scoring& scoring_;
     pros::adi::Pneumatics& loader_;
     pros::adi::Pneumatics& wing_;
+    pros::adi::Pneumatics& double_park_;
 };
