@@ -36,7 +36,7 @@ constexpr float DT_HORIZONTAL_DRIFT{8.0};
 constexpr float DT_GEAR_RATIO{0.625};
 
 // other motors
-constexpr int INTAKE_MOTOR_PORT{-1};
+constexpr int INTAKE_MOTOR_PORT{-5};
 constexpr int TOP_MOTOR_PORT{-3};
 constexpr int MIDDLE_MOTOR_PORT{-10};
 constexpr int HOPPER_MOTOR_PORT{-2};
@@ -143,5 +143,6 @@ Scoring scoring(top_motor, middle_motor, intake_motor, hopper_motor,
 DriverControl driver_control(chassis, controller, scoring, loader, wing,
                              double_park, DRIVE_VELOCITY_PERCENT,
                              TURN_VELOCITY_PERCENT);
-AutonomousControl autonomous_control(chassis, scoring, loader, wing);
+AutonomousControl autonomous_control(chassis, scoring, loader, wing,
+                                     double_park);
 }  // namespace config
