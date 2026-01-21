@@ -11,12 +11,13 @@
 class DriverControl {
    public:
     DriverControl(lemlib::Chassis& chassis, pros::Controller& controller,
-                  Scoring& scoring, pros::adi::Pneumatics& loader,
-                  pros::adi::Pneumatics& wing,
+                  pros::Controller& secondary_controller, Scoring& scoring,
+                  pros::adi::Pneumatics& loader, pros::adi::Pneumatics& wing,
                   pros::adi::Pneumatics& double_park, int drive_velocity,
                   int turn_velocity)
         : chassis_{chassis},
           controller_{controller},
+          secondary_controller_{secondary_controller},
           scoring_{scoring},
           loader_{loader},
           double_park_{double_park},
@@ -39,8 +40,11 @@ class DriverControl {
     int drive_velocity_{100};
     int turn_velocity_{75};
 
+    bool scoring_middle_{false};
+
     lemlib::Chassis& chassis_;
     pros::Controller& controller_;
+    pros::Controller& secondary_controller_;
 
     Scoring& scoring_;
     pros::adi::Pneumatics& loader_;

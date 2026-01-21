@@ -15,6 +15,15 @@ void DriverControl::split_arcade_drive(int drive_velocity, int turn_velocity) {
 }
 
 void DriverControl::mechanism_control() {
+    if (secondary_controller_.get_digital_new_press(
+            pros::E_CONTROLLER_DIGITAL_DOWN)) {
+        scoring_middle_ = true;
+    }
+    if (secondary_controller_.get_digital_new_press(
+            pros::E_CONTROLLER_DIGITAL_UP)) {
+        scoring_middle_ = false;
+    }
+
     if (controller_.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1)) {
         scoring_.intake();
     } else if (controller_.get_digital_new_release(
@@ -29,18 +38,22 @@ void DriverControl::mechanism_control() {
         scoring_.stop_scoring(Scoring::ScoreTarget::Low);
     }
 
-    if (controller_.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2)) {
-        scoring_.score(Scoring::ScoreTarget::Middle);
+    if (controller_.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2) ||
+        controller_.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L1)) {
+        if (scoring_middle_) {
+            scoring_.score(Scoring::ScoreTarget::Middle);
+        } else {
+            scoring_.score(Scoring::ScoreTarget::High);
+        }
     } else if (controller_.get_digital_new_release(
-                   pros::E_CONTROLLER_DIGITAL_L2)) {
-        scoring_.stop_scoring(Scoring::ScoreTarget::Middle);
-    }
-
-    if (controller_.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L1)) {
-        scoring_.score(Scoring::ScoreTarget::High);
-    } else if (controller_.get_digital_new_release(
+                   pros::E_CONTROLLER_DIGITAL_L2) ||
+               controller_.get_digital_new_release(
                    pros::E_CONTROLLER_DIGITAL_L1)) {
-        scoring_.stop_scoring(Scoring::ScoreTarget::High);
+        if (scoring_middle_) {
+            scoring_.stop_scoring(Scoring::ScoreTarget::Middle);
+        } else {
+            scoring_.stop_scoring(Scoring::ScoreTarget::High);
+        }
     }
 
     if (controller_.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A)) {

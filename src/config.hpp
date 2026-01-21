@@ -8,6 +8,7 @@
 #include "lemlib/api.hpp"
 #include "main.h"
 #include "mechanisms/scoring.hpp"
+#include "pros/misc.h"
 
 namespace config {
 // drivetrain
@@ -70,6 +71,7 @@ constexpr int TURN_VELOCITY_PERCENT = 70;
 
 // declarations (do not edit)
 pros::Controller controller(pros::E_CONTROLLER_MASTER);
+pros::Controller secondary_controller(pros::E_CONTROLLER_PARTNER);
 
 // drivetrain
 pros::MotorGroup dt_left_motors(DT_LEFT_PORTS, DT_GEARSET);
@@ -140,8 +142,8 @@ pros::Optical right_optical(OPTICAL_RIGHT_PORT);
 // code
 Scoring scoring(top_motor, middle_motor, intake_motor, hopper_motor,
                 left_optical, right_optical);
-DriverControl driver_control(chassis, controller, scoring, loader, wing,
-                             double_park, DRIVE_VELOCITY_PERCENT,
+DriverControl driver_control(chassis, controller, secondary_controller, scoring,
+                             loader, wing, double_park, DRIVE_VELOCITY_PERCENT,
                              TURN_VELOCITY_PERCENT);
 AutonomousControl autonomous_control(chassis, scoring, loader, wing,
                                      double_park);
