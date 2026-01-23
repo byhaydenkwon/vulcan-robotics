@@ -47,6 +47,8 @@ class DriverControl {
     void two_controller_mechanism_control();
     void one_controller_mechanism_control();
 
+    void set_both_text(const char* text);
+
     int drive_velocity_{100};
     int turn_velocity_{75};
 

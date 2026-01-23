@@ -21,29 +21,26 @@ void DriverControl::two_controller_mechanism_control() {
     if (secondary_controller_.get_digital_new_press(
             pros::E_CONTROLLER_DIGITAL_DOWN)) {
         scoring_middle_ = true;
-        controller_.print(1, 1, "SCORE MID");
-        secondary_controller_.print(1, 1, "SCORE MID");
+        set_both_text("SCORE MID");
     }
 
     if (secondary_controller_.get_digital_new_press(
             pros::E_CONTROLLER_DIGITAL_UP)) {
-        controller_.print(1, 1, "SCORE HIGH");
-        secondary_controller_.print(1, 1, "SCORE HIGH");
+        scoring_middle_ = false;
+        set_both_text("SCORE MID");
     }
 
     // secondary set intake flushing
     if (secondary_controller_.get_digital_new_press(
             pros::E_CONTROLLER_DIGITAL_X)) {
         intake_flushing_ = true;
-        controller_.print(1, 1, "INTAKE FLUSH");
-        secondary_controller_.print(1, 1, "INTAKE FLUSH");
+        set_both_text("INTAKE FLUSH");
     }
 
     if (secondary_controller_.get_digital_new_press(
             pros::E_CONTROLLER_DIGITAL_B)) {
         intake_flushing_ = false;
-        controller_.print(1, 1, "INTAKE NORMAL");
-        secondary_controller_.print(1, 1, "INTAKE NORMAL");
+        set_both_text("INTAKE NORMAL");
     }
 
     // primary controller
@@ -134,4 +131,15 @@ void DriverControl::one_controller_mechanism_control() {
 
     if (controller_.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN))
         double_park_.toggle();
+}
+
+void DriverControl::set_both_text(const char* text) {
+    controller_.clear_line(1);
+    pros::delay(60);
+    secondary_controller_.clear_line(1);
+    pros::delay(60);
+    controller_.print(1, 1, text);
+    pros::delay(60);
+    secondary_controller_.print(1, 1, text);
+    pros::delay(60);
 }
