@@ -68,6 +68,7 @@ constexpr int OPTICAL_RIGHT_PORT{18};
 // code
 constexpr int DRIVE_VELOCITY_PERCENT = 100;
 constexpr int TURN_VELOCITY_PERCENT = 70;
+constexpr bool USE_TWO_CONTROLLERS = true;
 
 // declarations (do not edit)
 pros::Controller controller(pros::E_CONTROLLER_MASTER);
@@ -144,7 +145,7 @@ Scoring scoring(top_motor, middle_motor, intake_motor, hopper_motor,
                 left_optical, right_optical);
 DriverControl driver_control(chassis, controller, secondary_controller, scoring,
                              loader, wing, double_park, DRIVE_VELOCITY_PERCENT,
-                             TURN_VELOCITY_PERCENT);
+                             TURN_VELOCITY_PERCENT, USE_TWO_CONTROLLERS);
 AutonomousControl autonomous_control(chassis, scoring, loader, wing,
                                      double_park);
 }  // namespace config
