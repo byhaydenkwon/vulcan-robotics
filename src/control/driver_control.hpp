@@ -24,7 +24,12 @@ class DriverControl {
           wing_{wing},
           drive_velocity_{drive_velocity},
           turn_velocity_{turn_velocity},
-          use_two_controllers_{use_two_controllers} {}
+          use_two_controllers_{use_two_controllers} {
+        if (controller.is_connected() && !secondary_controller.is_connected()) {
+            printf("Secondary controller not connected, using only one");
+            use_two_controllers_ = false;
+        }
+    }
 
     void control_loop() {
         while (true) {
