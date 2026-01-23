@@ -46,6 +46,10 @@ class DriverControl {
     int turn_velocity_{75};
 
     bool scoring_middle_{false};
+    bool intake_flushing_{false};
+
+    bool last_scoring_middle_{scoring_middle_};
+    bool last_intake_flushing_{intake_flushing_};
 
     lemlib::Chassis& chassis_;
     pros::Controller& controller_;
