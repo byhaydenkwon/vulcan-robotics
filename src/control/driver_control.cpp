@@ -1,5 +1,8 @@
 #include "driver_control.hpp"
 
+#include <atomic>
+#include <memory>
+
 #include "lemlib/api.hpp"
 #include "main.h"
 #include "mechanisms/scoring.hpp"
@@ -21,26 +24,26 @@ void DriverControl::two_controller_mechanism_control() {
     if (secondary_controller_.get_digital_new_press(
             pros::E_CONTROLLER_DIGITAL_DOWN)) {
         scoring_middle_ = true;
-        set_both_text("SCORE MID");
+        set_controllers_text("SCORE MID");
     }
 
     if (secondary_controller_.get_digital_new_press(
             pros::E_CONTROLLER_DIGITAL_UP)) {
         scoring_middle_ = false;
-        set_both_text("SCORE MID");
+        set_controllers_text("SCORE MID");
     }
 
     // secondary set intake flushing
     if (secondary_controller_.get_digital_new_press(
             pros::E_CONTROLLER_DIGITAL_X)) {
         intake_flushing_ = true;
-        set_both_text("INTAKE FLUSH");
+        set_controllers_text("INTAKE FLUSH");
     }
 
     if (secondary_controller_.get_digital_new_press(
             pros::E_CONTROLLER_DIGITAL_B)) {
         intake_flushing_ = false;
-        set_both_text("INTAKE NORMAL");
+        set_controllers_text("INTAKE NORMAL");
     }
 
     // primary controller
@@ -133,16 +136,37 @@ void DriverControl::one_controller_mechanism_control() {
         double_park_.toggle();
 }
 
-/// Set text on the bottom line of both controllers, clearing beforehand
-/// to prevent stray characters.
-/// ! Blocks for >240ms.
-void DriverControl::set_both_text(const char* text) {
-    controller_.clear_line(1);
-    pros::delay(60);
-    secondary_controller_.clear_line(1);
-    pros::delay(60);
-    controller_.print(1, 1, text);
-    pros::delay(60);
-    secondary_controller_.print(1, 1, text);
-    pros::delay(60);
+void DriverControl::controllers_feedback_loop() {
+    std::shared_ptr<const std::string> last_controller_text{nullptr};
+    while (true) {
+        auto current_controller_text{
+            controllers_text_.load(std::memory_order_acquire)};
+
+        if (current_controller_text &&
+            current_controller_text != last_controller_text) {
+            // actually print the text here, delaying 60ms due to very slow
+            // controller text updates
+            // lines are cleared to clear stray characters
+            controller_.clear_line(1);
+            pros::delay(60);
+            secondary_controller_.clear_line(1);
+            pros::delay(60);
+            controller_.print(1, 1, (*current_controller_text).c_str());
+            pros::delay(60);
+            secondary_controller_.print(1, 1,
+                                        (*current_controller_text).c_str());
+            pros::delay(60);
+
+            last_controller_text = current_controller_text;
+        }
+
+        pros::delay(30);
+    }
+}
+
+/// Queue text to be set on both controllers.
+/// This will replace text currently in the position.
+void DriverControl::set_controllers_text(std::string text) {
+    controllers_text_.store(std::make_shared<const std::string>(text),
+                            std::memory_order_release);
 }

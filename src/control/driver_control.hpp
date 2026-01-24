@@ -1,9 +1,13 @@
 #pragma once
 
+#include <memory>
+
 #include "lemlib/api.hpp"
 #include "main.h"
 #include "mechanisms/scoring.hpp"
 #include "pros/adi.hpp"
+#include "pros/rtos.h"
+#include "pros/rtos.hpp"
 
 // TODO see issue #72
 
@@ -34,10 +38,11 @@ class DriverControl {
     void control_loop() {
         while (true) {
             split_arcade_drive(drive_velocity_, turn_velocity_);
-            if (use_two_controllers_)
+            if (use_two_controllers_) {
                 two_controller_mechanism_control();
-            else
+            } else {
                 one_controller_mechanism_control();
+            }
             pros::delay(10);
         }
     }
@@ -46,8 +51,9 @@ class DriverControl {
     void split_arcade_drive(int drive_velocity, int turn_velocity);
     void two_controller_mechanism_control();
     void one_controller_mechanism_control();
+    void controllers_feedback_loop();
 
-    void set_both_text(const char* text);
+    void set_controllers_text(std::string text);
 
     int drive_velocity_{100};
     int turn_velocity_{75};
@@ -61,6 +67,9 @@ class DriverControl {
     // the release still stops the correct action.
     bool last_scoring_middle_{scoring_middle_};
     bool last_intake_flushing_{intake_flushing_};
+
+    // controller text setting publishes to this pointer
+    std::atomic<std::shared_ptr<const std::string>> controllers_text_{nullptr};
 
     lemlib::Chassis& chassis_;
     pros::Controller& controller_;
