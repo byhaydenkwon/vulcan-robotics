@@ -11,6 +11,14 @@ void DriverControl::start_control_loop() {
     pros::Task driver_control_task([this] -> void { this->control_loop(); },
                                    TASK_PRIORITY_DEFAULT,
                                    TASK_STACK_DEPTH_DEFAULT, "driver control");
+
+    if (use_two_controllers_) {
+        // start the controller feedback task at default - 1 priority
+        pros::Task controller_feedback_task(
+            [this] -> void { this->controllers_feedback_loop(); },
+            TASK_PRIORITY_DEFAULT - 1, TASK_STACK_DEPTH_DEFAULT,
+            "controller feedback");
+    }
 }
 
 void DriverControl::control_loop() {
