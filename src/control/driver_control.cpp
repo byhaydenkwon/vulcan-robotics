@@ -30,7 +30,8 @@ void DriverControl::control_loop() {
     }
 }
 
-void DriverControl::split_arcade_drive(int drive_velocity, int turn_velocity) {
+void DriverControl::split_arcade_drive(int drive_velocity,   // NOLINT
+                                       int turn_velocity) {  // NOLINT
     int drive_command{controller_.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y) *
                       drive_velocity / 100};
     int turn_command{controller_.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X) *

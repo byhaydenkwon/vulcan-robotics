@@ -21,11 +21,12 @@ struct DriverControlParams {
     bool use_two_controllers;
 };
 
+// ? It may be better later to refactor this into two classes, one of which
+// ? inherits and morphs the mechanism control function.
+
 /// Driver control class.
 class DriverControl {
    public:
-    // ? It may be better later to refactor this into two classes; one of which
-    // ? inherits and changes the mechanism control function.
     explicit DriverControl(DriverControlParams params)
         : chassis_{params.chassis},
           controller_{params.controller},
