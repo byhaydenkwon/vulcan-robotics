@@ -58,7 +58,7 @@ class Scoring {
         InvalidCount
     };
 
-    State get_state_for_score_target(ScoreTarget target);
+    auto get_state_for_score_target(ScoreTarget target) -> State;
 
     static constexpr std::array<State,
                                 static_cast<int>(ScoreTarget::InvalidCount)>

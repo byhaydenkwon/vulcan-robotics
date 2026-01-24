@@ -14,8 +14,8 @@ void Scoring::start_control_loop() {
                             "intake");
 }
 
-Scoring::State Scoring::get_state_for_score_target(
-    Scoring::ScoreTarget target) {
+auto Scoring::get_state_for_score_target(Scoring::ScoreTarget target)
+    -> Scoring::State {
     return target_states_[static_cast<int>(target)];
 }
 
