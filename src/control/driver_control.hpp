@@ -35,23 +35,15 @@ class DriverControl {
         }
     }
 
-    void control_loop() {
-        while (true) {
-            split_arcade_drive(drive_velocity_, turn_velocity_);
-            if (use_two_controllers_) {
-                two_controller_mechanism_control();
-            } else {
-                one_controller_mechanism_control();
-            }
-            pros::delay(10);
-        }
-    }
+    void start_control_loop();
 
    private:
+    void control_loop();
+    void controllers_feedback_loop();
+
     void split_arcade_drive(int drive_velocity, int turn_velocity);
     void two_controller_mechanism_control();
     void one_controller_mechanism_control();
-    void controllers_feedback_loop();
 
     void set_controllers_text(std::string text);
 

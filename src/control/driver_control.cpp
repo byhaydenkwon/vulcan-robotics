@@ -6,7 +6,24 @@
 #include "lemlib/api.hpp"
 #include "main.h"
 #include "mechanisms/scoring.hpp"
-#include "pros/misc.h"
+
+void DriverControl::start_control_loop() {
+    pros::Task driver_control_task([this] -> void { this->control_loop(); },
+                                   TASK_PRIORITY_DEFAULT,
+                                   TASK_STACK_DEPTH_DEFAULT, "driver control");
+}
+
+void DriverControl::control_loop() {
+    while (true) {
+        split_arcade_drive(drive_velocity_, turn_velocity_);
+        if (use_two_controllers_) {
+            two_controller_mechanism_control();
+        } else {
+            one_controller_mechanism_control();
+        }
+        pros::delay(10);
+    }
+}
 
 void DriverControl::split_arcade_drive(int drive_velocity, int turn_velocity) {
     int drive_command{controller_.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y) *
