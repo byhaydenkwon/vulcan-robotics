@@ -5,23 +5,31 @@
 #include "lemlib/api.hpp"
 #include "main.h"
 
+struct ScoringParams {
+    pros::Motor& top_motor;
+    pros::Motor& middle_motor;
+    pros::Motor& intake_motor;
+    pros::Motor& hopper_motor;
+
+    pros::Optical& left_optical;
+    pros::Optical& right_optical;
+};
+
 /// A stack-based intake control class.
 class Scoring {
    public:
-    enum class ScoreTarget { Low, Middle, High, InvalidCount };
-    enum class ColorSorting { None, Red, Blue, InvalidCount };
-
-    Scoring(pros::Motor& top_motor, pros::Motor& middle_motor,
-            pros::Motor& intake_motor, pros::Motor& hopper_motor,
-            pros::Optical& left_optical, pros::Optical& right_optical)
-        : top_{top_motor},
-          middle_{middle_motor},
-          intake_{intake_motor},
-          hopper_{hopper_motor},
-          left_optical_{left_optical},
-          right_optical_{right_optical} {
+    explicit Scoring(ScoringParams params)
+        : top_{params.top_motor},
+          middle_{params.middle_motor},
+          intake_{params.intake_motor},
+          hopper_{params.hopper_motor},
+          left_optical_{params.left_optical},
+          right_optical_{params.right_optical} {
         active_state_list_.reserve(static_cast<int>(State::InvalidCount));
     }
+
+    enum class ScoreTarget { Low, Middle, High, InvalidCount };
+    enum class ColorSorting { None, Red, Blue, InvalidCount };
 
     void start_control_loop();
     void stop_control_loop() { stop_next_ = true; }

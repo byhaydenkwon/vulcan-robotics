@@ -140,11 +140,32 @@ pros::Optical left_optical(OPTICAL_LEFT_PORT);
 pros::Optical right_optical(OPTICAL_RIGHT_PORT);
 
 // code
-Scoring scoring(top_motor, middle_motor, intake_motor, hopper_motor,
-                left_optical, right_optical);
-DriverControl driver_control(chassis, controller, secondary_controller, scoring,
-                             loader, wing, double_park, DRIVE_VELOCITY_PERCENT,
-                             TURN_VELOCITY_PERCENT, USE_TWO_CONTROLLERS);
-AutonomousControl autonomous_control(chassis, scoring, loader, wing,
-                                     double_park);
+Scoring scoring({.top_motor = top_motor,
+                 .middle_motor = middle_motor,
+                 .intake_motor = intake_motor,
+                 .hopper_motor = hopper_motor,
+                 .left_optical = left_optical,
+                 .right_optical = right_optical});
+DriverControl driver_control({
+    .chassis = chassis,
+    .controller = controller,
+    .secondary_controller = secondary_controller,
+    .loader = loader,
+    .wing = wing,
+    .double_park = double_park,
+
+    .scoring = scoring,
+
+    .drive_velocity = DRIVE_VELOCITY_PERCENT,
+    .turn_velocity = TURN_VELOCITY_PERCENT,
+    .use_two_controllers = USE_TWO_CONTROLLERS,
+});
+AutonomousControl autonomous_control({
+    .chassis = chassis,
+    .loader = loader,
+    .wing = wing,
+    .double_park = double_park,
+
+    .scoring = scoring,
+});
 }  // namespace config

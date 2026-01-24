@@ -6,28 +6,40 @@
 #include "main.h"
 #include "mechanisms/scoring.hpp"
 
+struct DriverControlParams {
+    lemlib::Chassis& chassis;
+    pros::Controller& controller;
+    pros::Controller& secondary_controller;
+    pros::adi::Pneumatics& loader;
+    pros::adi::Pneumatics& wing;
+    pros::adi::Pneumatics& double_park;
+
+    Scoring& scoring;
+
+    int drive_velocity;
+    int turn_velocity;
+    bool use_two_controllers;
+};
+
 /// Driver control class.
 class DriverControl {
-    // ? It may be better later to refactor this into two classes, one of which
-    // ? inherits and changes the mechanism control function.
    public:
-    DriverControl(lemlib::Chassis& chassis, pros::Controller& controller,
-                  pros::Controller& secondary_controller, Scoring& scoring,
-                  pros::adi::Pneumatics& loader, pros::adi::Pneumatics& wing,
-                  pros::adi::Pneumatics& double_park, int drive_velocity,
-                  int turn_velocity, bool use_two_controllers)
-        : chassis_{chassis},
-          controller_{controller},
-          secondary_controller_{secondary_controller},
-          scoring_{scoring},
-          loader_{loader},
-          double_park_{double_park},
-          wing_{wing},
-          drive_velocity_{drive_velocity},
-          turn_velocity_{turn_velocity},
-          use_two_controllers_{use_two_controllers} {
-        if (controller.is_connected() && !secondary_controller.is_connected()) {
-            printf("Secondary controller not connected, using only one");
+    // ? It may be better later to refactor this into two classes; one of which
+    // ? inherits and changes the mechanism control function.
+    explicit DriverControl(DriverControlParams params)
+        : chassis_{params.chassis},
+          controller_{params.controller},
+          secondary_controller_{params.secondary_controller},
+          scoring_{params.scoring},
+          loader_{params.loader},
+          double_park_{params.double_park},
+          wing_{params.wing},
+          drive_velocity_{params.drive_velocity},
+          turn_velocity_{params.turn_velocity},
+          use_two_controllers_{params.use_two_controllers} {
+        if (controller_.is_connected() &&
+            !secondary_controller_.is_connected()) {
+            printf("Secondary controller not connected; using only one");
             use_two_controllers_ = false;
         }
 
@@ -63,8 +75,8 @@ class DriverControl {
     bool intake_flushing_{false};
 
     // these variables are used to store the status of scoring_middle_
-    // and intake_flushing at the time of activation, so that even if
-    // the secondary controller switches the mode for either,
+    // and intake_flushing at the time of activation; so that even if
+    // the secondary controller switches the mode for either;
     // the release still stops the correct action.
     bool last_scoring_middle_{scoring_middle_};
     bool last_intake_flushing_{intake_flushing_};
