@@ -27,11 +27,11 @@ constexpr float DT_TRACK_WIDTH{13.875};
 constexpr float DT_RPM{600};
 // lemlib docs:
 /* `horizontalDrift` is a feature we added to the original boomerang controller
- * that ensures compatibility with drivetrains with both all omni wheels (drift
- * drive), or drivetrains with center traction wheels. It controls how fast the
- * chassis can move while turning. If you have a drift drive, we recommend
- * starting with a value of 2, while a drivetrain with center traction wheels
- * should start with a value of 8. */
+ that ensures compatibility with drivetrains with both all omni wheels (drift
+ drive), or drivetrains with center traction wheels. It controls how fast the
+ chassis can move while turning. If you have a drift drive, we recommend
+ starting with a value of 2, while a drivetrain with center traction wheels
+ should start with a value of 8. */
 constexpr float DT_HORIZONTAL_DRIFT{8.0};
 constexpr float DT_GEAR_RATIO{0.625};
 
