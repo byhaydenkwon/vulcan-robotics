@@ -55,6 +55,10 @@ class DriverControl {
     bool scoring_middle_{false};
     bool intake_flushing_{false};
 
+    // these variables are used to store the status of scoring_middle_
+    // and intake_flushing at the time of activation, so that even if
+    // the secondary controller switches the mode for either,
+    // the release still stops the correct action.
     bool last_scoring_middle_{scoring_middle_};
     bool last_intake_flushing_{intake_flushing_};
 

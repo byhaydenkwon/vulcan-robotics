@@ -133,6 +133,9 @@ void DriverControl::one_controller_mechanism_control() {
         double_park_.toggle();
 }
 
+/// Set text on the bottom line of both controllers, clearing beforehand
+/// to prevent stray characters.
+/// ! Blocks for >240ms.
 void DriverControl::set_both_text(const char* text) {
     controller_.clear_line(1);
     pros::delay(60);
