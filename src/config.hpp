@@ -8,7 +8,6 @@
 #include "lemlib/api.hpp"
 #include "main.h"
 #include "mechanisms/scoring.hpp"
-#include "pros/misc.h"
 
 namespace config {
 // drivetrain

@@ -3,7 +3,6 @@
 #include "lemlib/api.hpp"
 #include "main.h"
 #include "mechanisms/scoring.hpp"
-#include "pros/adi.hpp"
 
 class AutonomousControl {
    public:

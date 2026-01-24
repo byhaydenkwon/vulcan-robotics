@@ -5,9 +5,6 @@
 #include "lemlib/api.hpp"
 #include "main.h"
 #include "mechanisms/scoring.hpp"
-#include "pros/adi.hpp"
-#include "pros/rtos.h"
-#include "pros/rtos.hpp"
 
 /// Driver control class.
 class DriverControl {
