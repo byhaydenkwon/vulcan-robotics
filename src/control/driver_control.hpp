@@ -9,10 +9,10 @@
 #include "pros/rtos.h"
 #include "pros/rtos.hpp"
 
-// TODO see issue #72
-
 /// Driver control class.
 class DriverControl {
+    // ? It may be better later to refactor this into two classes, one of which
+    // ? inherits and changes the mechanism control function.
    public:
     DriverControl(lemlib::Chassis& chassis, pros::Controller& controller,
                   pros::Controller& secondary_controller, Scoring& scoring,
@@ -33,6 +33,14 @@ class DriverControl {
             printf("Secondary controller not connected, using only one");
             use_two_controllers_ = false;
         }
+
+        if (use_two_controllers_) {
+            active_mechanism_control_ =
+                &DriverControl::two_controller_mechanism_control;
+        } else {
+            active_mechanism_control_ =
+                &DriverControl::one_controller_mechanism_control;
+        }
     }
 
     void start_control_loop();
@@ -46,6 +54,10 @@ class DriverControl {
     void one_controller_mechanism_control();
 
     void set_controllers_text(std::string text);
+
+    bool use_two_controllers_{true};
+    void (DriverControl::*active_mechanism_control_)(){
+        &DriverControl::two_controller_mechanism_control};
 
     int drive_velocity_{100};
     int turn_velocity_{75};
@@ -66,7 +78,6 @@ class DriverControl {
     lemlib::Chassis& chassis_;
     pros::Controller& controller_;
     pros::Controller& secondary_controller_;
-    bool use_two_controllers_;
 
     Scoring& scoring_;
     pros::adi::Pneumatics& loader_;

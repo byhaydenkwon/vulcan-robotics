@@ -24,11 +24,8 @@ void DriverControl::start_control_loop() {
 void DriverControl::control_loop() {
     while (true) {
         split_arcade_drive(drive_velocity_, turn_velocity_);
-        if (use_two_controllers_) {
-            two_controller_mechanism_control();
-        } else {
-            one_controller_mechanism_control();
-        }
+        // single or dual mechanism control
+        (this->*active_mechanism_control_)();
         pros::delay(10);
     }
 }
