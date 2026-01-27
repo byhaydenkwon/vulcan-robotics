@@ -11,13 +11,13 @@ void AutonomousControl::match_right() {
     loader_.extend();
     pros::delay(300);
     chassis_.moveToPoint(10.528, 29.942, 1000, {.maxSpeed = 80.0}, false);
-    scoring_.intake();
+    scoring_.intake(Scoring::IntakeTarget::Intake);
     pros::delay(700);  // three blocks, most of the time (four if not)
 
     // move to goal; score four blocks
     chassis_.moveToPoint(-27.72, 31.0, 2000, {.forwards = false}, false);
     scoring_.score(Scoring::ScoreTarget::High);
-    scoring_.stop_intaking();
+    scoring_.stop_intaking(Scoring::IntakeTarget::Intake);
     loader_.retract();
     pros::delay(2000);
 
@@ -32,13 +32,13 @@ void AutonomousControl::match_right() {
     // wing_.retract();
 
     // get three blocks in middle
-    scoring_.intake();
+    scoring_.intake(Scoring::IntakeTarget::Intake);
     chassis_.turnToHeading(250, 1000);
     chassis_.moveToPoint(-46.5, -1.0, 2000, {.maxSpeed = 70.0}, false);
     pros::delay(1000);
 
     // score in low
-    scoring_.stop_intaking();
+    scoring_.stop_intaking(Scoring::IntakeTarget::Intake);
     scoring_.score(Scoring::ScoreTarget::Low);
 }
 
@@ -48,10 +48,10 @@ void AutonomousControl::match_left() {
     loader_.extend();
     pros::delay(500);
     chassis_.moveToPoint(-8.028, 29.942, 1000, {}, false);
-    scoring_.intake();
+    scoring_.intake(Scoring::IntakeTarget::Intake);
     pros::delay(700);
     chassis_.moveToPoint(27.72, 31.75, 2000, {.forwards = false}, false);
-    scoring_.stop_intaking();
+    scoring_.stop_intaking(Scoring::IntakeTarget::Intake);
     loader_.retract();
     scoring_.score(Scoring::ScoreTarget::High);
     // chassis_.moveToPoint(23.72, 26, 2000, {.forwards = false}, false);
@@ -69,13 +69,13 @@ void AutonomousControl::skills() {
     // loader_.extend();
     // pros::delay(300);
     // chassis_.moveToPoint(10.528, 29.942, 1000, {.maxSpeed = 80.0}, false);
-    // scoring_.intake();
+    // scoring_.intake(Scoring::IntakeTarget::Intake);
     // pros::delay(700);  // three blocks, most of the time (four if not)
 
     // // move to goal; score four blocks
     // chassis_.moveToPoint(-27.72, 31.0, 2000, {.forwards = false}, false);
     // scoring_.score(Scoring::ScoreTarget::High);
-    // scoring_.stop_intaking();
+    // scoring_.stop_intaking(Scoring::IntakeTarget::Intake);
     // loader_.retract();
     // pros::delay(2000);
 

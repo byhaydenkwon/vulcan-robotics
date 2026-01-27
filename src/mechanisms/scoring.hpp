@@ -28,20 +28,33 @@ class Scoring {
         active_state_list_.reserve(static_cast<int>(State::InvalidCount));
     }
 
+    enum class IntakeTarget { Intake, Flush, InvalidCount };
     enum class ScoreTarget { Low, Middle, High, InvalidCount };
     enum class ColorSorting { None, Red, Blue, InvalidCount };
 
     void start_control_loop();
     void stop_control_loop() { stop_next_ = true; }
 
-    void intake() { push_active_state(State::Intaking); }
+    void intake(IntakeTarget target) { push_active_state(State::Intaking); }
     void score(ScoreTarget target) {
         push_active_state(get_state_for_score_target(target));
     }
 
-    void stop_intaking() { remove_all_of_state(State::Intaking); }
+    void stop_intaking(IntakeTarget target) {
+        remove_all_of_state(get_state_for_intake_target(target));
+    }
     void stop_scoring(ScoreTarget target) {
         remove_all_of_state(get_state_for_score_target(target));
+    }
+
+    void change_requests(ScoreTarget of, ScoreTarget to) {
+        change_states(get_state_for_score_target(of),
+                      get_state_for_score_target(to));
+    }
+
+    void change_requests(IntakeTarget of, IntakeTarget to) {
+        change_states(get_state_for_intake_target(of),
+                      get_state_for_intake_target(to));
     }
 
     void stop_all() { clear_all_states(); }
@@ -52,6 +65,7 @@ class Scoring {
     enum class State {
         Idle,
         Intaking,
+        Flushing,
         ScoringLow,
         ScoringMiddle,
         ScoringHigh,
@@ -59,15 +73,21 @@ class Scoring {
     };
 
     auto get_state_for_score_target(ScoreTarget target) -> State;
+    auto get_state_for_intake_target(IntakeTarget target) -> State;
 
     static constexpr std::array<State,
                                 static_cast<int>(ScoreTarget::InvalidCount)>
-        target_states_{State::ScoringLow, State::ScoringMiddle,
-                       State::ScoringHigh};
+        score_target_states_{State::ScoringLow, State::ScoringMiddle,
+                             State::ScoringHigh};
+
+    static constexpr std::array<State,
+                                static_cast<int>(IntakeTarget::InvalidCount)>
+        intake_target_states_{State::Intaking, State::Flushing};
 
     void push_active_state(State state);
     void remove_all_of_state(State state);
     void clear_all_states();
+    void change_states(State of, State to);
 
     void control_loop();
 

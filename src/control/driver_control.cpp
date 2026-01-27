@@ -65,12 +65,16 @@ void DriverControl::two_controller_mechanism_control() {
     if (secondary_controller_.get_digital_new_press(
             pros::E_CONTROLLER_DIGITAL_DOWN)) {
         scoring_middle_ = true;
+        scoring_.change_requests(Scoring::ScoreTarget::High,
+                                 Scoring::ScoreTarget::Middle);
         set_controllers_text("SCORE MID");
     }
 
     if (secondary_controller_.get_digital_new_press(
             pros::E_CONTROLLER_DIGITAL_UP)) {
         scoring_middle_ = false;
+        scoring_.change_requests(Scoring::ScoreTarget::Middle,
+                                 Scoring::ScoreTarget::High);
         set_controllers_text("SCORE MID");
     }
 
@@ -78,12 +82,16 @@ void DriverControl::two_controller_mechanism_control() {
     if (secondary_controller_.get_digital_new_press(
             pros::E_CONTROLLER_DIGITAL_X)) {
         intake_flushing_ = true;
+        scoring_.change_requests(Scoring::IntakeTarget::Intake,
+                                 Scoring::IntakeTarget::Flush);
         set_controllers_text("INTAKE FLUSH");
     }
 
     if (secondary_controller_.get_digital_new_press(
             pros::E_CONTROLLER_DIGITAL_B)) {
         intake_flushing_ = false;
+        scoring_.change_requests(Scoring::IntakeTarget::Flush,
+                                 Scoring::IntakeTarget::Intake);
         set_controllers_text("INTAKE NORMAL");
     }
 
@@ -100,17 +108,15 @@ void DriverControl::two_controller_mechanism_control() {
         controller_.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L1)) {
         if (scoring_middle_) {
             scoring_.score(Scoring::ScoreTarget::Middle);
-            last_scoring_middle_ = true;
         } else {
             scoring_.score(Scoring::ScoreTarget::High);
-            last_scoring_middle_ = false;
         }
 
     } else if (controller_.get_digital_new_release(
                    pros::E_CONTROLLER_DIGITAL_L2) ||
                controller_.get_digital_new_release(
                    pros::E_CONTROLLER_DIGITAL_L1)) {
-        if (last_scoring_middle_) {
+        if (scoring_middle_) {
             scoring_.stop_scoring(Scoring::ScoreTarget::Middle);
         } else {
             scoring_.stop_scoring(Scoring::ScoreTarget::High);
@@ -120,18 +126,16 @@ void DriverControl::two_controller_mechanism_control() {
     // R1 intake logic based on secondary status
     if (controller_.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1)) {
         if (intake_flushing_) {
-            scoring_.score(Scoring::ScoreTarget::Middle);
-            last_intake_flushing_ = true;
+            scoring_.intake(Scoring::IntakeTarget::Flush);
         } else {
-            scoring_.intake();
-            last_intake_flushing_ = false;
+            scoring_.intake(Scoring::IntakeTarget::Intake);
         }
     } else if (controller_.get_digital_new_release(
                    pros::E_CONTROLLER_DIGITAL_R1)) {
-        if (last_intake_flushing_) {
-            scoring_.stop_scoring(Scoring::ScoreTarget::Middle);
+        if (intake_flushing_) {
+            scoring_.stop_intaking(Scoring::IntakeTarget::Flush);
         } else {
-            scoring_.stop_intaking();
+            scoring_.stop_intaking(Scoring::IntakeTarget::Intake);
         }
     }
 
@@ -148,9 +152,9 @@ void DriverControl::two_controller_mechanism_control() {
 
 void DriverControl::one_controller_mechanism_control() {
     if (controller_.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1))
-        scoring_.intake();
+        scoring_.intake(Scoring::IntakeTarget::Intake);
     else if (controller_.get_digital_new_release(pros::E_CONTROLLER_DIGITAL_R1))
-        scoring_.stop_intaking();
+        scoring_.stop_intaking(Scoring::IntakeTarget::Intake);
 
     if (controller_.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R2))
         scoring_.score(Scoring::ScoreTarget::Low);

@@ -16,7 +16,12 @@ void Scoring::start_control_loop() {
 
 auto Scoring::get_state_for_score_target(Scoring::ScoreTarget target)
     -> Scoring::State {
-    return target_states_[static_cast<int>(target)];
+    return score_target_states_[static_cast<int>(target)];
+}
+
+auto Scoring::get_state_for_intake_target(Scoring::IntakeTarget target)
+    -> Scoring::State {
+    return intake_target_states_[static_cast<int>(target)];
 }
 
 void Scoring::push_active_state(Scoring::State state) {
@@ -49,6 +54,15 @@ void Scoring::clear_all_states() {
     }
 }
 
+void Scoring::change_states(State of, State to) {
+    if (state_list_mutex_.take(200)) {
+        std::ranges::replace(active_state_list_, of, to);
+        state_list_mutex_.give();
+    } else {
+        printf("STATE LIST MUTEX TIMED OUT EXCHANGING");
+    }
+}
+
 void Scoring::control_loop() {
     while (!stop_next_) {
         State active{State::Idle};
@@ -65,6 +79,9 @@ void Scoring::control_loop() {
         switch (active) {
             case State::Intaking:
                 spin_intake();
+                break;
+            case State::Flushing:
+                spin_score_middle();
                 break;
             case State::ScoringLow:
                 spin_score_low();
