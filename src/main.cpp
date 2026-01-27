@@ -17,6 +17,7 @@ void initialize() {
     pros::lcd::initialize();
     chassis.calibrate();
 
+    driver_control.detect_controllers();
     scoring.start_control_loop();
 }
 

@@ -37,23 +37,10 @@ class DriverControl {
           wing_{params.wing},
           drive_velocity_{params.drive_velocity},
           turn_velocity_{params.turn_velocity},
-          use_two_controllers_{params.use_two_controllers} {
-        if (controller_.is_connected() &&
-            !secondary_controller_.is_connected()) {
-            printf("Secondary controller not connected; using only one");
-            use_two_controllers_ = false;
-        }
-
-        if (use_two_controllers_) {
-            active_mechanism_control_ =
-                &DriverControl::two_controller_mechanism_control;
-        } else {
-            active_mechanism_control_ =
-                &DriverControl::one_controller_mechanism_control;
-        }
-    }
+          use_two_controllers_{params.use_two_controllers} {}
 
     void start_control_loop();
+    void detect_controllers();
 
    private:
     void control_loop();

@@ -7,6 +7,24 @@
 #include "main.h"
 #include "mechanisms/scoring.hpp"
 
+void DriverControl::detect_controllers() {
+    pros::delay(300);  // for controller printing text
+    if (controller_.is_connected() && !secondary_controller_.is_connected()) {
+        controller_.print(1, 1, "one controller");
+        use_two_controllers_ = false;
+    } else {
+        controller_.print(1, 1, "two controllers");
+    }
+
+    if (use_two_controllers_) {
+        active_mechanism_control_ =
+            &DriverControl::two_controller_mechanism_control;
+    } else {
+        active_mechanism_control_ =
+            &DriverControl::one_controller_mechanism_control;
+    }
+}
+
 void DriverControl::start_control_loop() {
     pros::Task driver_control_task([this] -> void { this->control_loop(); },
                                    TASK_PRIORITY_DEFAULT,
