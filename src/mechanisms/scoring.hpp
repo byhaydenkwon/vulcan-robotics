@@ -38,6 +38,7 @@ class Scoring {
     void intake(IntakeTarget target) {
         push_active_state(get_state_for_intake_target(target));
     }
+    void intake() { push_active_state(State::Intaking); }
     void score(ScoreTarget target) {
         push_active_state(get_state_for_score_target(target));
     }
