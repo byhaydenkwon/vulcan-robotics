@@ -35,7 +35,9 @@ class Scoring {
     void start_control_loop();
     void stop_control_loop() { stop_next_ = true; }
 
-    void intake(IntakeTarget target) { push_active_state(State::Intaking); }
+    void intake(IntakeTarget target) {
+        push_active_state(get_state_for_intake_target(target));
+    }
     void score(ScoreTarget target) {
         push_active_state(get_state_for_score_target(target));
     }
