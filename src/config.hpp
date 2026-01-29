@@ -38,7 +38,7 @@ constexpr float DT_GEAR_RATIO{0.625};
 // other motors
 constexpr int INTAKE_MOTOR_PORT{-5};
 constexpr int TOP_MOTOR_PORT{-3};
-constexpr int MIDDLE_MOTOR_PORT{-10};
+constexpr int MIDDLE_MOTOR_PORT{-20};
 constexpr int HOPPER_MOTOR_PORT{-2};
 
 // pneumatics
@@ -61,8 +61,8 @@ constexpr float PARALLEL_TRACKING_OFFSET{-2.125};  // left is negative
 constexpr float PERPENDICULAR_TRACKING_OFFSET{-0.6875};
 
 // other sensors
-constexpr int OPTICAL_LEFT_PORT{4};
-constexpr int OPTICAL_RIGHT_PORT{18};
+constexpr int OPTICAL_LEFT_PORT{18};
+constexpr int OPTICAL_RIGHT_PORT{4};
 
 // code
 constexpr int DRIVE_VELOCITY_PERCENT = 100;
