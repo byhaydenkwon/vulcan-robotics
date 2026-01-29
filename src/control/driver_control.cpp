@@ -75,7 +75,7 @@ void DriverControl::two_controller_mechanism_control() {
         scoring_middle_ = false;
         scoring_.change_requests(Scoring::ScoreTarget::Middle,
                                  Scoring::ScoreTarget::High);
-        set_controllers_text("SCORE MID");
+        set_controllers_text("SCORE HIGH");
     }
 
     // secondary set intake flushing
