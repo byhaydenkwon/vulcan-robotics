@@ -56,7 +56,6 @@ class DriverControl {
     void one_controller_mechanism_control();
 
     void set_controllers_text(std::string text);
-    void double_park();
 
     bool use_two_controllers_{true};
     void (DriverControl::*active_mechanism_control_)(){
@@ -67,6 +66,8 @@ class DriverControl {
 
     bool scoring_middle_{false};
     bool intake_flushing_{false};
+
+    bool double_park_requested_{false};
 
     // controller text setting publishes to this pointer
     std::atomic<std::shared_ptr<const std::string>> controllers_text_{nullptr};
