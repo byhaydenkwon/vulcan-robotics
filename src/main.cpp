@@ -17,6 +17,9 @@ void initialize() {
     pros::lcd::initialize();
     chassis.calibrate();
 
+    left_optical.set_led_pwm(100);
+    right_optical.set_led_pwm(100);
+
     driver_control.detect_controllers();
     scoring.start_control_loop();
 }

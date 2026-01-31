@@ -154,6 +154,9 @@ DriverControl driver_control({
     .wing = wing,
     .double_park = double_park,
 
+    .left_optical = left_optical,
+    .right_optical = right_optical,
+
     .scoring = scoring,
 
     .drive_velocity = DRIVE_VELOCITY_PERCENT,

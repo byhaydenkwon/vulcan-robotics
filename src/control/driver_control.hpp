@@ -14,6 +14,9 @@ struct DriverControlParams {
     pros::adi::Pneumatics& wing;
     pros::adi::Pneumatics& double_park;
 
+    pros::Optical& left_optical;
+    pros::Optical& right_optical;
+
     Scoring& scoring;
 
     int drive_velocity;
@@ -33,6 +36,8 @@ class DriverControl {
           secondary_controller_{params.secondary_controller},
           scoring_{params.scoring},
           loader_{params.loader},
+          left_optical_{params.left_optical},
+          right_optical_{params.right_optical},
           double_park_{params.double_park},
           wing_{params.wing},
           drive_velocity_{params.drive_velocity},
@@ -50,6 +55,7 @@ class DriverControl {
     void two_controller_mechanism_control();
     void one_controller_mechanism_control();
 
+    void align_double_park_block();
     void set_controllers_text(std::string text);
 
     bool use_two_controllers_{true};
@@ -68,6 +74,9 @@ class DriverControl {
     lemlib::Chassis& chassis_;
     pros::Controller& controller_;
     pros::Controller& secondary_controller_;
+
+    pros::Optical& left_optical_;
+    pros::Optical& right_optical_;
 
     Scoring& scoring_;
     pros::adi::Pneumatics& loader_;
