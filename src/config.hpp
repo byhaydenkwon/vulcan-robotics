@@ -54,11 +54,11 @@ constexpr bool DOUBLE_PARK_EXTENDED_IS_LOW{false};
 // odometry
 constexpr int IMU_PORT{17};
 constexpr int ROTATION_PARALLEL_PORT{8};
-constexpr int ROTATION_PERPENDICULAR_PORT{19};
+// constexpr int ROTATION_PERPENDICULAR_PORT{19};
 constexpr float TRACKING_WHEELS{lemlib::Omniwheel::NEW_2};
 
 constexpr float PARALLEL_TRACKING_OFFSET{-2.125};  // left is negative
-constexpr float PERPENDICULAR_TRACKING_OFFSET{-0.6875};
+// constexpr float PERPENDICULAR_TRACKING_OFFSET{-0.6875};
 
 // other sensors
 constexpr int OPTICAL_LEFT_PORT{18};
@@ -97,16 +97,16 @@ pros::adi::Pneumatics double_park(DOUBLE_PARK_PORT, false,
 pros::IMU imu(IMU_PORT);
 
 pros::Rotation parallel_sensor(ROTATION_PARALLEL_PORT);
-pros::Rotation perpendicular_sensor(ROTATION_PERPENDICULAR_PORT);
+// pros::Rotation perpendicular_sensor(ROTATION_PERPENDICULAR_PORT);
 
 lemlib::TrackingWheel parallel_wheel(&parallel_sensor, TRACKING_WHEELS,
                                      PARALLEL_TRACKING_OFFSET);
-lemlib::TrackingWheel perpendicular_wheel(&perpendicular_sensor,
-                                          TRACKING_WHEELS,
-                                          PERPENDICULAR_TRACKING_OFFSET);
+// lemlib::TrackingWheel perpendicular_wheel(&perpendicular_sensor,
+//                                           TRACKING_WHEELS,
+//                                           PERPENDICULAR_TRACKING_OFFSET);
 
-lemlib::OdomSensors odom_sensors(&parallel_wheel, nullptr, &perpendicular_wheel,
-                                 nullptr, &imu);
+lemlib::OdomSensors odom_sensors(&parallel_wheel, nullptr, nullptr, nullptr,
+                                 &imu);
 
 lemlib::ControllerSettings lateral_controller(
     10,   // proportional gain (kP)
