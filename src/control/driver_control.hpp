@@ -1,5 +1,6 @@
 #pragma once
 
+#include <atomic>
 #include <memory>
 
 #include "lemlib/api.hpp"
@@ -49,6 +50,7 @@ class DriverControl {
 
    private:
     void control_loop();
+    void double_park_loop();
     void controllers_feedback_loop();
 
     void split_arcade_drive(int drive_velocity, int turn_velocity);
@@ -67,7 +69,9 @@ class DriverControl {
     bool scoring_middle_{false};
     bool intake_flushing_{false};
 
-    bool double_park_requested_{false};
+    std::unique_ptr<pros::Task> driver_control_task;
+    std::unique_ptr<pros::Task> controller_feedback_task;
+    std::unique_ptr<pros::Task> double_park_task;
 
     // controller text setting publishes to this pointer
     std::atomic<std::shared_ptr<const std::string>> controllers_text_{nullptr};

@@ -2,6 +2,7 @@
 #include "mechanisms/scoring.hpp"
 
 #include <algorithm>
+#include <atomic>
 #include <cmath>
 #include <ranges>
 #include <vector>
@@ -89,7 +90,8 @@ void Scoring::control_loop() {
                 if (std::ranges::contains(active_state_list_,
                                           State::DoubleParking) &&
                     active != State::DoubleParking) {
-                    double_park_state_ = DoubleParkState::IndefiniteCancel;
+                    double_park_state_.store(DoubleParkState::IndefiniteCancel,
+                                             std::memory_order_release);
                 }
 
                 // remove any finite states if they're in the state list and not
@@ -170,9 +172,11 @@ void Scoring::spin_double_park() {
     int right_prox = right_optical_.get_proximity();
 
     if (left_prox > 50 || right_prox > 50) {  // block detected
+        pros::delay(300);                     // ! SORRY
+        double_park_state_.store(DoubleParkState::Success,
+                                 std::memory_order_release);
         spin_stop();
         remove_all_of_state(State::DoubleParking);
-        double_park_state_ = DoubleParkState::Success;
     } else {
         spin_motor_percent(top_, 70);
         spin_motor_percent(middle_, -70);

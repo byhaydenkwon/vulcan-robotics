@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <atomic>
 
 #include "lemlib/api.hpp"
 #include "main.h"
@@ -66,7 +67,9 @@ class Scoring {
         double_park_state_ = DoubleParkState::ExternalCancel;
     }
 
-    auto double_park_state() -> DoubleParkState { return double_park_state_; }
+    auto double_park_state() -> DoubleParkState {
+        return double_park_state_.load(std::memory_order_acquire);
+    }
 
     void change_requests(ScoreTarget of, ScoreTarget to) {
         change_states(get_state_for_score_target(of),
@@ -142,7 +145,8 @@ class Scoring {
 
     static void spin_motor_percent(const pros::Motor& motor, float percent);
 
-    DoubleParkState double_park_state_{DoubleParkState::InvalidCount};
+    std::atomic<DoubleParkState> double_park_state_{
+        DoubleParkState::InvalidCount};
 
     pros::Motor& top_;
     pros::Motor& middle_;

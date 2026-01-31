@@ -1,11 +1,13 @@
 #include "driver_control.hpp"
 
 #include <atomic>
+#include <cstdint>
 #include <memory>
 
 #include "lemlib/api.hpp"
 #include "main.h"
 #include "mechanisms/scoring.hpp"
+#include "pros/rtos.h"
 
 void DriverControl::detect_controllers() {
     pros::delay(300);  // for controller printing text
@@ -26,13 +28,16 @@ void DriverControl::detect_controllers() {
 }
 
 void DriverControl::start_control_loop() {
-    pros::Task driver_control_task([this] -> void { this->control_loop(); },
-                                   TASK_PRIORITY_DEFAULT,
-                                   TASK_STACK_DEPTH_DEFAULT, "driver control");
+    driver_control_task = std::make_unique<pros::Task>(
+        [this] -> void { this->control_loop(); }, TASK_PRIORITY_DEFAULT,
+        TASK_STACK_DEPTH_DEFAULT, "driver control");
+    double_park_task = std::make_unique<pros::Task>(
+        [this] -> void { this->double_park_loop(); }, TASK_PRIORITY_DEFAULT,
+        TASK_STACK_DEPTH_DEFAULT, "double park");
 
     if (use_two_controllers_) {
         // start the controller feedback task at default - 1 priority
-        pros::Task controller_feedback_task(
+        controller_feedback_task = std::make_unique<pros::Task>(
             [this] -> void { this->controllers_feedback_loop(); },
             TASK_PRIORITY_DEFAULT - 1, TASK_STACK_DEPTH_DEFAULT,
             "controller feedback");
@@ -44,18 +49,23 @@ void DriverControl::control_loop() {
         split_arcade_drive(drive_velocity_, turn_velocity_);
         // single or dual mechanism control
         (this->*active_mechanism_control_)();
+        pros::delay(10);
+    }
+}
 
-        Scoring::DoubleParkState dps = scoring_.double_park_state();
+void DriverControl::double_park_loop() {
+    while (true) {
+        if (double_park_task->notify_take(false, INT32_MAX)) {
+            while (scoring_.double_park_state() !=
+                   Scoring::DoubleParkState::Success) {
+                pros::delay(10);
+            }
 
-        if (dps == Scoring::DoubleParkState::Success &&
-            double_park_requested_) {
             double_park_.extend();
-            double_park_requested_ = false;
-        } else if (dps != Scoring::DoubleParkState::Attempting) {
-            double_park_requested_ = false;
+            double_park_task->notify_clear();
         }
 
-        pros::delay(10);
+        pros::delay(40);
     }
 }
 
@@ -161,10 +171,10 @@ void DriverControl::two_controller_mechanism_control() {
         if (scoring_.double_park_state() ==
             Scoring::DoubleParkState::Attempting) {
             scoring_.stop_double_parking();
-            double_park_requested_ = false;
+            double_park_task->notify_clear();
         } else {
             scoring_.double_park();
-            double_park_requested_ = true;
+            double_park_task->notify();
         }
     }
 }
@@ -200,10 +210,10 @@ void DriverControl::one_controller_mechanism_control() {
         if (scoring_.double_park_state() ==
             Scoring::DoubleParkState::Attempting) {
             scoring_.stop_double_parking();
-            double_park_requested_ = false;
+            double_park_task->notify_clear();
         } else {
             scoring_.double_park();
-            double_park_requested_ = true;
+            double_park_task->notify();
         }
     }
 }
