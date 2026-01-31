@@ -10,36 +10,36 @@ void AutonomousControl::match_right() {
     chassis_.moveToPose(-10.028, 33.942, 90, 2000, {}, false);
     loader_.extend();
     pros::delay(300);
-    chassis_.moveToPoint(10.528, 29.942, 1000, {.maxSpeed = 80.0}, false);
+    chassis_.moveToPoint(10.528, 29.942, 1000, {.maxSpeed = 73.5}, false);
     scoring_.intake(Scoring::IntakeTarget::Intake);
     pros::delay(700);  // three blocks, most of the time (four if not)
 
     // move to goal; score four blocks
-    chassis_.moveToPoint(-27.72, 31.0, 2000, {.forwards = false}, false);
+    chassis_.moveToPoint(-28.12, 31.0, 2000, {.forwards = false}, false);
     scoring_.score(Scoring::ScoreTarget::High);
     scoring_.stop_intaking(Scoring::IntakeTarget::Intake);
     loader_.retract();
     pros::delay(2000);
 
-    // wing/long goal control sequence
-    // wing_.extend();
-    // chassis_.moveToPose(-15.0, 13.0, 270, 2300, {}, false);
+    // wing / long goal control sequence
+    wing_.extend();
+    chassis_.moveToPose(-15.0, 16.5, 270, 2300, {}, false);
+    scoring_.stop_scoring(Scoring::ScoreTarget::Low);
+    wing_.retract();
+    chassis_.moveToPoint(-52.0, 24.0, 2000,
+                         {.minSpeed = 80, .earlyExitRange = 7}, false);
+    chassis_.moveToPoint(-15.0, 25.0, 2000, {.forwards = false}, false);
+    wing_.retract();
+
+    // // get three blocks in middle
     // scoring_.stop_scoring(Scoring::ScoreTarget::High);
-    // wing_.retract();
-    // chassis_.moveToPoint(-45.0, 24.0, 2000,
-    //                      {.minSpeed = 80, .earlyExitRange = 7}, false);
-    chassis_.moveToPoint(-15.0, 25.0, 2000, {}, false);
-    // wing_.retract();
-
-    // get three blocks in middle
-    scoring_.intake(Scoring::IntakeTarget::Intake);
-    chassis_.turnToHeading(250, 1000);
-    chassis_.moveToPoint(-46.5, -1.0, 2000, {.maxSpeed = 70.0}, false);
-    pros::delay(1000);
-
-    // score in low
-    scoring_.stop_intaking(Scoring::IntakeTarget::Intake);
-    scoring_.score(Scoring::ScoreTarget::Low);
+    // scoring_.intake(Scoring::IntakeTarget::Intake);
+    // chassis_.moveToPoint(-25.12, 31, 500);
+    // chassis_.moveToPose(-46.5, -1.0, 250, 2000, {.maxSpeed = 70.0}, false);
+    // pros::delay(500);
+    // // score in low
+    // scoring_.stop_intaking(Scoring::IntakeTarget::Intake);
+    // scoring_.score(Scoring::ScoreTarget::Low);
 }
 
 void AutonomousControl::match_left() {
