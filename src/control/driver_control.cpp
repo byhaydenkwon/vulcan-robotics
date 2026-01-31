@@ -147,12 +147,7 @@ void DriverControl::two_controller_mechanism_control() {
         wing_.toggle();
 
     if (controller_.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN)) {
-        double left_hue = left_optical_.get_hue();
-        double right_hue = right_optical_.get_hue();
-        int left_prox = left_optical_.get_proximity();
-        int right_prox = right_optical_.get_proximity();
-
-        controller_.print(1, 1, "%d", left_prox);
+        pros::Task([this] { this->double_park(); });
     }
 }
 
@@ -228,33 +223,46 @@ void DriverControl::set_controllers_text(std::string text) {
                             std::memory_order_release);
 }
 
-void DriverControl::align_double_park_block() {
+void DriverControl::double_park() {
     double left_hue = left_optical_.get_hue();
     double right_hue = right_optical_.get_hue();
     int left_prox = left_optical_.get_proximity();
     int right_prox = right_optical_.get_proximity();
 
-    controller_.print(1, 1, "%f", left_hue);
+    controller_.print(1, 1, "%d", left_prox);
     // blue range: 7 closest, 215 farthest
     // red range: 10 closest, 0 farthest
     // left prox no block: 10-25ish
     // prox: either one above 50 means there's a block
 
-    // scoring_.score(Scoring::ScoreTarget::Low);
-
     // block detected?
-    if (!(left_prox > 50 || left_prox < 50)) {
-        return;
+    // if (!(left_prox > 50 || left_prox < 50)) {
+    //     return;
+    // }
+    scoring_.score(Scoring::ScoreTarget::Low);
+
+    // wait until block detected
+    while (!(left_prox > 50 || right_prox > 50)) {
+        left_prox = left_optical_.get_proximity();
+        right_prox = right_optical_.get_proximity();
+
+        pros::delay(30);
     }
+
+    pros::delay(140);
+    scoring_.stop_scoring(Scoring::ScoreTarget::Low);
+    pros::delay(200);
+    double_park_.extend();
 
     // if either hue is [215, 340], it's blue
     // if either hue is [350, 30], it's red
-    bool left_hue_blue{left_hue > 215 && left_hue < 340 && left_prox > 110};
-    bool left_hue_red{left_hue > 350 || left_hue < 30 && left_prox > 110};
+    // bool left_hue_blue{left_hue > 215 && left_hue < 340 && left_prox > 110};
+    // bool left_hue_red{left_hue > 350 || left_hue < 30 && left_prox > 110};
 
-    bool right_hue_blue{right_hue > 215 && right_hue < 340 && right_prox > 110};
-    bool right_hue_red{right_hue > 350 || right_hue < 30 && right_prox > 110};
+    // bool right_hue_blue{right_hue > 215 && right_hue < 340 && right_prox >
+    // 110}; bool right_hue_red{right_hue > 350 || right_hue < 30 && right_prox
+    // > 110};
 
-    if (left_hue_blue || right_hue_blue) {
-    }
+    // if (left_hue_blue || right_hue_blue) {
+    // }
 }

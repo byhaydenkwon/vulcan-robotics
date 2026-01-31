@@ -55,8 +55,8 @@ class DriverControl {
     void two_controller_mechanism_control();
     void one_controller_mechanism_control();
 
-    void align_double_park_block();
     void set_controllers_text(std::string text);
+    void double_park();
 
     bool use_two_controllers_{true};
     void (DriverControl::*active_mechanism_control_)(){
