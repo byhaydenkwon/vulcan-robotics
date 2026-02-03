@@ -177,6 +177,9 @@ void DriverControl::two_controller_mechanism_control() {
             double_park_task->notify();
         }
     }
+    if (controller_.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_UP)) {
+        double_park_.retract();
+    }
 }
 
 void DriverControl::one_controller_mechanism_control() {
@@ -215,6 +218,9 @@ void DriverControl::one_controller_mechanism_control() {
             scoring_.double_park();
             double_park_task->notify();
         }
+    }
+    if (controller_.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_UP)) {
+        double_park_.retract();
     }
 }
 
