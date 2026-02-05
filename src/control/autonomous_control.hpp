@@ -21,8 +21,10 @@ class AutonomousControl {
           loader_(params.loader),
           wing_{params.wing},
           double_park_{params.double_park} {};
-    void match_right();
-    void match_left();
+    void right_awp();
+    void right_together();
+    void left_awp();
+    void left_together();
     void skills();
     void dumb_skills();
 

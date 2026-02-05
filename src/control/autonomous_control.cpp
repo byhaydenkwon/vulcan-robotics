@@ -3,7 +3,14 @@
 #include "lemlib/api.hpp"
 #include "main.h"
 
-void AutonomousControl::match_right() {
+void AutonomousControl::right_together() {
+    // eventually, this should:
+    // 1. go to center and get 3 center blocks
+    // 2. score 4 blocks in lower goal
+    // 3. go to loader and load 3 blocks
+    // 4. score 3 blocks in long goal
+    // 5. wing those 3 blocks to get control of long goal
+
     chassis_.setPose(0, 0, 0);
 
     // get three blocks from loader
@@ -40,7 +47,14 @@ void AutonomousControl::match_right() {
     // chassis_.moveToPose(-44.5, 1.0, 235, 2000, {.maxSpeed = 100}, false);
 }
 
-void AutonomousControl::match_left() {
+void AutonomousControl::left_together() {
+    // eventually, this should:
+    // 1. go to center and get 3 center blocks
+    // 2. score 4 blocks in upper center goal
+    // 3. go to loader and load 3 blocks
+    // 4. score 3 blocks in long goal
+    // 5. wing those 3 blocks to get control of long goal
+
     chassis_.setPose(0, 0, 0);
     chassis_.moveToPose(10.028, 33.942, 270, 2300, {}, false);
     loader_.extend();
@@ -58,21 +72,33 @@ void AutonomousControl::match_left() {
 }
 
 void AutonomousControl::skills() {
-    // right-side 4 blocks + long goal control auto
+    // eventually, this should:
+    // 1. go to right-side loader and clear
+    // 2. go to other side of field (same long goal); score six blocks there
+    // 3. move backward and clear loader
+    // 4. score six blocks on same long goal
+    // 5. move to other side (different long goal) and clear loader
+    // 6. move to other side (same long goal as 5.) and score
+    // 7. clear loader and score blocks
+    // 8. park
+
     chassis_.setPose(0, 0, 0);
 
     // get six blocks from loader
-    chassis_.moveToPose(-10.028, 33.942, 90, 2000, {}, false);
+    chassis_.moveToPose(-10.428, 34.342, 90, 2000, {}, false);
     loader_.extend();
     pros::delay(300);
-    chassis_.moveToPoint(10.528, 29.942, 1000, {.maxSpeed = 80.0}, false);
-    scoring_.intake(Scoring::IntakeTarget::Intake);
-    pros::delay(1400);
+    chassis_.moveToPoint(10.528, 29.942, 1000, {.maxSpeed = 73.5}, false);
+    scoring_.intake();
+    pros::delay(1300);
 
     // go clear other loader
-    chassis_.moveToPoint(-10, 42, 4000);
-    chassis_.moveToPoint(-100, 50, 10000);
-    chassis_.moveToPose(-121.403, 36, 270, 7000);
+    chassis_.moveToPoint(-10, 42, 4000, {}, false);
+    scoring_.stop_intaking();
+    loader_.retract();
+    chassis_.moveToPoint(-100, 50, 10000, {}, false);
+    loader_.extend();
+    chassis_.moveToPose(-121.403, 36, 270, 7000, {}, false);
 }
 
 void AutonomousControl::dumb_skills() { double_park_.extend(); }
