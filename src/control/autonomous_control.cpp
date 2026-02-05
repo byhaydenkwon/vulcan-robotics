@@ -7,7 +7,7 @@ void AutonomousControl::match_right() {
     chassis_.setPose(0, 0, 0);
 
     // get three blocks from loader
-    chassis_.moveToPose(-10.028, 33.942, 90, 2000, {}, false);
+    chassis_.moveToPose(-10.428, 34.342, 90, 2000, {}, false);
     loader_.extend();
     pros::delay(300);
     chassis_.moveToPoint(10.528, 29.942, 1000, {.maxSpeed = 73.5}, false);
@@ -15,31 +15,29 @@ void AutonomousControl::match_right() {
     pros::delay(700);  // three blocks, most of the time (four if not)
 
     // move to goal; score four blocks
-    chassis_.moveToPoint(-28.12, 31.0, 2000, {.forwards = false}, false);
+    chassis_.moveToPoint(-28.12, 30.2, 2000, {.forwards = false}, false);
     scoring_.score(Scoring::ScoreTarget::High);
     scoring_.stop_intaking(Scoring::IntakeTarget::Intake);
     loader_.retract();
     pros::delay(2000);
+    scoring_.stop_scoring(Scoring::ScoreTarget::High);
 
-    // wing / long goal control sequence
+    // wing / long goal control sequence (only)
     wing_.extend();
-    chassis_.moveToPose(-15.0, 16.5, 270, 2300, {}, false);
-    scoring_.stop_scoring(Scoring::ScoreTarget::Low);
-    wing_.retract();
-    chassis_.moveToPoint(-52.0, 24.0, 2000,
-                         {.minSpeed = 80, .earlyExitRange = 7}, false);
-    chassis_.moveToPoint(-15.0, 25.0, 2000, {.forwards = false}, false);
+    chassis_.moveToPose(-15.0, 14.0, 270, 2300, {}, false);
     wing_.retract();
 
-    // // get three blocks in middle
-    // scoring_.stop_scoring(Scoring::ScoreTarget::High);
-    // scoring_.intake(Scoring::IntakeTarget::Intake);
-    // chassis_.moveToPoint(-25.12, 31, 500);
-    // chassis_.moveToPose(-46.5, -1.0, 250, 2000, {.maxSpeed = 70.0}, false);
-    // pros::delay(500);
-    // // score in low
-    // scoring_.stop_intaking(Scoring::IntakeTarget::Intake);
-    // scoring_.score(Scoring::ScoreTarget::Low);
+    // the following for winging and moving back
+    // chassis_.moveToPoint(-52.0, 25.0, 2000,
+    //                      {.minSpeed = 80, .earlyExitRange = 7}, false);
+    // chassis_.moveToPoint(-15.0, 25.0, 2000, {.forwards = false}, false);
+    // wing_.retract();
+
+    chassis_.moveToPoint(-45.0, 25.5, 2000, {}, false);
+    wing_.extend();
+    scoring_.intake();
+    chassis_.moveToPose(-40.0, 6.0, 235, 5000, {.maxSpeed = 100}, false);
+    // chassis_.moveToPose(-44.5, 1.0, 235, 2000, {.maxSpeed = 100}, false);
 }
 
 void AutonomousControl::match_left() {
