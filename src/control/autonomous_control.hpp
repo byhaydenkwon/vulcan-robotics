@@ -24,6 +24,7 @@ class AutonomousControl {
     void match_right();
     void match_left();
     void skills();
+    void dumb_skills();
 
    private:
     lemlib::Chassis& chassis_;
