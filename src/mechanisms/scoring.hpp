@@ -56,7 +56,7 @@ class Scoring {
         double_park_state_ = DoubleParkState::Attempting;
     }
 
-    void stop_intaking(IntakeTarget target) {
+    void stop_intaking(IntakeTarget target = IntakeTarget::Intake) {
         remove_all_of_state(get_state_for_intake_target(target));
     }
     void stop_scoring(ScoreTarget target) {
