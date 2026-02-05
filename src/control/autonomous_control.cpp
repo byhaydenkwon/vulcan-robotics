@@ -92,13 +92,30 @@ void AutonomousControl::skills() {
     scoring_.intake();
     pros::delay(1300);
 
-    // go clear other loader
-    chassis_.moveToPoint(-10, 42, 4000, {}, false);
+    // go to other side of field
+    chassis_.moveToPoint(-10, 47, 4000, {}, false);
     scoring_.stop_intaking();
     loader_.retract();
-    chassis_.moveToPoint(-100, 50, 10000, {}, false);
+    chassis_.moveToPoint(-110, 51, 10000, {}, false);
+
+    // move to high goal and score
+    chassis_.moveToPose(-92.5, 33.5, 270, 3000, {.forwards = false}, false);
+    scoring_.score(Scoring::ScoreTarget::High);
+    pros::delay(2000);
+    scoring_.stop_scoring(Scoring::ScoreTarget::High);
+
+    // get six blocks from loader
     loader_.extend();
-    chassis_.moveToPose(-121.403, 36, 270, 7000, {}, false);
+    scoring_.intake();
+    chassis_.moveToPose(-121.403, 34.0, 270, 2000, {}, false);
+    pros::delay(1300);
+
+    // move to high goal and score
+    chassis_.moveToPose(-92.5, 33.5, 270, 2000, {.forwards = false}, false);
+    scoring_.stop_intaking();
+    scoring_.score(Scoring::ScoreTarget::High);
+    pros::delay(2000);
+    scoring_.stop_scoring(Scoring::ScoreTarget::High);
 }
 
 void AutonomousControl::dumb_skills() { double_park_.extend(); }
