@@ -3,6 +3,44 @@
 #include "lemlib/api.hpp"
 #include "main.h"
 
+void AutonomousControl::right_awp() {
+    // 1. go to loader, grab 3 blocks
+    // 2. score 4 in long goal
+    // 3. get 3 close center blocks
+    // 4. score them in low
+    // 5. get 3 far center blocks
+    // 6. score them in high
+
+    // get three blocks from loader
+    chassis_.moveToPose(-10.428, 34.342, 90, 2000, {}, false);
+    loader_.extend();
+    pros::delay(300);
+    chassis_.moveToPoint(10.528, 29.942, 1000, {.maxSpeed = 73.5}, false);
+    scoring_.intake(Scoring::IntakeTarget::Intake);
+    pros::delay(700);  // three blocks, most of the time (four if not)
+
+    // move to goal; score four blocks
+    chassis_.moveToPoint(-28.12, 30.2, 2000, {.forwards = false}, true);
+    chassis_.waitUntil(13.);
+    scoring_.score(Scoring::ScoreTarget::High);
+    scoring_.stop_intaking(Scoring::IntakeTarget::Intake);
+    loader_.retract();
+    chassis_.waitUntilDone();
+    pros::delay(1300);
+    scoring_.stop_scoring(Scoring::ScoreTarget::High);
+
+    // pick up close three center blocks
+    chassis_.moveToPoint(-20, 30.2, 1000, {}, false);
+    chassis_.moveToPose(-24, 16.8, 235, 1500, {}, false);
+    scoring_.intake();
+
+    // score in low
+    chassis_.moveToPose(-44, 3.5, 235, 3000, {.maxSpeed = 70}, true);
+    chassis_.waitUntil(8.);
+    scoring_.stop_intaking();
+    scoring_.score(Scoring::ScoreTarget::Low);
+}
+
 void AutonomousControl::right_together() {
     // eventually, this should:
     // 1. go to center and get 3 center blocks
@@ -44,7 +82,6 @@ void AutonomousControl::right_together() {
     wing_.extend();
     scoring_.intake();
     chassis_.moveToPose(-40.0, 6.0, 235, 5000, {.maxSpeed = 100}, false);
-    // chassis_.moveToPose(-44.5, 1.0, 235, 2000, {.maxSpeed = 100}, false);
 }
 
 void AutonomousControl::left_together() {
