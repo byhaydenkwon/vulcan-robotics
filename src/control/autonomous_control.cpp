@@ -35,8 +35,8 @@ void AutonomousControl::right_awp() {
     scoring_.intake();
 
     // score in low
-    chassis_.moveToPose(-44, 3.5, 235, 3000, {.maxSpeed = 70}, true);
-    chassis_.waitUntil(8.);
+    chassis_.moveToPose(-45, 1.0, 237, 2500, {.maxSpeed = 65}, true);
+    chassis_.waitUntil(15);
     scoring_.stop_intaking();
     scoring_.score(Scoring::ScoreTarget::Low);
 }
@@ -127,32 +127,43 @@ void AutonomousControl::skills() {
     pros::delay(300);
     chassis_.moveToPoint(10.528, 29.942, 1000, {.maxSpeed = 73.5}, false);
     scoring_.intake();
-    pros::delay(1300);
+    pros::delay(1700);
 
     // go to other side of field
-    chassis_.moveToPoint(-10, 47, 4000, {}, false);
+    chassis_.moveToPoint(-10, 30, 3000, {.forwards = false}, false);
+    chassis_.moveToPoint(-10, 47, 4000, {.forwards = false}, false);
     scoring_.stop_intaking();
     loader_.retract();
-    chassis_.moveToPoint(-110, 51, 10000, {}, false);
+    chassis_.moveToPoint(-115, 52, 10000, {.forwards = false}, false);
 
     // move to high goal and score
-    chassis_.moveToPose(-92.5, 33.5, 270, 3000, {.forwards = false}, false);
+    chassis_.moveToPose(-92.5, 43, 270, 3000, {.forwards = false}, false);
+    // scoring_.score(Scoring::ScoreTarget::Low);
+    // pros::delay(750);
+    // scoring_.stop_scoring(Scoring::ScoreTarget::Low);
     scoring_.score(Scoring::ScoreTarget::High);
-    pros::delay(2000);
+    pros::delay(2500);
     scoring_.stop_scoring(Scoring::ScoreTarget::High);
 
     // get six blocks from loader
     loader_.extend();
     scoring_.intake();
-    chassis_.moveToPose(-121.403, 34.0, 270, 2000, {}, false);
-    pros::delay(1300);
+    chassis_.moveToPose(-121.403, 42.5, 270, 2000, {}, false);
+    pros::delay(1700);
 
     // move to high goal and score
-    chassis_.moveToPose(-92.5, 33.5, 270, 2000, {.forwards = false}, false);
+    chassis_.moveToPose(-92.5, 43, 270, 2000, {.forwards = false}, false);
     scoring_.stop_intaking();
+    // scoring_.score(Scoring::ScoreTarget::Low);
+    // pros::delay(750);
+    // scoring_.stop_scoring(Scoring::ScoreTarget::Low);
     scoring_.score(Scoring::ScoreTarget::High);
-    pros::delay(2000);
+    pros::delay(2500);
     scoring_.stop_scoring(Scoring::ScoreTarget::High);
+    loader_.retract();
+
+    chassis_.moveToPoint(-131, -65, 4000, {}, false);
+    chassis_.moveToPose(-131, -117, 270, 4000, {}, false);
 }
 
 void AutonomousControl::sixty_s_stop_time() { double_park_.extend(); }
