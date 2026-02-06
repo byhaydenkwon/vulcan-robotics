@@ -7,6 +7,7 @@
 #include "lemlib/api.hpp"
 #include "main.h"
 #include "mechanisms/scoring.hpp"
+#include "pros/misc.h"
 #include "pros/rtos.h"
 
 void DriverControl::detect_controllers() {
@@ -180,6 +181,9 @@ void DriverControl::two_controller_mechanism_control() {
     if (controller_.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_UP)) {
         double_park_.retract();
     }
+    if (controller_.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
+        double_park_.extend();
+    }
 }
 
 void DriverControl::one_controller_mechanism_control() {
@@ -221,6 +225,9 @@ void DriverControl::one_controller_mechanism_control() {
     }
     if (controller_.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_UP)) {
         double_park_.retract();
+    }
+    if (controller_.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
+        double_park_.extend();
     }
 }
 
