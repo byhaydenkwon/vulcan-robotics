@@ -137,7 +137,7 @@ void AutonomousControl::skills() {
     chassis_.moveToPoint(-115, 52, 10000, {.forwards = false}, false);
 
     // move to high goal and score
-    chassis_.moveToPose(-92.5, 43, 270, 3000, {.forwards = false}, false);
+    chassis_.moveToPose(-92.5, 44, 270, 3000, {.forwards = false}, false);
     // scoring_.score(Scoring::ScoreTarget::Low);
     // pros::delay(750);
     // scoring_.stop_scoring(Scoring::ScoreTarget::Low);
@@ -152,7 +152,7 @@ void AutonomousControl::skills() {
     pros::delay(1700);
 
     // move to high goal and score
-    chassis_.moveToPose(-92.5, 43, 270, 2000, {.forwards = false}, false);
+    chassis_.moveToPose(-92.5, 44, 270, 2000, {.forwards = false}, false);
     scoring_.stop_intaking();
     // scoring_.score(Scoring::ScoreTarget::Low);
     // pros::delay(750);
@@ -162,8 +162,22 @@ void AutonomousControl::skills() {
     scoring_.stop_scoring(Scoring::ScoreTarget::High);
     loader_.retract();
 
-    chassis_.moveToPoint(-131, -65, 4000, {}, false);
-    chassis_.moveToPose(-131, -117, 270, 4000, {}, false);
+    // move to diagonal from original side's loader
+    chassis_.moveToPoint(-94, -24, 3000, {.minSpeed = 80, .earlyExitRange = 6},
+                         false);
+    chassis_.moveToPose(-102, -57, 270, 4000, {}, false);
+    loader_.extend();
+    pros::delay(300);
+    chassis_.moveToPose(-113.403, -57, 270, 2000, {}, false);
+    scoring_.intake();
+    pros::delay(1700);
+    chassis_.moveToPoint(-100, -57, 1000, {.forwards = false}, false);
+    scoring_.stop_intaking();
+    loader_.retract();
+
+    // move to scoring position on original color side
+    chassis_.moveToPose(-100, -80, 90, 3000, {}, false);
+    chassis_.moveToPoint(-6, -80, 3000, {}, false);
 }
 
 void AutonomousControl::sixty_s_stop_time() { double_park_.extend(); }
