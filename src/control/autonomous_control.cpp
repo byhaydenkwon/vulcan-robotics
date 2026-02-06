@@ -155,4 +155,4 @@ void AutonomousControl::skills() {
     scoring_.stop_scoring(Scoring::ScoreTarget::High);
 }
 
-void AutonomousControl::dumb_skills() { double_park_.extend(); }
+void AutonomousControl::sixty_s_stop_time() { double_park_.extend(); }

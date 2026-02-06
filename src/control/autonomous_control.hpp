@@ -26,7 +26,7 @@ class AutonomousControl {
     void left_awp();
     void left_together();
     void skills();
-    void dumb_skills();
+    void sixty_s_stop_time();
 
    private:
     lemlib::Chassis& chassis_;
