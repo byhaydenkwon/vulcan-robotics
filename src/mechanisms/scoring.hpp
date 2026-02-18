@@ -27,6 +27,7 @@ class Scoring {
           left_optical_{params.left_optical},
           right_optical_{params.right_optical} {
         active_state_list_.reserve(static_cast<int>(State::InvalidCount));
+        hopper_.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
     }
 
     enum class IntakeTarget { Intake, Flush, InvalidCount };
