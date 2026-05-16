@@ -2,6 +2,7 @@
 
 ![Vulcan Logo](images/logos/vulcan.png)
 
+**This repository is in an archive status, as the 2025-2026 VEX Robotics season has ended. See you in Override!**
 
 Hi, we're team 36830C - Vulcan! This is where our code and some general information is hosted. We don't accept public contributions since this is our team, but feel free to take some inspiration for yourself and your own teams!
 
