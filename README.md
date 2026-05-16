@@ -1,8 +1,8 @@
 # VEX Robotics Team 36830C - Vulcan
+## **This repository is in an archive status, as the 2025-2026 VEX Robotics season has ended. See you in Override!**
 
 ![Vulcan Logo](images/logos/vulcan.png)
 
-**This repository is in an archive status, as the 2025-2026 VEX Robotics season has ended. See you in Override!**
 
 Hi, we're team 36830C - Vulcan! This is where our code and some general information is hosted. We don't accept public contributions since this is our team, but feel free to take some inspiration for yourself and your own teams!
 
@@ -12,6 +12,7 @@ We are Team 36830C - Vulcan, from Auburn High School in Auburn, Alabama.
 
 ## Table of Contents
 - [VEX Robotics Team 36830C - Vulcan](#vex-robotics-team-36830c---vulcan)
+  - [**This repository is in an archive status, as the 2025-2026 VEX Robotics season has ended. See you in Override!**](#this-repository-is-in-an-archive-status-as-the-2025-2026-vex-robotics-season-has-ended-see-you-in-override)
   - [About us](#about-us)
   - [Table of Contents](#table-of-contents)
   - [Team Members](#team-members)
