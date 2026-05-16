@@ -1,8 +1,10 @@
 # VEX Robotics Team 36830C - Vulcan
+## **This repository is in an archive status, as the 2025-2026 VEX Robotics season has ended. See you in Override!**
 
 ![Vulcan Logo](images/logos/vulcan.png)
 
-Thank you for coming to the official repository of VEX Robotics Team 36830C, Vulcan! Here we will have all of our code along with  additional information. This will solely be used to document code changes and will thus remain "professional" to provide examples. We will not be accepting pull requests.
+
+Hi, we're team 36830C - Vulcan! This is where our code and some general information is hosted. We don't accept public contributions since this is our team, but feel free to take some inspiration for yourself and your own teams!
 
 ## About us
 
@@ -10,32 +12,32 @@ We are Team 36830C - Vulcan, from Auburn High School in Auburn, Alabama.
 
 ## Table of Contents
 - [VEX Robotics Team 36830C - Vulcan](#vex-robotics-team-36830c---vulcan)
+  - [**This repository is in an archive status, as the 2025-2026 VEX Robotics season has ended. See you in Override!**](#this-repository-is-in-an-archive-status-as-the-2025-2026-vex-robotics-season-has-ended-see-you-in-override)
   - [About us](#about-us)
   - [Table of Contents](#table-of-contents)
   - [Team Members](#team-members)
   - [Robot Design](#robot-design)
   - [Programming](#programming)
-  - [Highlights](#highlights)
   - [Contact Us](#contact-us)
 
 ## Team Members
 
-- Ian (Driver, Designer, Builder, Notebooker)
-- Cal (Builder, Designer, Notebooker)
-- Hayden (Coder, Designer, Notebooker)
+- Ian (Driver)
+- Cal (Builder)
+- Hayden (Programmer)
+
+We all design the robot and notebook the process.
 
 ## Robot Design
 
-Our overall design will change throughout the season as the metas shift, but we will remain vigilant throughout as to not completely hole-copy another team's robot. We will be sure to carefully plan, test, and document all changes. One of our foundational beliefs is that a well-designed robot is a key component to winning in the competitive field that is VEX Robotics.
+Our design will change throughout the season, but we stay original. Having a well-designed robot and code that works *for your team* is much more effective than hole-counting another team. Innovation!
+
+Currently, we run a basket robot with a standard wing and double-parking capabilities.
 
 ## Programming
 
-Programming is the core component of a robot and team. It's the bread and butter. The oil in an engine. We use various techniques, such as autonomous programs and unique driver controls, to ensure that our robot's competitiveness on the field is fully utilized.
-
-## Highlights
-
-We have not competed yet as we are still building our robot, but we hope to see everyone at Spooky Vex in October!
+We especially love to experiment with new programming strategies. Compared to the physical robot, it's easier to change and try things—for example, we use two controllers to simplify driving for Ian, the primary driver. It's changed throughout the season (the codebase used to be entirely in Python, for example), and it will continue to do so. Future prospects include implementation of custom multi-sensor localization and further improvements to make driving "smarter" during driver-controlled periods.
 
 ## Contact Us
 
-Our team would love to connect with the wider robotics community. If you have any questions, comments, concerns, suggestions, or grievances, feel free to reach out to us at [ibrooks6919@gmail.com](mailto:ibrooks6919@gmail.com)
+Our team would love to connect with the wider robotics community. If you have any questions, comments, concerns, suggestions, or grievances, feel free to reach out to us at [ibrooks6919@gmail.com](mailto:ibrooks6919@gmail.com)!

@@ -27,18 +27,18 @@ constexpr float DT_TRACK_WIDTH{13.875};
 constexpr float DT_RPM{600};
 // lemlib docs:
 /* `horizontalDrift` is a feature we added to the original boomerang controller
- * that ensures compatibility with drivetrains with both all omni wheels (drift
- * drive), or drivetrains with center traction wheels. It controls how fast the
- * chassis can move while turning. If you have a drift drive, we recommend
- * starting with a value of 2, while a drivetrain with center traction wheels
- * should start with a value of 8. */
+ that ensures compatibility with drivetrains with both all omni wheels (drift
+ drive), or drivetrains with center traction wheels. It controls how fast the
+ chassis can move while turning. If you have a drift drive, we recommend
+ starting with a value of 2, while a drivetrain with center traction wheels
+ should start with a value of 8. */
 constexpr float DT_HORIZONTAL_DRIFT{8.0};
 constexpr float DT_GEAR_RATIO{0.625};
 
 // other motors
-constexpr int INTAKE_MOTOR_PORT{-1};
+constexpr int INTAKE_MOTOR_PORT{-5};
 constexpr int TOP_MOTOR_PORT{-3};
-constexpr int MIDDLE_MOTOR_PORT{-10};
+constexpr int MIDDLE_MOTOR_PORT{-20};
 constexpr int HOPPER_MOTOR_PORT{-2};
 
 // pneumatics
@@ -53,23 +53,25 @@ constexpr bool DOUBLE_PARK_EXTENDED_IS_LOW{false};
 
 // odometry
 constexpr int IMU_PORT{17};
-constexpr int ROTATION_PARALLEL_PORT{9};
-constexpr int ROTATION_PERPENDICULAR_PORT{19};
+constexpr int ROTATION_PARALLEL_PORT{8};
+// constexpr int ROTATION_PERPENDICULAR_PORT{19};
 constexpr float TRACKING_WHEELS{lemlib::Omniwheel::NEW_2};
 
 constexpr float PARALLEL_TRACKING_OFFSET{-2.125};  // left is negative
-constexpr float PERPENDICULAR_TRACKING_OFFSET{-0.6875};
+// constexpr float PERPENDICULAR_TRACKING_OFFSET{-0.6875};
 
 // other sensors
-constexpr int OPTICAL_LEFT_PORT{4};
-constexpr int OPTICAL_RIGHT_PORT{18};
+constexpr int OPTICAL_LEFT_PORT{18};
+constexpr int OPTICAL_RIGHT_PORT{4};
 
 // code
 constexpr int DRIVE_VELOCITY_PERCENT = 100;
 constexpr int TURN_VELOCITY_PERCENT = 70;
+constexpr bool USE_TWO_CONTROLLERS = true;
 
 // declarations (do not edit)
 pros::Controller controller(pros::E_CONTROLLER_MASTER);
+pros::Controller secondary_controller(pros::E_CONTROLLER_PARTNER);
 
 // drivetrain
 pros::MotorGroup dt_left_motors(DT_LEFT_PORTS, DT_GEARSET);
@@ -95,16 +97,16 @@ pros::adi::Pneumatics double_park(DOUBLE_PARK_PORT, false,
 pros::IMU imu(IMU_PORT);
 
 pros::Rotation parallel_sensor(ROTATION_PARALLEL_PORT);
-pros::Rotation perpendicular_sensor(ROTATION_PERPENDICULAR_PORT);
+// pros::Rotation perpendicular_sensor(ROTATION_PERPENDICULAR_PORT);
 
 lemlib::TrackingWheel parallel_wheel(&parallel_sensor, TRACKING_WHEELS,
                                      PARALLEL_TRACKING_OFFSET);
-lemlib::TrackingWheel perpendicular_wheel(&perpendicular_sensor,
-                                          TRACKING_WHEELS,
-                                          PERPENDICULAR_TRACKING_OFFSET);
+// lemlib::TrackingWheel perpendicular_wheel(&perpendicular_sensor,
+//                                           TRACKING_WHEELS,
+//                                           PERPENDICULAR_TRACKING_OFFSET);
 
-lemlib::OdomSensors odom_sensors(&parallel_wheel, nullptr, &perpendicular_wheel,
-                                 nullptr, &imu);
+lemlib::OdomSensors odom_sensors(&parallel_wheel, nullptr, nullptr, nullptr,
+                                 &imu);
 
 lemlib::ControllerSettings lateral_controller(
     10,   // proportional gain (kP)
@@ -138,10 +140,35 @@ pros::Optical left_optical(OPTICAL_LEFT_PORT);
 pros::Optical right_optical(OPTICAL_RIGHT_PORT);
 
 // code
-Scoring scoring(top_motor, middle_motor, intake_motor, hopper_motor,
-                left_optical, right_optical);
-DriverControl driver_control(chassis, controller, scoring, loader, wing,
-                             double_park, DRIVE_VELOCITY_PERCENT,
-                             TURN_VELOCITY_PERCENT);
-AutonomousControl autonomous_control(chassis, scoring, loader, wing);
+Scoring scoring({.top_motor = top_motor,
+                 .middle_motor = middle_motor,
+                 .intake_motor = intake_motor,
+                 .hopper_motor = hopper_motor,
+                 .left_optical = left_optical,
+                 .right_optical = right_optical});
+DriverControl driver_control({
+    .chassis = chassis,
+    .controller = controller,
+    .secondary_controller = secondary_controller,
+    .loader = loader,
+    .wing = wing,
+    .double_park = double_park,
+
+    .left_optical = left_optical,
+    .right_optical = right_optical,
+
+    .scoring = scoring,
+
+    .drive_velocity = DRIVE_VELOCITY_PERCENT,
+    .turn_velocity = TURN_VELOCITY_PERCENT,
+    .use_two_controllers = USE_TWO_CONTROLLERS,
+});
+AutonomousControl autonomous_control({
+    .chassis = chassis,
+    .loader = loader,
+    .wing = wing,
+    .double_park = double_park,
+
+    .scoring = scoring,
+});
 }  // namespace config

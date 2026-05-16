@@ -1,46 +1,87 @@
 #pragma once
 
+#include <atomic>
+#include <memory>
+
 #include "lemlib/api.hpp"
 #include "main.h"
 #include "mechanisms/scoring.hpp"
-#include "pros/adi.hpp"
 
-// TODO see issue #72
+struct DriverControlParams {
+    lemlib::Chassis& chassis;
+    pros::Controller& controller;
+    pros::Controller& secondary_controller;
+    pros::adi::Pneumatics& loader;
+    pros::adi::Pneumatics& wing;
+    pros::adi::Pneumatics& double_park;
+
+    pros::Optical& left_optical;
+    pros::Optical& right_optical;
+
+    Scoring& scoring;
+
+    int drive_velocity;
+    int turn_velocity;
+    bool use_two_controllers;
+};
+
+// ? It may be better later to refactor this into two classes, one of which
+// ? inherits and morphs the mechanism control function.
 
 /// Driver control class.
 class DriverControl {
    public:
-    DriverControl(lemlib::Chassis& chassis, pros::Controller& controller,
-                  Scoring& scoring, pros::adi::Pneumatics& loader,
-                  pros::adi::Pneumatics& wing,
-                  pros::adi::Pneumatics& double_park, int drive_velocity,
-                  int turn_velocity)
-        : chassis_{chassis},
-          controller_{controller},
-          scoring_{scoring},
-          loader_{loader},
-          double_park_{double_park},
-          wing_{wing},
-          drive_velocity_{drive_velocity},
-          turn_velocity_{turn_velocity} {}
+    explicit DriverControl(DriverControlParams params)
+        : chassis_{params.chassis},
+          controller_{params.controller},
+          secondary_controller_{params.secondary_controller},
+          scoring_{params.scoring},
+          loader_{params.loader},
+          left_optical_{params.left_optical},
+          right_optical_{params.right_optical},
+          double_park_{params.double_park},
+          wing_{params.wing},
+          drive_velocity_{params.drive_velocity},
+          turn_velocity_{params.turn_velocity},
+          use_two_controllers_{params.use_two_controllers} {}
 
-    void control_loop() {
-        while (true) {
-            split_arcade_drive(drive_velocity_, turn_velocity_);
-            mechanism_control();
-            pros::delay(10);
-        }
-    }
+    void start_control_loop();
+    void detect_controllers();
 
    private:
+    void control_loop();
+    void double_park_loop();
+    void controllers_feedback_loop();
+
     void split_arcade_drive(int drive_velocity, int turn_velocity);
-    void mechanism_control();
+    void two_controller_mechanism_control();
+    void one_controller_mechanism_control();
+
+    void set_controllers_text(std::string text);
+
+    bool use_two_controllers_{true};
+    void (DriverControl::*active_mechanism_control_)(){
+        &DriverControl::two_controller_mechanism_control};
 
     int drive_velocity_{100};
     int turn_velocity_{75};
 
+    bool scoring_middle_{false};
+    bool intake_flushing_{false};
+
+    std::unique_ptr<pros::Task> driver_control_task;
+    std::unique_ptr<pros::Task> controller_feedback_task;
+    std::unique_ptr<pros::Task> double_park_task;
+
+    // controller text setting publishes to this pointer
+    std::atomic<std::shared_ptr<const std::string>> controllers_text_{nullptr};
+
     lemlib::Chassis& chassis_;
     pros::Controller& controller_;
+    pros::Controller& secondary_controller_;
+
+    pros::Optical& left_optical_;
+    pros::Optical& right_optical_;
 
     Scoring& scoring_;
     pros::adi::Pneumatics& loader_;

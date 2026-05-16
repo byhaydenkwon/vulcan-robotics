@@ -14,9 +14,13 @@ using namespace config;
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
-    pros::lcd::initialize();  // initialize brain screen
+    pros::lcd::initialize();
     chassis.calibrate();
 
+    left_optical.set_led_pwm(100);
+    right_optical.set_led_pwm(100);
+
+    driver_control.detect_controllers();
     scoring.start_control_loop();
 }
 
@@ -49,7 +53,7 @@ void competition_initialize() {}
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-void autonomous() { autonomous_control.match_right(); }
+void autonomous() { autonomous_control.right_together(); }
 
 /**
  * Runs the operator control code. This function will be started in its own task
@@ -65,6 +69,9 @@ void autonomous() { autonomous_control.match_right(); }
  * task, not resume it from where it left off.
  */
 void opcontrol() {
-    scoring.stop_all();
-    driver_control.control_loop();
+    // This task itself is not long-running. It just starts the driver
+    // control task defined in that class to facilitate possible use of
+    // two controller feedback.
+    scoring.stop_all();  // stop stray autonomous commands
+    driver_control.start_control_loop();
 }

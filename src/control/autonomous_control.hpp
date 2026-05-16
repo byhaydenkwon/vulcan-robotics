@@ -4,19 +4,35 @@
 #include "main.h"
 #include "mechanisms/scoring.hpp"
 
+struct AutonomousControlParams {
+    lemlib::Chassis& chassis;
+    pros::adi::Pneumatics& loader;
+    pros::adi::Pneumatics& wing;
+    pros::adi::Pneumatics& double_park;
+
+    Scoring& scoring;
+};
+
 class AutonomousControl {
    public:
-    AutonomousControl(lemlib::Chassis& chassis, Scoring& scoring,
-                      pros::adi::Pneumatics& loader,
-                      pros::adi::Pneumatics& wing)
-        : chassis_(chassis), scoring_(scoring), loader_(loader), wing_{wing} {};
-    void match_right();
-    void match_left();
+    explicit AutonomousControl(AutonomousControlParams params)
+        : chassis_(params.chassis),
+          scoring_(params.scoring),
+          loader_(params.loader),
+          wing_{params.wing},
+          double_park_{params.double_park} {};
+    void right_awp();
+    void right_together();
+    void left_awp();
+    void left_together();
     void skills();
+    void sixty_s_stop_time();
 
    private:
     lemlib::Chassis& chassis_;
-    Scoring& scoring_;
     pros::adi::Pneumatics& loader_;
     pros::adi::Pneumatics& wing_;
+    pros::adi::Pneumatics& double_park_;
+
+    Scoring& scoring_;
 };

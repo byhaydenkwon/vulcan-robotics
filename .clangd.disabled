@@ -7,4 +7,5 @@ CompileFlags:
 Diagnostics:
   ClangTidy:
     Add: ["modernize*", "bugprone-*", "performance*-"]
+    Remove: modernize-use-std-print
   UnusedIncludes: None
